@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const wordSchema = new Schema({
     "word": { type: String, index: { unique: true, dropDups: true } },
     "level": { type: String },
-    "explanation": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Word' }],
+    "explanation": [{ type: String }],
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true },
 });
