@@ -22,13 +22,19 @@ const getTestSet = async (ctx) => {
 const create = async (ctx) => {
     let word = ctx.request.body.word;
     let level = ctx.request.body.level;
-    let explanation = ctx.request.body.explanation;
+    let explanations = ctx.request.body.explanations;
+    let sentences = ctx.request.body.sentences;
+    let pronunciations = ctx.request.body.pronunciations;
+    let chineseExplanations = ctx.request.body.chineseExplanations;
 
     try {
         let newWord = new WordModel({
             word: word,
             level: level,
-            explanation: explanation
+            explanations: explanations,
+            sentences: sentences,
+            pronunciations: pronunciations,
+            chineseExplanations: chineseExplanations
         }).save()
         ctx.status = 200;
         ctx.body = {};

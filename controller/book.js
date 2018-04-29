@@ -21,17 +21,20 @@ const create = async (ctx) => {
     let bookname = ctx.request.body.bookname;
     let author = ctx.request.body.author;
     let segments = ctx.request.body.segments;
-
-    let book = new BookModel({
-        bookname: bookname,
-        author: author,
-        segments: segments
-    })
-    
-    let newBook = await book.save();
-
-    ctx.status = 200;
-    ctx.body = {}
+    console.log(ctx.request)
+    try {
+        let book = new BookModel({
+            bookname: bookname,
+            author: author,
+            segments: segments
+        }).save()
+        ctx.status = 200;
+        ctx.body = {};
+    } catch (error) {
+        ctx.status = 403;
+        // TODO: error code
+        ctx.body = { "error": "error" }
+    }
 }
 
 module.exports.securedRouters = {
