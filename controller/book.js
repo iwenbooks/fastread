@@ -9,13 +9,13 @@ const list = async (ctx) => {
 }
 
 const getInfoById = async (ctx) => {
-	let bookInfo = await BookModel.findById(ctx.params.id)
-		.populate({
+    let bookInfo = await BookModel.findById(ctx.params.id)
+        .populate({
             path: 'segments',
             select: {
-				content: 0
-			}
-		})
+                content: 0
+            }
+        })
         .exec()
     ctx.body = bookInfo
 }
@@ -23,9 +23,10 @@ const getInfoById = async (ctx) => {
 const create = async (ctx) => {
     let bookModel = ctx.request.body;
     try {
-        let book = new BookModel(bookModel).save()
+        let book = await new BookModel(bookModel).save()
+
         ctx.status = 200;
-        ctx.body = {};
+        ctx.body = { _id: book._id };
     } catch (error) {
         ctx.status = 403;
         // TODO: error code

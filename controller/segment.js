@@ -9,16 +9,14 @@ const list = async (ctx) => {
 }
 
 const create = async (ctx) => {
-    let content = ctx.request.body.content;
+    let segmentModel = ctx.request.body;
 
-    let segment = new SegmentModel({
-		content: content
-    })
+    let segment = new SegmentModel(segmentModel)
     
     let newSegment = await segment.save();
 
     ctx.status = 200;
-    ctx.body = {}
+    ctx.body = {_id: newSegment._id}
 }
 
 module.exports.securedRouters = {

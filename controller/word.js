@@ -13,18 +13,27 @@ const list = async (ctx) => {
     ctx.body = words;
 }
 
+function randomFetch(filter, options) {
+    return new Promise((resolve, reject) => {
+        WordModel.findRandom(filter, {}, options, function (err, results) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(results)
+            }
+        });
+    })
+}
+
 const getTestSet = async (ctx) => {
-    // TODO: random
+    let levels = ctx.params.levels || [0, 1, 2, 3, 4, 5]
+    let limit = ctx.params.limit || 2;
     let words = []
-    words = WordModel.findRandom({}, {}, { count: 3 }, function (err, results) {
-        if (err) console.log(err);
-        else {
-            ctx.words = results
-            ctx.body = 200
-        }
-    });
-    // let words = await WordModel.find().exec();
-    // ctx.body = words;
+    words = words.concat(await randomFetch({ level: 0 }, { limit: 2 }));
+    words = words.concat(await randomFetch({ level: 1 }, { limit: 2 }));
+    words = words.concat(await randomFetch({ level: 2 }, { limit: 2 }));
+    words = words.concat(await randomFetch({ level: 3 }, { limit: 2 }));
+    ctx.body = words;
 }
 
 const create = async (ctx) => {
@@ -36,7 +45,7 @@ const create = async (ctx) => {
     let chineseExplanations = ctx.request.body.chineseExplanations;
 
     try {
-        let newWord = new WordModel({
+        let newWord = await new WordModel({
             word: word,
             level: level,
             explanations: explanations,
@@ -45,7 +54,7 @@ const create = async (ctx) => {
             chineseExplanations: chineseExplanations
         }).save()
         ctx.status = 200;
-        ctx.body = {};
+        ctx.body = { _id: newWord._id };
     } catch (error) {
         ctx.status = 403;
         // TODO: error code
