@@ -11,10 +11,13 @@ const userSchema = new Schema({
         book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
         segment: { type: mongoose.Schema.Types.ObjectId, ref: 'Segment' }
     }],
-    "words": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Word' }],
+    "words": [{
+        word: { type: mongoose.Schema.Types.ObjectId, ref: 'Word' },
+        times: { type: Number }
+    }],
     "level": { type: Number },
     "created": { type: Date, default: Date.now, index: true },
-    "updated": { type: Date, default: Date.now, index: true },
+    "updated": { type: Date, default: Date.now, index: true }
 });
 
 // use sha1 to crypt password

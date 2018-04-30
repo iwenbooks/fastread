@@ -78,6 +78,24 @@ const updateLevel = async (ctx) => {
     ctx.body = {};
 }
 
+const updateWords = async (ctx) => {
+    // TODO: use user token
+    let updateWords = ctx.request.body.updateWords
+    let userId = "5ad882e4ac2fba1e3666cd87";
+    let user = await UserModel.findById(userId);
+    for (var i = 0; i < user.words.length; i++) {
+        console.log(user.words[i].word)
+        console.log(updateWords)
+        if (updateWords.includes(String(user.words[i].word))) {
+            console.log('plus one')
+            user.words[i].times++;
+        }
+    }
+    user = await user.save();
+    ctx.status = 200;
+    ctx.body = {};
+}
+
 module.exports.securedRouters = {
     // 'GET /user': list
 };
@@ -87,5 +105,6 @@ module.exports.routers = {
     'POST /auth': auth,
     'POST /user': register,
     'GET /myInfo': myInfo,
-    'POST /updateLevel': updateLevel
+    'POST /updateLevel': updateLevel,
+    'POST /updateWords': updateWords
 };

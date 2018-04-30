@@ -15,8 +15,16 @@ const list = async (ctx) => {
 
 const getTestSet = async (ctx) => {
     // TODO: random
-    let words = await WordModel.find().limit(10).exec();
-    ctx.body = words;
+    let words = []
+    words = WordModel.findRandom({}, {}, { count: 3 }, function (err, results) {
+        if (err) console.log(err);
+        else {
+            ctx.words = results
+            ctx.body = 200
+        }
+    });
+    // let words = await WordModel.find().exec();
+    // ctx.body = words;
 }
 
 const create = async (ctx) => {

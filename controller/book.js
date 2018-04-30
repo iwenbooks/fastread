@@ -11,23 +11,19 @@ const list = async (ctx) => {
 const getInfoById = async (ctx) => {
 	let bookInfo = await BookModel.findById(ctx.params.id)
 		.populate({
-			path: 'segments'
+            path: 'segments',
+            select: {
+				content: 0
+			}
 		})
         .exec()
     ctx.body = bookInfo
 }
 
 const create = async (ctx) => {
-    let bookname = ctx.request.body.bookname;
-    let author = ctx.request.body.author;
-    let segments = ctx.request.body.segments;
-    console.log(ctx.request)
+    let bookModel = ctx.request.body;
     try {
-        let book = new BookModel({
-            bookname: bookname,
-            author: author,
-            segments: segments
-        }).save()
+        let book = new BookModel(bookModel).save()
         ctx.status = 200;
         ctx.body = {};
     } catch (error) {
