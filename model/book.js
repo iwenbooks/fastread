@@ -8,7 +8,7 @@ const bookSchema = new Schema({
     "author": { type: String },
     "cover": { type: String },
     "segments": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Segment' }],
-    "level": { type: String },
+    "level": { type: Number },
     "downloads": { type: Number },
     "gutenburgId": { type: Number },
     "category": [{ type: String }]
