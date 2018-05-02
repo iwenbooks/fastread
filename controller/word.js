@@ -62,11 +62,17 @@ const create = async (ctx) => {
     }
 }
 
+const getInfoById = async (ctx) => {
+    let wordInfo = await WordModel.findById(ctx.params.id).exec()
+    ctx.body = wordInfo
+}
+
 module.exports.securedRouters = {
 };
 
 module.exports.routers = {
     'POST /word': create,
     'GET /word': list,
-    'GET /test': getTestSet
+    'GET /test': getTestSet,
+    'GET /word/:id': getInfoById
 };

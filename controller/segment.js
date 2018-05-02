@@ -19,10 +19,16 @@ const create = async (ctx) => {
     ctx.body = {_id: newSegment._id}
 }
 
+const getInfoById = async (ctx) => {
+    let segmentInfo = await SegmentModel.findById(ctx.params.id).exec()
+    ctx.body = segmentInfo
+}
+
 module.exports.securedRouters = {
 };
 
 module.exports.routers = {
     'GET /segment': list,
-    'POST /segment': create
+    'POST /segment': create,
+    'GET /segment/:id': getInfoById
 };
