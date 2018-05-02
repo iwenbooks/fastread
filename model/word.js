@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 const wordSchema = new Schema({
     "word": { type: String, index: { unique: true, dropDups: true } },
     "level": { type: Number },
+    "nyfreq": { type: Number },
     "pronunciations": [{ type: String }],
     "chineseExplanations": [{
         "pos": { type: String },
@@ -14,6 +15,7 @@ const wordSchema = new Schema({
     }],
     "explanations": [{
         "pos": { type: String },
+        "variants": [{type: String}],
         "explanation": { type: String }
     }],
     "sentences": [{

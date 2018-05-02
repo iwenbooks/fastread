@@ -43,6 +43,7 @@ const create = async (ctx) => {
     let sentences = ctx.request.body.sentences;
     let pronunciations = ctx.request.body.pronunciations;
     let chineseExplanations = ctx.request.body.chineseExplanations;
+    let nyfreq = ctx.request.body.nyfreq;
 
     try {
         let newWord = await new WordModel({
@@ -51,7 +52,8 @@ const create = async (ctx) => {
             explanations: explanations,
             sentences: sentences,
             pronunciations: pronunciations,
-            chineseExplanations: chineseExplanations
+            chineseExplanations: chineseExplanations,
+            nyfreq: nyfreq
         }).save()
         ctx.status = 200;
         ctx.body = { _id: newWord._id };
