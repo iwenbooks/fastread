@@ -17,6 +17,7 @@
     "koa-logger": "^2.0.1",
     "koa-router": "^7.4.0",
     "mongoose": "^5.0.14",
-    "mongoose-simple-random": "^0.4.1"
+    "mongoose-simple-random": "^0.4.1",
+    "request": "^2.85.0"
   }
 }
