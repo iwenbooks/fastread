@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const jwt = require('../middleware/jwt')
 const UserModel = require('../model/user');
+const BookModel = require('../model/book');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 
 const list = async (ctx) => {
@@ -96,6 +97,35 @@ const updateWords = async (ctx) => {
     ctx.body = {};
 }
 
+const updateBookProgress = async (ctx) => {
+    // TODO: use user token
+    // TODO: check book and progress is valid
+    let updateBook = ctx.request.body.book
+    let updateProgress = ctx.request.body.segment
+    try {
+        let book = await BookModel.findById(updateBook)
+        if (book.segments.indexOf(updateProgress.toString()) < 0) {
+            ctx.status = 401
+            ctx.body = { error: "Invalid segment" }
+            return;
+        }
+        let userId = "5ad882e4ac2fba1e3666cd87";
+        let user = await UserModel.findById(userId);
+        for (var i = 0; i < user.books.length; i++) {
+            if (String(user.books[i].book) === updateBook) {
+                user.books[i].segment = updateProgress
+            }
+        }
+        user = await user.save();
+        ctx.status = 200;
+        ctx.body = {};
+    } catch {
+        ctx.status = 401;
+        ctx.body = { error: "error" }
+    }
+
+}
+
 module.exports.securedRouters = {
     // 'GET /user': list
 };
@@ -106,5 +136,6 @@ module.exports.routers = {
     'POST /user': register,
     'GET /myInfo': myInfo,
     'POST /updateLevel': updateLevel,
-    'POST /updateWords': updateWords
+    'POST /updateWords': updateWords,
+    'POST /updateBookProgress': updateBookProgress
 };
