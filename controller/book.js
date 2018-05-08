@@ -8,6 +8,11 @@ const list = async (ctx) => {
     ctx.body = books;
 }
 
+const getBookByLevel = async (ctx) => {
+    let books = await BookModel.find({level: ctx.params.level}).exec();
+    ctx.body = books;
+}
+
 const getInfoById = async (ctx) => {
     let bookInfo = await BookModel.findById(ctx.params.id)
         .populate({
@@ -41,5 +46,6 @@ module.exports.securedRouters = {
 module.exports.routers = {
     'GET /book': list,
     'GET /book/:id': getInfoById,
-    'POST /book': create
+    'POST /book': create,
+    'GET /getBookByLevel/:level': getBookByLevel
 };
