@@ -27,13 +27,13 @@ function randomFetch(filter, options) {
 
 // TODO: the levels config
 const getTestSet = async (ctx) => {
-    let levels = ctx.params.levels || [0, 1, 2, 3, 4, 5]
-    let limit = ctx.params.limit || 2;
+    let levels = ctx.params.levels || [1, 2, 3, 4, 5, 6, 7]
+    let limit = ctx.params.limit || 10;
     let words = []
-    words = words.concat(await randomFetch({ level: 0 }, { limit: 2 }));
-    words = words.concat(await randomFetch({ level: 1 }, { limit: 2 }));
-    words = words.concat(await randomFetch({ level: 2 }, { limit: 2 }));
-    words = words.concat(await randomFetch({ level: 3 }, { limit: 2 }));
+    for (let i = 0; i < levels.length; i++) {
+        let tmp = await randomFetch({ level: levels[i] }, { limit: limit })
+        words = words.concat(await randomFetch({ level: levels[i] }, { limit: limit }))
+    }
     ctx.body = words;
 }
 
