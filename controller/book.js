@@ -4,7 +4,11 @@ const jwt = require('../middleware/jwt')
 const BookModel = require('../model/book');
 
 const list = async (ctx) => {
-    let books = await BookModel.find().exec();
+    let page = ctx.query.page || 1;
+    let limit = 10;
+    let skip = (page - 1) * limit;
+
+    let books = await BookModel.find().skip(skip).limit(limit).exec();
     ctx.body = books;
 }
 
