@@ -119,7 +119,7 @@ const updateBookProgress = async (ctx) => {
         user = await user.save();
         ctx.status = 200;
         ctx.body = {};
-    } catch {
+    } catch (error) {
         ctx.status = 401;
         ctx.body = { error: "error" }
     }
@@ -140,7 +140,7 @@ const addNewBook = async (ctx) => {
         user = await user.save();
         ctx.status = 200;
         ctx.body = {};
-    } catch {
+    } catch (error) {
         ctx.status = 401;
         ctx.body = { error: "error" }
     }
