@@ -123,7 +123,27 @@ const updateBookProgress = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: "error" }
     }
+}
 
+const addNewBook = async (ctx) => {
+    // TODO: use user token
+    let newBookId = ctx.request.body.book
+    try {
+        let book = await BookModel.findById(newBookId)
+        let userId = "5ad882e4ac2fba1e3666cd87";
+        let user = await UserModel.findById(userId);
+        // TODO: check if the book already been read
+        user.books.push({
+            book: newBookId,
+            segment: book.segments[0]
+        })
+        user = await user.save();
+        ctx.status = 200;
+        ctx.body = {};
+    } catch {
+        ctx.status = 401;
+        ctx.body = { error: "error" }
+    }
 }
 
 module.exports.securedRouters = {
@@ -137,5 +157,6 @@ module.exports.routers = {
     'GET /myInfo': myInfo,
     'POST /updateLevel': updateLevel,
     'POST /updateWords': updateWords,
-    'POST /updateBookProgress': updateBookProgress
+    'POST /updateBookProgress': updateBookProgress,
+    'POST /user/book': addNewBook
 };
