@@ -10,7 +10,7 @@ const list = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = 10;
     let skip = (page - 1) * limit;
-    let users = await UserModel.find().exec();
+    let users = await UserModel.find().skip(skip).limit(limit).exec();
     ctx.body = users;
 }
 

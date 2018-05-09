@@ -9,7 +9,7 @@ const list = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = 10;
     let skip = (page - 1) * limit;
-    let words = await WordModel.find().exec();
+    let words = await WordModel.find().skip(skip).limit(limit).exec();
     ctx.body = words;
 }
 

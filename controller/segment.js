@@ -4,7 +4,11 @@ const jwt = require('../middleware/jwt')
 const SegmentModel = require('../model/segment');
 
 const list = async (ctx) => {
-    let segments = await SegmentModel.find().exec();
+    let page = ctx.query.page || 1;
+    let limit = 10;
+    let skip = (page - 1) * limit;
+
+    let segments = await SegmentModel.find().skip(skip).limit(limit).exec();
     ctx.body = segments;
 }
 
