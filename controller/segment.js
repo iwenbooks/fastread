@@ -4,7 +4,7 @@ const jwt = require('../middleware/jwt')
 const SegmentModel = require('../model/segment');
 
 const list = async (ctx) => {
-    let page = ctx.query.page || 1;
+    let page = Number(ctx.query.page) || 1;
     let limit = 10;
     let skip = (page - 1) * limit;
 

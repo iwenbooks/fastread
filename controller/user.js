@@ -59,8 +59,11 @@ const register = async (ctx) => {
 }
 
 const myInfo = async (ctx) => {
+    console.log(ctx)
+
     // TODO: use user token
-    let userId = "5ad882e4ac2fba1e3666cd87";
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
     let user = await UserModel.findById(userId);
     ctx.status = 200;
     ctx.body = user;
@@ -68,7 +71,8 @@ const myInfo = async (ctx) => {
 
 const updateLevel = async (ctx) => {
     // TODO: use user token
-    let userId = "5ad882e4ac2fba1e3666cd87";
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
     let user = await UserModel.findByIdAndUpdate(
         userId,
         {
@@ -82,7 +86,8 @@ const updateLevel = async (ctx) => {
 const updateWords = async (ctx) => {
     // TODO: use user token
     let updateWords = ctx.request.body.updateWords
-    let userId = "5ad882e4ac2fba1e3666cd87";
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
     let user = await UserModel.findById(userId);
     for (var i = 0; i < user.words.length; i++) {
         console.log(user.words[i].word)
@@ -109,7 +114,8 @@ const updateBookProgress = async (ctx) => {
             ctx.body = { error: "Invalid segment" }
             return;
         }
-        let userId = "5ad882e4ac2fba1e3666cd87";
+        let token = jwt.getToken(ctx)
+        let userId = token.id;
         let user = await UserModel.findById(userId);
         for (var i = 0; i < user.books.length; i++) {
             if (String(user.books[i].book) === updateBook) {
@@ -130,7 +136,8 @@ const addNewBook = async (ctx) => {
     let newBookId = ctx.request.body.book
     try {
         let book = await BookModel.findById(newBookId)
-        let userId = "5ad882e4ac2fba1e3666cd87";
+        let token = jwt.getToken(ctx)
+        let userId = token.id;
         let user = await UserModel.findById(userId);
         // TODO: check if the book already been read
         user.books.push({
@@ -147,16 +154,15 @@ const addNewBook = async (ctx) => {
 }
 
 module.exports.securedRouters = {
-    // 'GET /user': list
-};
-
-module.exports.routers = {
-    'GET /user': list,
-    'POST /auth': auth,
-    'POST /user': register,
     'GET /myInfo': myInfo,
     'POST /updateLevel': updateLevel,
     'POST /updateWords': updateWords,
     'POST /updateBookProgress': updateBookProgress,
     'POST /user/book': addNewBook
+};
+
+module.exports.routers = {
+    'GET /user': list,
+    'POST /auth': auth,
+    'POST /user': register
 };

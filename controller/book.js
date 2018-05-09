@@ -44,7 +44,6 @@ const create = async (ctx) => {
 }
 
 module.exports.securedRouters = {
-    // 'GET /users': list
 };
 
 module.exports.routers = {
