@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 
 const segmentSchema = new Schema({
     "content": { type: String },
+    "name": {type: String},
     "level": { type: Number },
     "words": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Word' }],
     "created": { type: Date, default: Date.now, index: true },
