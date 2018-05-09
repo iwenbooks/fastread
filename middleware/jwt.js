@@ -24,3 +24,10 @@ module.exports.errorHandler = () => JWTErrorHandler;
 module.exports.issue =  (payload) => {
     return jsonwebtoken.sign(payload, SECRET);
 };
+
+module.exports.getToken = function (ctx) {
+    // TODO: set expired time
+	let token = ctx.request.headers['authorization'].split(' ')[1]
+	let decoded = jsonwebtoken.verify(token, SECRET)
+	return decoded;
+}
