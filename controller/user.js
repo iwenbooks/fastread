@@ -139,7 +139,13 @@ const addNewBook = async (ctx) => {
         let token = jwt.getToken(ctx)
         let userId = token.id;
         let user = await UserModel.findById(userId);
-        // TODO: check if the book already been read
+        // Check if the book already been read
+        user.books.forEach(book => {
+            if (String(book.book) === newBookId) {
+                ctx.throw(400, 'The book has already been added in user\'s read list!')
+            }
+        });
+
         user.books.push({
             book: newBookId,
             segment: book.segments[0]
@@ -149,7 +155,7 @@ const addNewBook = async (ctx) => {
         ctx.body = {};
     } catch (error) {
         ctx.status = 401;
-        ctx.body = { error: "error" }
+        ctx.body = { error: error }
     }
 }
 
