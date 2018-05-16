@@ -109,8 +109,6 @@ const updateWords = async (ctx) => {
 }
 
 const updateBookProgress = async (ctx) => {
-    // TODO: use user token
-    // TODO: check book and progress is valid
     let updateBook = ctx.request.body.book
     let updateProgress = ctx.request.body.segment
     try {
