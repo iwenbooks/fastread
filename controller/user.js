@@ -66,10 +66,13 @@ const myInfo = async (ctx) => {
     let user = await UserModel
         .findById(userId)
         .populate(
-            { path: 'books.book' }
-        )
-        .select(
-            { segments: 0 }
+            {
+                path: 'books.book',
+                select: {
+                    segments: 0,
+                    author: 0
+                }
+            }
         ).exec();
     ctx.status = 200;
     ctx.body = user;
@@ -183,13 +186,34 @@ const removeBook = async (ctx) => {
     }
 }
 
+const getRecommendedBooks = async (ctx) => {
+    try {
+        let token = jwt.getToken(ctx)
+        let userId = token.id;
+        let user = await UserModel.findById(userId)
+        let books = await BookModel.find({
+            level: user.level
+        }).select({
+            segments: 0
+        }).sort({
+            download: -1
+        }).limit(3).exec();
+        ctx.body = books;
+        ctx.status = 200;
+    } catch (error) {
+        ctx.status = 401;
+        ctx.body = { error: error }
+    }
+}
+
 module.exports.securedRouters = {
     'GET /myInfo': myInfo,
     'POST /updateLevel': updateLevel,
     'POST /updateWords': updateWords,
     'POST /updateBookProgress': updateBookProgress,
     'POST /user/book': addBook,
-    'DEL /user/book': removeBook
+    'DEL /user/book': removeBook,
+    'GET /user/recommend': getRecommendedBooks
 };
 
 module.exports.routers = {
