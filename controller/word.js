@@ -27,7 +27,7 @@ function randomFetch(filter, options) {
 
 // TODO: the levels config
 const getTestSet = async (ctx) => {
-    let levels = ctx.params.levels || [1, 2, 3, 4, 5, 6, 7]
+    let levels = ctx.params.levels || [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     let limit = ctx.params.limit || 10;
     let words = []
     for (let i = 0; i < levels.length; i++) {
