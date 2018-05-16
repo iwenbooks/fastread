@@ -19,6 +19,10 @@ function add_rule(router, securedRouter, rule) {
             let path = key.substring(5);
             securedRouter.post(path, rule['securedRouters'][key]);
             console.log(`register URL mapping: POST ${path}`);
+        } else if (key.startsWith('DEL ')) {
+            let path = key.substring(4);
+            securedRouter.del(path, rule['securedRouters'][key]);
+            console.log(`register URL mapping: POST ${path}`);
         } else {
             console.log(`invalid URL: ${key}`);
         }
@@ -31,6 +35,10 @@ function add_rule(router, securedRouter, rule) {
         } else if (key.startsWith('POST ')) {
             let path = key.substring(5);
             router.post(path, rule['routers'][key]);
+            console.log(`register URL mapping: POST ${path}`);
+        } else if (key.startsWith('DEL ')) {
+            let path = key.substring(4);
+            securedRouter.del(path, rule['routers'][key]);
             console.log(`register URL mapping: POST ${path}`);
         } else {
             console.log(`invalid URL: ${key}`);

@@ -61,10 +61,16 @@ const register = async (ctx) => {
 const myInfo = async (ctx) => {
     console.log(ctx)
 
-    // TODO: use user token
     let token = jwt.getToken(ctx)
     let userId = token.id;
-    let user = await UserModel.findById(userId);
+    let user = await UserModel
+        .findById(userId)
+        .populate(
+            { path: 'books.book' }
+        )
+        .select(
+            { segments: 0 }
+        ).exec();
     ctx.status = 200;
     ctx.body = user;
 }
@@ -131,7 +137,7 @@ const updateBookProgress = async (ctx) => {
     }
 }
 
-const addNewBook = async (ctx) => {
+const addBook = async (ctx) => {
     // TODO: use user token
     let newBookId = ctx.request.body.book
     try {
@@ -159,12 +165,33 @@ const addNewBook = async (ctx) => {
     }
 }
 
+const removeBook = async (ctx) => {
+    let newBookId = ctx.request.body.book
+    try {
+        let token = jwt.getToken(ctx)
+        let userId = token.id;
+        let user = await UserModel.findById(userId)
+        for (let i = 0; i < user.books.length; i++) {
+            if (String(user.books[i].book) === newBookId) {
+                user.books.slice(1, 1)
+            }
+        }
+        user = await user.save();
+        ctx.status = 200;
+        ctx.body = {};
+    } catch (error) {
+        ctx.status = 401;
+        ctx.body = { error: error }
+    }
+}
+
 module.exports.securedRouters = {
     'GET /myInfo': myInfo,
     'POST /updateLevel': updateLevel,
     'POST /updateWords': updateWords,
     'POST /updateBookProgress': updateBookProgress,
-    'POST /user/book': addNewBook
+    'POST /user/book': addBook,
+    'DEL /user/book': removeBook
 };
 
 module.exports.routers = {

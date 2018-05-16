@@ -13,7 +13,11 @@ const list = async (ctx) => {
 }
 
 const getBookByLevel = async (ctx) => {
-    let books = await BookModel.find({level: ctx.params.level}).exec();
+    let books = await BookModel.find({
+        level: ctx.params.level
+    }).select({
+        segments: 0 
+    }).exec();
     ctx.body = books;
 }
 
