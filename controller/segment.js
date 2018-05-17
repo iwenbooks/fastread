@@ -30,8 +30,8 @@ const getInfoById = async (ctx) => {
 
 const updateWordsList = async (ctx) => {
     let segmentInfo = await SegmentModel.findById(ctx.request.body.id).exec()
-    let pattern = new RegExp(".,;'\"[]"); 
-    let words = segmentInfo.content.replace(pattern, '$1§sep§').split('§sep§')
+    let pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%+_]"); 
+    let words = segmentInfo.content.replace(/([ .,;]+)/g, '$1§sep§').split('§sep§')
     for (let i = 0; i < words.length; i++) {
         words[i] = words[i].replace(pattern, '')
     }
