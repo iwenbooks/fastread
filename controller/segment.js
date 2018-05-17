@@ -29,7 +29,7 @@ const getInfoById = async (ctx) => {
 }
 
 const updateWordsList = async (ctx) => {
-    let segmentInfo = await SegmentModel.findById(ctx.params.id)
+    let segmentInfo = await SegmentModel.findById(ctx.request.body.id)
     words = segmentInfo.content.replace(/([ .,;]+)/g,'$1§sep§').split('§sep§')
     ctx.body = words
 }
@@ -41,5 +41,5 @@ module.exports.routers = {
     'GET /segment': list,
     'POST /segment': create,
     'GET /segment/:id': getInfoById,
-    'POST /segment/:id/words': updateWordsList
+    'POST /segment/words': updateWordsList
 };
