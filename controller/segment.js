@@ -16,11 +16,11 @@ const create = async (ctx) => {
     let segmentModel = ctx.request.body;
 
     let segment = new SegmentModel(segmentModel)
-    
+
     let newSegment = await segment.save();
 
     ctx.status = 200;
-    ctx.body = {_id: newSegment._id}
+    ctx.body = { _id: newSegment._id }
 }
 
 const getInfoById = async (ctx) => {
@@ -30,7 +30,11 @@ const getInfoById = async (ctx) => {
 
 const updateWordsList = async (ctx) => {
     let segmentInfo = await SegmentModel.findById(ctx.request.body.id).exec()
-    let words = segmentInfo.content.replace(/([ .,;]+)/g,'$1§sep§').split('§sep§')
+    let pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%+_]"); 
+    let words = segmentInfo.content.replace(pattern, '$1§sep§').split('§sep§')
+    for (let i = 0; i < words.length; i++) {
+        words[i] = words[i].replace(pattern, '')
+    }
     ctx.body = words
 }
 
