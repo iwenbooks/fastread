@@ -200,8 +200,13 @@ const getRecommendedBooks = async (ctx) => {
         let token = jwt.getToken(ctx)
         let userId = token.id;
         let user = await UserModel.findById(userId)
+        let userBookList = []
+        user.books.forEach(book => {
+            userBookList.push(book.book)
+        }); 
         let books = await BookModel.find({
-            level: user.level
+            level: user.level,
+            _id: { "$nin": userBookList }
         }).select({
             segments: 0
         }).sort({
