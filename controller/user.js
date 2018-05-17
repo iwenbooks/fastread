@@ -203,7 +203,7 @@ const getRecommendedBooks = async (ctx) => {
         let userBookList = []
         user.books.forEach(book => {
             userBookList.push(book.book)
-        }); 
+        });
         let books = await BookModel.find({
             level: user.level,
             _id: { "$nin": userBookList }
@@ -220,6 +220,43 @@ const getRecommendedBooks = async (ctx) => {
     }
 }
 
+const updateRecord = async (ctx) => {
+    try {
+        let token = jwt.getToken(ctx)
+        let userId = token.id;
+        let user = await UserModel.findById(userId)
+
+        let book = ctx.request.body.book;
+        let segment = ctx.request.body.segment;
+        let time = ctx.request.body.time;
+        let score = ctx.request.body.score;
+        let isNewRecord = true;
+
+        for (var i = 0; i < user.records.length; i++) {
+            if (String(user.records[i].segment) === segment) {
+                user.records[i].time = time
+                user.records.score = score
+                isNewRecord = false;
+            }
+        }
+        if (isNewRecord) {
+            user.records.push({
+                book: book,
+                segment: segment,
+                time: time,
+                score: score
+            })
+        }
+
+        user = await user.save();
+        ctx.status = 200;
+        ctx.body = {};
+    } catch (error) {
+        ctx.status = 401;
+        ctx.body = { error: error }
+    }
+}
+
 module.exports.securedRouters = {
     'GET /myInfo': myInfo,
     'POST /updateLevel': updateLevel,
@@ -227,7 +264,8 @@ module.exports.securedRouters = {
     'POST /updateBookProgress': updateBookProgress,
     'POST /user/book': addBook,
     'DEL /user/book': removeBook,
-    'GET /user/recommend': getRecommendedBooks
+    'GET /user/recommend': getRecommendedBooks,
+    'POST /user/record': updateRecord
 };
 
 module.exports.routers = {

@@ -11,6 +11,12 @@ const userSchema = new Schema({
         book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
         segment: { type: mongoose.Schema.Types.ObjectId, ref: 'Segment' }
     }],
+    "records": [{
+        book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
+        segment: { type: mongoose.Schema.Types.ObjectId, ref: 'Segment' },
+        score: {type: Number},
+        time: {type: Number}
+    }],
     "words": [{
         word: { type: mongoose.Schema.Types.ObjectId, ref: 'Word' },
         times: { type: Number }
