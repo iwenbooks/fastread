@@ -98,14 +98,23 @@ const updateWords = async (ctx) => {
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel.findById(userId);
-    for (var i = 0; i < user.words.length; i++) {
-        console.log(user.words[i].word)
-        console.log(updateWords)
-        if (updateWords.includes(String(user.words[i].word))) {
-            console.log('plus one')
-            user.words[i].times++;
+
+    updateWords.forEach(word => {
+        let isNewWord = true;
+        for (var i = 0; i < user.words.length; i++) {
+            if (String(user.words[i].word) === word) {
+                user.words[i].times++;
+                isNewWord = false;
+            }
         }
-    }
+        if (isNewWord) {
+            user.words.push({
+                word: word,
+                times: 1
+            })
+        }
+    });
+
     user = await user.save();
     ctx.status = 200;
     ctx.body = {};
