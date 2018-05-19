@@ -5,7 +5,7 @@ const BookModel = require('../model/book');
 
 const list = async (ctx) => {
     let page = ctx.query.page || 1;
-    let limit = 10;
+    let limit = ctx.query.limit || 10;
     let skip = (page - 1) * limit;
 
     let books = await BookModel.find().skip(skip).limit(limit).exec();
