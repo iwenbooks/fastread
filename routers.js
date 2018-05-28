@@ -22,7 +22,11 @@ function add_rule(router, securedRouter, rule) {
         } else if (key.startsWith('DEL ')) {
             let path = key.substring(4);
             securedRouter.del(path, rule['securedRouters'][key]);
-            console.log(`register URL mapping: POST ${path}`);
+            console.log(`register URL mapping: DEL ${path}`);
+        } else if (key.startsWith('PUT ')) {
+            let path = key.substring(4);
+            securedRouter.put(path, rule['securedRouters'][key]);
+            console.log(`register URL mapping: PUT ${path}`);
         } else {
             console.log(`invalid URL: ${key}`);
         }
@@ -38,8 +42,12 @@ function add_rule(router, securedRouter, rule) {
             console.log(`register URL mapping: POST ${path}`);
         } else if (key.startsWith('DEL ')) {
             let path = key.substring(4);
-            securedRouter.del(path, rule['routers'][key]);
+            router.del(path, rule['routers'][key]);
             console.log(`register URL mapping: POST ${path}`);
+        } else if (key.startsWith('PUT ')) {
+            let path = key.substring(4);
+            router.put(path, rule['routers'][key]);
+            console.log(`register URL mapping: PUT ${path}`);
         } else {
             console.log(`invalid URL: ${key}`);
         }

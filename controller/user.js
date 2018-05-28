@@ -78,6 +78,17 @@ const myInfo = async (ctx) => {
     ctx.body = user;
 }
 
+const updateInfo = async (ctx) => {
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+    let user = await UserModel.findByIdAndUpdate(
+        userId,
+        ctx.request.body
+    );
+    ctx.status = 200;
+    ctx.body = {};
+}
+
 const updateLevel = async (ctx) => {
     // TODO: use user token
     let token = jwt.getToken(ctx)
@@ -264,6 +275,7 @@ module.exports.securedRouters = {
     'POST /updateBookProgress': updateBookProgress,
     'POST /user/book': addBook,
     'DEL /user/book': removeBook,
+    'PUT /user': updateInfo,
     'GET /user/recommend': getRecommendedBooks,
     'POST /user/record': updateRecord
 };

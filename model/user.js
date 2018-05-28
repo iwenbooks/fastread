@@ -22,6 +22,11 @@ const userSchema = new Schema({
         times: { type: Number }
     }],
     "level": { type: Number },
+    "nickname": { type: String, default: ""},
+    "age": {type: Number, default: 0},
+    "gender": {type: Number, default: 0},
+    "phone": {type: String, default: ''},
+    "email": {type: String, default: ''},
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true }
 });
