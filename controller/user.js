@@ -39,6 +39,44 @@ const auth = async (ctx) => {
     }
 }
 
+const authByWechat = async (ctx) => {
+    let wechatOpenId = ctx.request.body.wechatOpenId;
+    let avatar = ctx.request.body.avatar;
+    let nickname = ctx.request.body.nickname;
+    let user = await UserModel.findOne({ 'wechatOpenId': wechatOpenId });
+    if (user) {
+        ctx.status = 200;
+        ctx.body = {
+            token: jwt.issue({
+                id: user._id,
+                wechatOpenId: wechatOpenId
+            })
+        }
+    } else {
+        user = new UserModel({
+            wechatOpenId: wechatOpenId,
+            avatar: avatar,
+            nickname: nickname,
+            username: wechatOpenId,
+            level: -1
+        })
+        try {
+            let newUser = await user.save();
+            ctx.status = 200;
+            ctx.body = {
+                token: jwt.issue({
+                    id: newUser._id,
+                    wechatOpenId: newUser.wechatOpenId
+                })
+            }
+        } catch (error) {
+            ctx.status = 403;
+            console.log(error)
+            ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME }
+        }
+    }
+}
+
 const register = async (ctx) => {
     let username = ctx.request.body.username;
     let password = ctx.request.body.password;
@@ -59,8 +97,6 @@ const register = async (ctx) => {
 }
 
 const myInfo = async (ctx) => {
-    console.log(ctx)
-
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel
@@ -87,6 +123,24 @@ const updateInfo = async (ctx) => {
     );
     ctx.status = 200;
     ctx.body = {};
+}
+
+const updatePhone = async (ctx) => {
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+    let phone = ctx.request.body.phone;
+
+    let user = await UserModel.findById(userId);
+    let checkPhone = await UserModel.findOne({ 'phone': phone });
+    if (checkPhone) {
+        ctx.status = 403;
+        ctx.body = { error: "Phone number already exist!" }
+    } else {
+        user.phone = phone;
+        user = await user.save();
+        ctx.status = 200;
+        ctx.body = {}
+    }
 }
 
 const updateLevel = async (ctx) => {
@@ -277,11 +331,13 @@ module.exports.securedRouters = {
     'DEL /user/book': removeBook,
     'PUT /user': updateInfo,
     'GET /user/recommend': getRecommendedBooks,
-    'POST /user/record': updateRecord
+    'POST /user/record': updateRecord,
+    'PUT /user/phone': updatePhone
 };
 
 module.exports.routers = {
     'GET /user': list,
     'POST /auth': auth,
-    'POST /user': register
+    'POST /user': register,
+    'POST /authByWechat': authByWechat
 };
