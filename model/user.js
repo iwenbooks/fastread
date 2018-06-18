@@ -30,7 +30,11 @@ const userSchema = new Schema({
     "phone": { type: String, default: '' },
     "email": { type: String, default: '' },
     "created": { type: Date, default: Date.now, index: true },
-    "updated": { type: Date, default: Date.now, index: true }
+    "updated": { type: Date, default: Date.now, index: true },
+    "settings": {
+        "font-size": {type: Number, default: 14},
+        "background": {type:Number, defautl: 0}
+    }
 });
 
 // use sha1 to crypt password
