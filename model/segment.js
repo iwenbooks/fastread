@@ -9,7 +9,10 @@ const segmentSchema = new Schema({
     "level": { type: Number },
     "words": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Word' }],
     "created": { type: Date, default: Date.now, index: true },
-    "updated": { type: Date, default: Date.now, index: true }
+    "updated": { type: Date, default: Date.now, index: true },
+    "comments": [
+        {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
+    ]
 });
 
 segmentSchema.pre('save', function (next) {
