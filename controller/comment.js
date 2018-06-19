@@ -23,9 +23,30 @@ const commentSegment = async (ctx) => {
     ctx.body = {};
 }
 
+const getSegmentCommentsById = async (ctx) => {
+    let page = ctx.query.page || 1;
+    let limit = Number(ctx.query.limit) || 10;
+    let skip = (page - 1) * limit;
+
+    let segmentInfo = await SegmentModel
+        .findById(ctx.params.id)
+        .select('comments')
+        .populate({
+            path: 'comments',
+            options: {
+                sort: { 'created': -1 },
+                skip: skip,
+                limit: limit
+            }
+        })
+        .exec()
+    ctx.body = segmentInfo
+}
+
 module.exports.securedRouters = {
     'POST /comment/segment': commentSegment
 };
 
 module.exports.routers = {
+    'GET /comment/segment/:id': getSegmentCommentsById
 };
