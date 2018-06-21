@@ -8,6 +8,8 @@ const commentSchema = new Schema({
     "user": { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true },
+    "likes": [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    "likeNum": { type: Number, default: 0}
 });
 
 commentSchema.pre('save', function (next) {

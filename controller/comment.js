@@ -43,8 +43,34 @@ const getSegmentCommentsById = async (ctx) => {
     ctx.body = segmentInfo
 }
 
+const like = async (ctx) => {
+    let comment = await CommentModel.findById(ctx.request.body.id).exec()
+    let token = jwt.getToken(ctx)
+    let userId = token.id
+    let alreadyLiked = false
+
+    for (let i = 0; i < comment.likes.length; i++) {
+        if (String(comment.likes[i]) === userId) {
+            alreadyLiked = true
+            comment.likes.splice(i, 1)
+            console.log(comment.likes)
+            break
+        }
+    }
+    if (!alreadyLiked) {
+        comment.likes.push(userId)
+    }
+    comment.likeNum = comment.likes.length
+
+    let updatedComment = await comment.save()
+
+    ctx.status = 200
+    ctx.body = {}
+}
+
 module.exports.securedRouters = {
-    'POST /comment/segment': commentSegment
+    'POST /comment/segment': commentSegment,
+    'POST /comment/like': like
 };
 
 module.exports.routers = {
