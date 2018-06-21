@@ -114,6 +114,14 @@ const myInfo = async (ctx) => {
     ctx.body = user;
 }
 
+const getInfoById = async (ctx) => {
+    let userInfo = await UserModel
+        .findById(ctx.params.id)
+        .select("_id avatar username")
+        .exec()
+    ctx.body = userInfo
+}
+
 const updateInfo = async (ctx) => {
     let token = jwt.getToken(ctx)
     let userId = token.id;
@@ -339,5 +347,6 @@ module.exports.routers = {
     'GET /user': list,
     'POST /auth': auth,
     'POST /user': register,
-    'POST /authByWechat': authByWechat
+    'POST /authByWechat': authByWechat,
+    'GET /user/:id': getInfoById
 };

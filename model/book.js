@@ -11,7 +11,10 @@ const bookSchema = new Schema({
     "level": { type: Number },
     "downloads": { type: Number },
     "gutenburgId": { type: Number },
-    "category": [{ type: String }]
+    "category": [{ type: String }],
+    "year": { type: String },
+    "publisher": { type: String },
+    "commentary": { type: String }
 });
 
 bookSchema.pre('save', function (next) {
