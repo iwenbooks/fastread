@@ -14,7 +14,12 @@ const bookSchema = new Schema({
     "category": [{ type: String }],
     "year": { type: String },
     "publisher": { type: String },
-    "commentary": { type: String }
+    "commentary": { type: String },
+    "likes": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Segment' }],
+    "likeNum": { type: Number },
+    "comments": [
+        {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
+    ]
 });
 
 bookSchema.pre('save', function (next) {
