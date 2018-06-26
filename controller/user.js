@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const jwt = require('../middleware/jwt')
 const UserModel = require('../model/user');
 const BookModel = require('../model/book');
+const CommentModel = require('../model/comment');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 
 const list = async (ctx) => {
@@ -112,6 +113,22 @@ const myInfo = async (ctx) => {
         ).exec();
     ctx.status = 200;
     ctx.body = user;
+}
+
+const getMyComments = async (ctx) => {
+    let page = ctx.query.page || 1;
+    let limit = Number(ctx.query.limit) || 10;
+    let skip = (page - 1) * limit;
+
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+
+    let myComments = await CommentModel
+        .find({'user': userId})
+        .skip(skip)
+        .limit(limit)
+        .exec()
+    ctx.body = myComments
 }
 
 const getInfoById = async (ctx) => {
@@ -269,28 +286,33 @@ const removeBook = async (ctx) => {
 }
 
 const getRecommendedBooks = async (ctx) => {
-    try {
-        let token = jwt.getToken(ctx)
-        let userId = token.id;
-        let user = await UserModel.findById(userId)
-        let userBookList = []
-        user.books.forEach(book => {
-            userBookList.push(book.book)
-        });
-        let books = await BookModel.find({
-            level: user.level,
-            _id: { "$nin": userBookList }
-        }).select({
-            segments: 0
-        }).sort({
-            download: -1
-        }).limit(3).exec();
-        ctx.body = books;
-        ctx.status = 200;
-    } catch (error) {
-        ctx.status = 401;
-        ctx.body = { error: error }
-    }
+    console.log("here")
+    ctx.body = {}
+    ctx.status = 200;
+    // try {
+    //     let token = jwt.getToken(ctx)
+    //     let userId = token.id;
+    //     console.log(userId)
+    //     let user = await UserModel.findById(userId)
+    //     let userBookList = []
+    //     user.books.forEach(book => {
+    //         userBookList.push(book.book)
+    //     });
+    //     console.log(user)
+    //     let books = await BookModel.find({
+    //         level: user.level,
+    //         _id: { "$nin": userBookList }
+    //     }).select({
+    //         segments: 0
+    //     }).sort({
+    //         download: -1
+    //     }).limit(3).exec();
+    //     ctx.body = books;
+    //     ctx.status = 200;
+    // } catch (error) {
+    //     ctx.status = 401;
+    //     ctx.body = { error: error }
+    // }
 }
 
 const updateRecord = async (ctx) => {
@@ -332,6 +354,7 @@ const updateRecord = async (ctx) => {
 
 module.exports.securedRouters = {
     'GET /myInfo': myInfo,
+    'GET /myComments': getMyComments,
     'POST /updateLevel': updateLevel,
     'POST /updateWords': updateWords,
     'POST /updateBookProgress': updateBookProgress,

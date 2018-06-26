@@ -16,7 +16,7 @@ const getBookByLevel = async (ctx) => {
     let books = await BookModel.find({
         level: ctx.params.level
     }).select({
-        segments: 0 
+        segments: 0
     }).exec();
     ctx.body = books;
 }
@@ -47,7 +47,32 @@ const create = async (ctx) => {
     }
 }
 
+
+const like = async (ctx) => {
+    let book = await BookModel.findById(ctx.request.body.id).exec()
+    let token = jwt.getToken(ctx)
+    let userId = token.id
+    let alreadyLiked = false
+    for (let i = 0; i < book.likes.length; i++) {
+        if (String(book.likes[i]) === userId) {
+            alreadyLiked = true
+            book.likes.splice(i, 1)
+            break
+        }
+    }
+    if (!alreadyLiked) {
+        book.likes.push(userId)
+    }
+    book.likeNum = book.likes.length
+
+    let updatedBook = await book.save()
+
+    ctx.status = 200
+    ctx.body = {}
+}
+
 module.exports.securedRouters = {
+    'POST /book/like': like
 };
 
 module.exports.routers = {

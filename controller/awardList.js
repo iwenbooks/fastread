@@ -1,7 +1,5 @@
 'use strict';
 
-const jwt = require('../middleware/jwt')
-const BookModel = require('../model/book');
 const AwardListModel = require('../model/awardList')
 
 const getAwardListBooks = async (ctx) => {
@@ -15,7 +13,7 @@ const getAwardListBooks = async (ctx) => {
     let books = awardListInfo.books.filter(
         each => each.level == level
     )
-    books = books.slice((page-1)*limit, page*limit)
+    books = books.slice((page - 1) * limit, page * limit)
 
     ctx.body = books;
 }
@@ -24,7 +22,6 @@ const create = async (ctx) => {
     let awardListModel = ctx.request.body;
     try {
         let awardList = await new AwardListModel(awardListModel).save()
-
         ctx.status = 200;
         ctx.body = { _id: awardList._id };
     } catch (error) {
