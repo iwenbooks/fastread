@@ -56,6 +56,10 @@ const getCommentsBySegmentId = async (ctx) => {
                 sort: { 'created': -1 },
                 skip: skip,
                 limit: limit
+            },
+            populate: {
+                path: 'user',
+                select: '_id nickname avatar'
             }
         })
         .exec()
@@ -76,6 +80,10 @@ const getCommentsByBookId = async (ctx) => {
                 sort: { 'created': -1 },
                 skip: skip,
                 limit: limit
+            },
+            populate: {
+                path: 'user',
+                select: '_id nickname avatar'
             }
         })
         .exec()

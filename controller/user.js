@@ -134,7 +134,7 @@ const getMyComments = async (ctx) => {
 const getInfoById = async (ctx) => {
     let userInfo = await UserModel
         .findById(ctx.params.id)
-        .select("_id avatar username")
+        .select("_id avatar username nickname")
         .exec()
     ctx.body = userInfo
 }
