@@ -124,7 +124,7 @@ const getMyComments = async (ctx) => {
     let userId = token.id;
 
     let myComments = await CommentModel
-        .find({'user': userId})
+        .find({ 'user': userId })
         .skip(skip)
         .limit(limit)
         .exec()
@@ -169,7 +169,6 @@ const updatePhone = async (ctx) => {
 }
 
 const updateLevel = async (ctx) => {
-    // TODO: use user token
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel.findByIdAndUpdate(
@@ -349,6 +348,26 @@ const updateRecord = async (ctx) => {
     }
 }
 
+const updateStatus = async (ctx) => {
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+    let status = ctx.request.body.status;
+
+    try {
+        let user = await UserModel.findByIdAndUpdate(
+            userId,
+            {
+                status: status
+            }
+        );
+        ctx.status = 200;
+        ctx.body = {};
+    } catch (error) {
+        ctx.status = 403
+        ctx.body = { error: error }
+    }
+}
+
 module.exports.securedRouters = {
     'GET /myInfo': myInfo,
     'GET /myComments': getMyComments,
@@ -360,7 +379,8 @@ module.exports.securedRouters = {
     'PUT /user': updateInfo,
     'GET /recommend': getRecommendedBooks,
     'POST /user/record': updateRecord,
-    'PUT /user/phone': updatePhone
+    'PUT /user/phone': updatePhone,
+    'PUT /user/status': updateStatus
 };
 
 module.exports.routers = {

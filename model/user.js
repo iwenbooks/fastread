@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    "username": { type: String, index: { unique: true, sparse: true} },
+    "username": { type: String, index: { unique: true, sparse: true } },
     "password": { type: String },
     "books": [{
         book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
@@ -32,8 +32,19 @@ const userSchema = new Schema({
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true },
     "settings": {
-        "font-size": {type: Number, default: 14},
-        "background": {type:Number, defautl: 0}
+        "font-size": { type: Number, default: 14 },
+        "background": { type: Number, default: 0 }
+    },
+    "status": {
+        "totalReadingTime": { type: Number, default: 0 },
+        "totalChapters": { type: Number, default: 0 },
+        "lastReadDate": { type: Date, default: Date.now, },
+        "continuousReadingDayCount": { type: Number, default: 0 },
+        "totalReadingWords": { type: Number, default: 0 },
+        "totalReadingBooks": { type: Number, default: 0 },
+        "totalAnswers": { type: Number, default: 0 },
+        "totalCorrectAnswers": { type: Number, default: 0 },
+        "totalLearnedWords": { type: Number, default: 0 }
     }
 });
 
