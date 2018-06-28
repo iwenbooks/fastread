@@ -47,6 +47,15 @@ const create = async (ctx) => {
     }
 }
 
+const updateInfo = async (ctx) => {
+    let bookId = ctx.params.book
+    let book = await BookModel.findByIdAndUpdate(
+        bookId,
+        ctx.request.body
+    );
+    ctx.status = 200;
+    ctx.body = {};
+}
 
 const like = async (ctx) => {
     let book = await BookModel.findById(ctx.request.body.id).exec()
@@ -79,5 +88,6 @@ module.exports.routers = {
     'GET /book': list,
     'GET /book/:id': getInfoById,
     'POST /book': create,
-    'GET /getBookByLevel/:level': getBookByLevel
+    'GET /getBookByLevel/:level': getBookByLevel,
+    'PUT /book/:book': updateInfo
 };
