@@ -35,6 +35,7 @@ app.use(async (ctx, next) => {
     }
     console.log('and we are done parsing the form!');
   }
+  await next();
 });
 
 app.use(routers.routers());
