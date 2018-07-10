@@ -105,12 +105,15 @@ const recommandByLevel = async(ctx)=>{
 }
 
 const search = async(ctx)=>{
-    let searchQuery = ctx.params.query;
-    console.log(searchQuery);
-    let bookinfo = await BookModel.searchByAuthorOrBookName(searchQuery).exec();
+    let page = ctx.query.page || 1;
+    let limit = Number(ctx.query.limit) || 10;
+    let skip = (page - 1) * limit;
+    let searchQuery = ctx.query.search;
+    let bookinfo = await BookModel.find({$or:[{"bookname":{$regex:searchQuery}},{"author":{$regex:searchQuery}}]}).skip(skip).limit(limit).exec();
     ctx.body=bookinfo;
     ctx.status=200;
 }
+
 
 module.exports.securedRouters = {
   'POST /book/like': like
