@@ -126,6 +126,6 @@ module.exports.routers = {
   'POST /book': create,
   'GET /getBookByLevel/:level': getBookByLevel,
   'PUT /book/:book': updateInfo,
-  'GET /search/:query':search,
+  'GET /search':search,
   'POST /uploadCover/:id': uploadCover
 };
