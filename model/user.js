@@ -63,7 +63,18 @@ userSchema.pre('save', function (next) {
 userSchema.statics.findByUsername = function (username) {
     return this.findOne({ username: username });
 };
-
+userSchema.statics.timeDifference=function(lastReadDate){
+    var dd= new Date();
+    var yesterday=dd.setDate(dd.getDate()-1);
+    var newDay = new Date(yesterday);
+    if (lastReadDate.getDate()==newDay.getDate()){
+        return 1;
+    }else if (lastReadDate.getDate()==new Date().getDate()) {
+        return 2;
+    } else {
+        return 0;
+    } 
+};
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
