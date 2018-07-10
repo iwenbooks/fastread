@@ -92,16 +92,29 @@ const uploadCover = async ctx => {
   ctx.status = 200;
   ctx.body = {};
 };
+const recommandByLevel = async(ctx)=>{
+    ctx.body=await BookModel.find({"level":{$lte:ctx.params.level}}).exec();
+    ctx.status=200;
+}
+const search = async(ctx)=>{
+    let searchQuery = ctx.params.query;
+    console.log(searchQuery);
+    let bookinfo = await BookModel.searchByAuthorOrBookName(searchQuery).exec();
+    ctx.body=bookinfo;
+    ctx.status=200;
+}
 
 module.exports.securedRouters = {
   'POST /book/like': like
 };
 
 module.exports.routers = {
+  'GET /recommandByLevel/:level':recommandByLevel,
   'GET /book': list,
   'GET /book/:id': getInfoById,
   'POST /book': create,
   'GET /getBookByLevel/:level': getBookByLevel,
   'PUT /book/:book': updateInfo,
+  'GET /search/:query':search,
   'POST /uploadCover/:id': uploadCover
 };
