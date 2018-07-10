@@ -115,7 +115,7 @@ module.exports.securedRouters = {
 };
 
 module.exports.routers = {
-  'GET /recommandByLevel/:level':recommandByLevel,
+  'GET /recommandByLevel':recommandByLevel,
   'GET /book': list,
   'GET /book/:id': getInfoById,
   'POST /book': create,
