@@ -26,6 +26,9 @@ bookSchema.pre('save', function (next) {
     this.updated = Date.now();
     next();
 });
+bookSchema.statics.searchByAuthorOrBookName=function (query) {
+    return Book.find({$or:[{"bookname":{$regex:query}},{"author":{$regex:query}}]});
+}
 
 const Book = mongoose.model('Book', bookSchema);
 
