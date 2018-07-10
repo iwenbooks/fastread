@@ -93,8 +93,14 @@ const uploadCover = async ctx => {
   ctx.body = {};
 };
 const recommandByLevel = async(ctx)=>{
-    ctx.body=await BookModel.find({"level":{$lte:ctx.params.level}}).exec();
-    ctx.status=200;
+        let page = ctx.query.page || 1;
+        let limit = Number(ctx.query.limit) || 10;
+        let skip = (page - 1) * limit;
+        let level = Number( ctx.query.level);
+        console.log(ctx.query);
+        let books = await BookModel.find({"level":{$lte:level}}).sort({"numberOfReading":-1}).skip(skip).limit(limit).exec();
+        ctx.body = books;
+        ctx.status=200;
 }
 const search = async(ctx)=>{
     let searchQuery = ctx.params.query;
