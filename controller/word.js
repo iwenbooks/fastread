@@ -31,10 +31,22 @@ const getTestSet = async (ctx) => {
     let limit = ctx.params.limit || 10;
     let words = []
     for (let i = 0; i < levels.length; i++) {
-        let tmp = await randomFetch({ level: levels[i] }, { limit: limit })
-        words = words.concat(await randomFetch({ level: levels[i] }, { limit: limit }))
+        let  word =await randomFetch({ level: levels[i] }, { limit: limit });
+        if(word==undefined){
+            i--;
+            continue;
+        }else{
+            if(/^[A-Z]+$/.test(word[0]["word"][0])){
+                i--;
+                continue;
+            }else{
+                console.log("word",word[0]["word"]);
+                words.push(word);
+            }
+        }
     }
     ctx.body = words;
+    ctx.status = 200;
 }
 
 const create = async (ctx) => {
