@@ -100,7 +100,7 @@ const recommandByLevel = async(ctx)=>{
         let pattern = Number(ctx.query.pattern);
         let sortWay = Number(ctx.query.sortway)||-1;//default:descending order
         console.log(ctx.query);
-        let books = await BookModel.find({"level":{$lte:level}}).sort({pattern:sortWay,"level":-1}).skip(skip).limit(limit).exec();
+        let books = await BookModel.find({"level":{$lte:level}}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
         ctx.body = books;
 }
 
