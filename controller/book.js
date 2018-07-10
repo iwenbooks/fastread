@@ -96,12 +96,14 @@ const recommandByLevel = async(ctx)=>{
         let page = ctx.query.page || 1;
         let limit = Number(ctx.query.limit) || 10;
         let skip = (page - 1) * limit;
-        let level = Number( ctx.query.level);
+        let level = Number( ctx.query.level)||10;
+        let pattern = Number(ctx.query.pattern);
+        let sortWay = Number(ctx.query.sortway)||-1;//default:descending order
         console.log(ctx.query);
-        let books = await BookModel.find({"level":{$lte:level}}).sort({"numberOfReading":-1}).skip(skip).limit(limit).exec();
+        let books = await BookModel.find({"level":{$lte:level}}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
         ctx.body = books;
-        ctx.status=200;
 }
+
 const search = async(ctx)=>{
     let searchQuery = ctx.params.query;
     console.log(searchQuery);
