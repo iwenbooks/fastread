@@ -33,7 +33,6 @@ const getTestSet = async (ctx) => {
     for (let i = 0; i < levels.length; i++) {
         let  word =await randomFetch({ level: levels[i] }, { limit: limit });
         if(word==undefined){
-            i--;
             continue;
         }else{
             if(/^[A-Z]+$/.test(word[0]["word"][0])){
