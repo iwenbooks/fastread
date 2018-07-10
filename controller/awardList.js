@@ -30,11 +30,24 @@ const create = async (ctx) => {
         ctx.body = { "error": "error" }
     }
 }
+const getAward = async(ctx)=>{
+    let page = ctx.query.page || 1;
+    let limit = Number(ctx.query.limit) || 10;
+    let skip = (page - 1) * limit;
+    let mylevel = Number(ctx.query.level)||10;
+    let award = ctx.query.award;
+    console.log(award);
+    let book = await AwardListModel.find({"name":award}).populate({path:'books'}).sort({"books.level":-1}).skip(skip).limit(limit);
+    console.log(book);
+    ctx.body = book;
+    ctx.status=200;
+}
 
 module.exports.securedRouters = {
 };
 
 module.exports.routers = {
+    'GET /getAward':getAward,
     'GET /awardList/:id/books': getAwardListBooks,
     'POST /awardList': create
 };
