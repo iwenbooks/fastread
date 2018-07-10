@@ -368,7 +368,101 @@ const updateStatus = async (ctx) => {
     }
 }
 
+const consecutiveRTime=async (ctx)=>{
+    let token = jwt.getToken(ctx)
+    let userId= token.id;
+    let result;
+    let user = await UserModel.findById(userId);
+    let judgeWhetherReadYesterday=await UserModel.timeDifference(user.status.lastReadDate);
+    if (judgeWhetherReadYesterday==1){
+        result = user.status.continuousReadingDayCount+1;
+    }else if(judgeWhetherReadYesterday==2){
+        result = user.status.continuousReadingDayCount;
+    }else{
+        result = 0;
+    }
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.continuousReadingDayCount":result,"status.lastReadDate":new Date()}})
+    ctx.body = result;
+    ctx.status =200;
+}
+const totalReadingWords = async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalReadingWords;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingWords":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+
+const totalReadingBooks = async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalReadingBooks;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingBooks":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+
+const totalAnswers = async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalAnswers;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalAnswers":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+
+const totalCorrectAnswers = async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalCorrectAnswers;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalCorrectAnswers":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+
+const totalLearnedWords=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalLearnedWords;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalLearnedWords":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+const totalChapters=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalChapters;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalChapters":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+const totalReadingTime=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId);
+    let result =parseInt(ctx.params.query)+user.status.totalReadingTime;
+    await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingTime":result}});
+    ctx.body = result;
+    ctx.status = 200;
+}
+
 module.exports.securedRouters = {
+    'GET /totalAnswers/:query':totalAnswers,
+    'GET /totalCorrectAnswers/:query':totalCorrectAnswers,
+    'GET /totalLearnedWords/:query':totalLearnedWords,
+    'GET /totalChapters/:query':totalChapters,
+    'GET /totalReadingTime/:query':totalReadingTime,
+    'GET /totalReadingBooks/:query':totalReadingBooks,
+    'GET /totalReadingWords/:query':totalReadingWords,
+    'GET /consecutiveTime':consecutiveRTime,
     'GET /myInfo': myInfo,
     'GET /myComments': getMyComments,
     'POST /updateLevel': updateLevel,
