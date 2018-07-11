@@ -116,6 +116,11 @@ const like = async (ctx) => {
     ctx.status = 200
     ctx.body = {}
 }
+const deleteCommentById = async(ctx)=>{
+    let id = ctx.params.myid;
+    await CommentModel.findByIdAndRemove(id);
+    ctx.status=200;
+}
 
 module.exports.securedRouters = {
     'POST /comment/segment': commentSegment,
