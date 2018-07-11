@@ -130,5 +130,6 @@ module.exports.securedRouters = {
 
 module.exports.routers = {
     'GET /comment/segment/:segment': getCommentsBySegmentId,
+    'POST /deleteCommentById/:myid':deleteCommentById,
     'GET /comment/book/:book': getCommentsByBookId
 };
