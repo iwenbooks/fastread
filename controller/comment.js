@@ -13,7 +13,9 @@ const commentSegment = async (ctx) => {
 
     let comment = new CommentModel({
         'user': userId,
-        'content': ctx.request.body.content
+        'content': ctx.request.body.content,
+        'star':ctx.query.star
+
     })
     let newComment = await comment.save()
 
