@@ -16,7 +16,7 @@ const bookSchema = new Schema({
     "publisher": { type: String },
     "commentary": { type: String },
     "likes": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Segment' }],
-    "likeNum": { type: Number },
+    "likeNum": { type: Number,default:0 },
     "numberOfReading":{type:Number,default :0},
     "comments": [
         {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
