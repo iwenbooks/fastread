@@ -106,8 +106,10 @@ const myInfo = async (ctx) => {
             {
                 path: 'books.book',
                 select: {
-                    segments: 0,
-                    author: 0
+                    id: 1,
+                    bookname: 1,
+                    cover:1,
+                    category:1
                 }
             }
         ).exec();
@@ -210,8 +212,8 @@ const updateWords = async (ctx) => {
 }
 
 const updateBookProgress = async (ctx) => {
-    let updateBook = ctx.request.body.book
-    let updateProgress = ctx.request.body.segment
+    let updateBook = ctx.request.body.book;
+    let updateProgress = ctx.request.body.segment;
     try {
         let book = await BookModel.findById(updateBook)
         if (book.segments.indexOf(updateProgress.toString()) < 0) {
@@ -219,12 +221,18 @@ const updateBookProgress = async (ctx) => {
             ctx.body = { error: "Invalid segment" }
             return;
         }
+        let judge=false;
+        if(book.segments[book.segments.length-1]==updateBookProgress.toString()){
+            judge =true;
+        }
+
         let token = jwt.getToken(ctx)
         let userId = token.id;
         let user = await UserModel.findById(userId);
         for (var i = 0; i < user.books.length; i++) {
             if (String(user.books[i].book) === updateBook) {
-                user.books[i].segment = updateProgress
+                user.books[i].segment = updateProgress;
+                user.books[i].whetherOrNotToRead=judge;
             }
         }
         user = await user.save();
