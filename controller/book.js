@@ -33,7 +33,7 @@ const getInfoById = async (ctx) => {
         .populate({
             path: 'segments',
             select: {
-                "_id":1
+                "content":0
             }
         })
         .exec()
