@@ -10,7 +10,9 @@ const userSchema = new Schema({
     "books": [{
         book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
         segment: { type: mongoose.Schema.Types.ObjectId, ref: 'Segment' },
-        whetherOrNotToRead:{type:Boolean,default:false}
+        whetherOrNotToRead:{type:Boolean,default:false},
+        like:{type:Boolean,default:false}
+
 
     }],
     "records": [{
