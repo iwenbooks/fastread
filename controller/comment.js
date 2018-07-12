@@ -8,14 +8,14 @@ const CommentModel = require('../model/comment')
 
 const commentSegment = async (ctx) => {
     let segmentInfo = await SegmentModel.findById(ctx.request.body.segment).exec()
+    let newlength = segmentInfo.comments.length;
+    await SegmentModel.update({"_id":ctx.request.body.segment},{$set:{"commentNum":newlength}})
     let token = jwt.getToken(ctx)
     let userId = token.id
-
     let comment = new CommentModel({
         'user': userId,
         'content': ctx.request.body.content,
         'star':ctx.query.star
-
     })
     let newComment = await comment.save()
 
