@@ -461,6 +461,35 @@ const totalReadingTime=async(ctx)=>{
     ctx.body = result;
     ctx.status = 200;
 }
+const likeBook = async(ctx)=>{
+    let userLikeBookId = ctx.request.body.book;
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
+    await UserModel.update(
+        {"_id":userId,
+        "books":{$elemMatch: {book:userLikeBookId}}},
+        {$set:{"books.$.like":true     
+        }})
+    let book =await BookModel.findById(userLikeBookId);
+    let likesNum = book.likeNum+1;
+    await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
+    ctx.status =200;    
+}
+const unLikeBook=async(ctx)=>{
+    let userLikeBookId = ctx.request.body.book;
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
+    await UserModel.update(
+        {"_id":userId,
+        "books":{$elemMatch: {book:userLikeBookId}}},
+        {$set:{"books.$.like":false     
+        }})
+    let book =await BookModel.findById(userLikeBookId);
+    let likesNum = book.likeNum-1;
+    await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
+    ctx.status =200;  
+
+}
 
 module.exports.securedRouters = {
     'GET /totalAnswers/:query':totalAnswers,
@@ -482,7 +511,9 @@ module.exports.securedRouters = {
     'GET /recommend': getRecommendedBooks,
     'POST /user/record': updateRecord,
     'PUT /user/phone': updatePhone,
-    'PUT /user/status': updateStatus
+    'PUT /user/status': updateStatus,
+    'POST /like':likeBook,
+    'POST /unlike':unLikeBook
 };
 
 module.exports.routers = {
