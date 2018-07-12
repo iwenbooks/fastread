@@ -471,6 +471,7 @@ const likeBook = async(ctx)=>{
         {$set:{"books.$.like":true     
         }})
     let book =await BookModel.findById(userLikeBookId);
+    console.log(book);
     let likesNum = book["likeNum"]+1;
     await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
     ctx.status =200;    
