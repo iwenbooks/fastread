@@ -12,7 +12,9 @@ const segmentSchema = new Schema({
     "updated": { type: Date, default: Date.now, index: true },
     "comments": [
         {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
-    ]
+    ],
+    "commentNum":{type:Number, default:0}
+
 });
 
 segmentSchema.pre('save', function (next) {
