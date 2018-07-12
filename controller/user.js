@@ -471,7 +471,7 @@ const likeBook = async(ctx)=>{
         {$set:{"books.$.like":true     
         }})
     let book =await BookModel.findById(userLikeBookId);
-    let likesNum = book.likeNum+1;
+    let likesNum = book["likeNum"]+1;
     await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
     ctx.status =200;    
 }
@@ -485,7 +485,7 @@ const unLikeBook=async(ctx)=>{
         {$set:{"books.$.like":false     
         }})
     let book =await BookModel.findById(userLikeBookId);
-    let likesNum = book.likeNum-1;
+    let likesNum = book["likeNum"]-1;
     await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
     ctx.status =200;  
 
