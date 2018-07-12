@@ -34,7 +34,14 @@ const getInfoById = async (ctx) => {
             path: 'segments',
             select: {
                 "_id":1,
-                "content:":0
+                "content":0,
+                "name":0,
+                "level":0,
+                "words":0,
+                "created":0,
+                "updated":0,
+                "comments":0,
+                "commentNum":1
             }
         })
         .exec()
