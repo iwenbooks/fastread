@@ -27,8 +27,5 @@ bookSchema.pre('save', function (next) {
     this.updated = Date.now();
     next();
 });
-
-
 const Book = mongoose.model('Book', bookSchema);
-
 module.exports = Book;
