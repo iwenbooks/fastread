@@ -28,16 +28,16 @@ const getBookByLevel = async ctx => {
   ctx.body = books;
 };
 
-const getInfoById = async ctx => {
-  let bookInfo = await BookModel.findById(ctx.params.id)
-    .populate({
-      path: 'segments',
-      select: {
-        content: 0
-      }
-    })
-    .exec();
-  ctx.body = bookInfo;
+const getInfoById = async (ctx) => {
+    let bookInfo = await BookModel.findById(ctx.params.id,{"likeNum":1,"numberOfReading":1,"CommentNum":1})
+        .populate({
+            path: 'segments',
+            select: {
+                "_id":1
+            }
+        })
+        .exec()
+    ctx.body = bookInfo
 };
 
 const create = async ctx => {
@@ -112,6 +112,12 @@ const search = async(ctx)=>{
     let bookinfo = await BookModel.find({$or:[{"bookname":{$regex:searchQuery}},{"author":{$regex:searchQuery}}]}).skip(skip).limit(limit).exec();
     ctx.body=bookinfo;
     ctx.status=200;
+};
+const GetCommentNum = async(ctx)=>{
+    let book = await BookModel.findById(ctx.params.bookid);
+    let newlength = book.comments.length;
+    await BookModel.update({"_id":ctx.params.bookid},{$set:{"CommentNum":newlength}})
+    ctx.status=200;
 }
 
 
@@ -120,6 +126,7 @@ module.exports.securedRouters = {
 };
 
 module.exports.routers = {
+  'GET /GetTotalCommentNum/:bookid':GetCommentNum,
   'GET /recommandByLevel':recommandByLevel,
   'GET /book': list,
   'GET /book/:id': getInfoById,
