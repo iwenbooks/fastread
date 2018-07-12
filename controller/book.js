@@ -46,7 +46,7 @@ const getInfoById = async (ctx) => {
         })
         .exec()
     ctx.body = bookInfo
-};
+}
 
 const create = async ctx => {
   let bookModel = ctx.request.body;
