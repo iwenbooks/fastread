@@ -29,7 +29,7 @@ const getBookByLevel = async ctx => {
 };
 
 const getInfoById = async (ctx) => {
-    let bookInfo = await BookModel.findById(ctx.params.id,{"likeNum":1,"numberOfReading":1,"CommentNum":1})
+    let bookInfo = await BookModel.findById(ctx.params.id)
         .populate({
             path: 'segments',
             select: {
@@ -44,6 +44,7 @@ const getInfoById = async (ctx) => {
             }
         })
         .exec()
+    
     ctx.body = bookInfo
 }
 
