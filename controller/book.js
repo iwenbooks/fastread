@@ -119,8 +119,23 @@ const search = async(ctx)=>{
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
-    let bookinfo = await BookModel.find({$or:[{"bookname":{$regex:searchQuery}},{"author":{$regex:searchQuery}}]}).skip(skip).limit(limit).exec();
-    ctx.body=bookinfo;
+    searchQuery=searchQuery.trim().split(/\s+/)
+    console.log(searchQuery);
+    let res=[];
+    for(let item of searchQuery){
+        console.log(item);
+        res.push(await BookModel.find({$or:[{"bookname":{$regex:item,"$options":'i'}},{"author":{$regex:item,"$options":'i'}}]}).skip(skip).limit(limit).exec()); 
+    }
+    let tmp =[];
+    for(let i = 0 ; i < res.length ; i++){
+        for (let j = 0 ; j < res[i].length ;j++){
+            if(tmp.indexOf(res[i][j])<0){
+                tmp.push(res[i][j]);
+            }
+        }
+    }
+
+    ctx.body=tmp;
     ctx.status=200;
 };
 const GetCommentNum = async(ctx)=>{
