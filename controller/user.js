@@ -275,16 +275,17 @@ const addBook = async (ctx) => {
 const removeBook = async (ctx) => {
     let newBookId = ctx.request.body.book
     try {
-        let token = jwt.getToken(ctx)
+        let token = jwt.getToken(ctx);
         let userId = token.id;
-        let user = await UserModel.findById(userId)
-        for (let i = 0; i < user.books.length; i++) {
-            if (String(user.books[i].book) === newBookId) {
-                user.books.slice(1, 1)
+        let user = await UserModel.findById(userId);
+        let tmp = [];
+        console.log(1111);
+        for(let i = 0;i<user.books.length;i++){
+            if(user.books[i]["book"]!=newBookId){
+                tmp.push(user.books[i]);
             }
         }
-        user = await user.save();
-        ctx.status = 200;
+        await UserModel.update({"_id":userId},{"books":tmp})
         ctx.body = {};
     } catch (error) {
         ctx.status = 401;
