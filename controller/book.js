@@ -202,7 +202,7 @@ module.exports.securedRouters = {
 };
 
 module.exports.routers = {
-   'GET /recommandByCategory':recommandByCategory,
+  'POST /recommandByCategory':recommandByCategory,
   'GET /GetTotalCommentNum/:bookid':GetCommentNum,
   'GET /recommandByLevel':recommandByLevel,
   'GET /book': list,
