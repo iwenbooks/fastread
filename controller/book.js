@@ -114,7 +114,7 @@ const recommandByLevel = async(ctx)=>{
         ctx.body = books;
 }
 
-cconst search = async(ctx)=>{
+const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
