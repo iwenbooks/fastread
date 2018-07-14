@@ -114,27 +114,49 @@ const recommandByLevel = async(ctx)=>{
         ctx.body = books;
 }
 
-const search = async(ctx)=>{
+cconst search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
+    let res1=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}})
+    console.log(res1)
     searchQuery=searchQuery.trim().split(/\s+/)
     console.log(searchQuery);
     let res=[];
     for(let item of searchQuery){
-        console.log(item);
         res.push(await BookModel.find({$or:[{"bookname":{$regex:item,"$options":'i'}},{"author":{$regex:item,"$options":'i'}}]}).skip(skip).limit(limit).exec()); 
     }
     let tmp =[];
+    let vote = [];
     for(let i = 0 ; i < res.length ; i++){
         for (let j = 0 ; j < res[i].length ;j++){
-            if(tmp.indexOf(res[i][j])<0){
-                tmp.push(res[i][j]);
+            let temp = res[i][j]["bookname"];
+            let judge = false;
+            for(let k = 0;k<tmp.length; k++){
+                if(tmp[k]["bookname"]==temp){
+                    vote[k]+=1;
+                    judge =true;
+                }
             }
+            if(!judge){
+                tmp.push(res[i][j]);
+                vote.push(1);
+            }        
         }
     }
-
+    let maxIndex;
+    for(let i=0;i<tmp.length-1;i++){
+        maxIndex = i;
+        for(let j = i+1;j<tmp.length;j++){
+            if(tmp[j]>tmp[maxIndex]){
+                maxIndex = j;
+            }
+        }
+        let temp = tmp[i];
+        tmp[i]=tmp[maxIndex];
+        tmp[maxIndex]=temp;
+    }
     ctx.body=tmp;
     ctx.status=200;
 };
