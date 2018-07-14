@@ -168,12 +168,13 @@ const GetCommentNum = async(ctx)=>{
 }
 
 const recommandByCategory = async(ctx) =>{
-    let page = ctx.query.page || 1;
-    let limit = Number(ctx.query.limit) || 10;
+    let page = ctx.request.body.page || 1;
+    let limit = Number(ctx.request.body.limit) || 10;
     let skip = (page - 1) * limit;
-    let level = Number(ctx.query.level)||10;
-    let pattern = Number(ctx.query.pattern);
-    /*category:{"全部0", "文学1", "历史2", "科学3Science Fiction", "侦探4", "奇幻5", "爱情6", "儿童7", "传记8Biographies & Memoirs", "艺术9Art", "现代10Modern Novel", "家庭11", "其他12 Other"} */
+    let level = Number(ctx.request.body.level)||10;
+    let pattern = Number(ctx.request.body.pattern);
+    /*category:{"全部0", "文学1 5570", "历史2 187", "科学3Science Fiction 207", "侦探4 47", "奇幻5 0", "爱情6 3", "儿童7 1602", "传记8Biographies & Memoirs 0", "艺术9Art 121", "现代10Modern Novel 4999
+", "家庭11   0", "其他12 Other   2778"} */
     let myCategory={
         1:"Classical Literature",
         2:"Historical Fiction",
@@ -182,7 +183,7 @@ const recommandByCategory = async(ctx) =>{
         5:"Fantasy",
         6:"Romance",
         7:"Children Books",
-        8:"Biographies&Memoirs",
+        8:"Biographies & Memoirs",
         9:"Art",
         10:"Modern Novel",
         11:"Parenting&Families",
@@ -196,7 +197,6 @@ const recommandByCategory = async(ctx) =>{
     }
     ctx.status =200;
 }
-
 module.exports.securedRouters = {
   'POST /book/like': like
 };
