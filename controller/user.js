@@ -6,6 +6,16 @@ const UserModel = require('../model/user');
 const BookModel = require('../model/book');
 const CommentModel = require('../model/comment');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
+const request = require('request');
+//wechat app:
+const appid="wx7a4f658c7ff6cee3"
+const appsecret="56c48cca391a9463a74803c5f625833c"
+const loginForWechat = async(ctx)=>{
+    let url ="https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+appsecret+"&js_code="+ctx.params.code+"&grant_type=authorization_code";
+    console.log(url);
+    ctx.body =await request(url);
+    ctx.status=200;
+}
 
 const list = async (ctx) => {
     let page = ctx.query.page || 1;
@@ -519,6 +529,7 @@ module.exports.securedRouters = {
 };
 
 module.exports.routers = {
+    'GET /loginForWechat/:code':loginForWechat,
     'GET /user': list,
     'POST /auth': auth,
     'POST /user': register,
