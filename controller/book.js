@@ -167,12 +167,42 @@ const GetCommentNum = async(ctx)=>{
     ctx.status=200;
 }
 
+const recommandByCategory = async(ctx) =>{
+    let page = ctx.query.page || 1;
+    let limit = Number(ctx.query.limit) || 10;
+    let skip = (page - 1) * limit;
+    let level = Number(ctx.query.level)||10;
+    let pattern = Number(ctx.query.pattern);
+    /*category:{"全部0", "文学1", "历史2", "科学3Science Fiction", "侦探4", "奇幻5", "爱情6", "儿童7", "传记8Biographies & Memoirs", "艺术9Art", "现代10Modern Novel", "家庭11", "其他12 Other"} */
+    let myCategory={
+        1:"Classical Literature",
+        2:"Historical Fiction",
+        3:"Science Fiction",
+        4:"Detective & Mystery",
+        5:"Fantasy",
+        6:"Romance",
+        7:"Children Books",
+        8:"Biographies&Memoirs",
+        9:"Art",
+        10:"Modern Novel",
+        11:"Parenting&Families",
+        12:"Other"
+    };
+    var tmp=[myCategory[pattern]];
+    if(pattern==0){
+        ctx.body = await BookModel.find({"level":{$lte:level}}).sort({"cover":-1}).skip(skip).limit(limit).exec();
+    }else{
+        ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).sort({"cover":-1}).skip(skip).limit(limit).exec()
+    }
+    ctx.status =200;
+}
 
 module.exports.securedRouters = {
   'POST /book/like': like
 };
 
 module.exports.routers = {
+   'GET /recommandByCategory':recommandByCategory,
   'GET /GetTotalCommentNum/:bookid':GetCommentNum,
   'GET /recommandByLevel':recommandByLevel,
   'GET /book': list,
