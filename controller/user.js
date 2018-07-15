@@ -222,33 +222,29 @@ const updateWords = async (ctx) => {
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
     let updateProgress = ctx.request.body.segment;
-    try {
-        let book = await BookModel.findById(updateBook)
-        let index=book.segments.indexOf(updateProgress.toString());
-        if ( index< 0) {
-            ctx.status = 401
-            ctx.body = { error: "Invalid segment" }
-            return;
-        }
-        let judge=false;
-        let segmentLength=book.segments.length;
-        if(book.segments[segmentLength-1]==updateBookProgress.toString()){
-            judge =true;
-        }
-        let token = jwt.getToken(ctx)
-        let userId = token.id;
-        await UserModel.update(
-            {"_id":userId,
-            "books":{$elemMatch: {segment:updateProgress}}},
-            {$set:{"books.$.segment":updateBookProgress,"books.$.whetherOrNotToRead":judge,"books.$.currentSegment":index,
-            "books.$.totalSegment":segmentLength     
-            }})
-        ctx.status = 200;
-        ctx.body = {};
-    } catch (error) {
-        ctx.status = 401;
-        ctx.body = { error: "error" }
+    let book = await BookModel.findById(updateBook)
+    let index=book.segments.indexOf(updateProgress.toString());
+    if ( index< 0) {
+        ctx.status = 401
+        ctx.body = { error: "Invalid segment" }
+        return;
     }
+    let judge=false;
+    let segmentLength=book.segments.length;
+    if(book.segments[segmentLength-1]==updateBookProgress.toString()){
+        judge =true;
+    }
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+    await UserModel.update(
+        {"_id":userId,
+        "books":{$elemMatch: {segment:updateProgress}}},
+        {$set:{"books.$.segment":updateBookProgress,"books.$.whetherOrNotToRead":judge,"books.$.currentSegment":index,
+        "books.$.totalSegment":segmentLength     
+        }})
+    ctx.status = 200;
+    ctx.body = {};
+
 }
 const addBook = async (ctx) => {
     // TODO: use user token
