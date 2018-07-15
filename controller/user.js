@@ -315,17 +315,27 @@ const getRecommendedBooks = async (ctx) => {
         console.log(user)
         let books = await BookModel.find({
             level: user.level,
-            _id: { "$nin": userBookList }
+            _id: { "$nin": userBookList },
         }).select({
             segments: 0
         }).sort({
+            cover:-1,
             likeNum: -1,
             numberOfReading:-1,
-            cover:-1,
             downloads:-1,
             CommentNum:-1
-        }).limit(3).exec();
-        ctx.body = books;
+        }).limit(30).exec();
+        function getRandomArrayElement(arr,count) {
+            let shuffled  =arr.slice(0),i=arr.length,min = i-count,temp,index;
+            while (i-->min) {
+                index =Math.floor((i+1)*Math.random());
+                temp = shuffled[index];
+                shuffled[index] = shuffled[i];
+                shuffled[i] = temp;  
+            }
+            return shuffled.slice(min);
+        }
+        ctx.body =await getRandomArrayElement(books,5);
         ctx.status = 200;
     } catch (error) {
         ctx.status = 401;
