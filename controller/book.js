@@ -103,17 +103,37 @@ const uploadCover = async ctx => {
   ctx.body = {};
 };
 const recommandByLevel = async(ctx)=>{
-        let page = ctx.query.page || 1;
-        let limit = Number(ctx.query.limit) || 10;
+        let page = ctx.request.body.page || 1;
+        let limit = Number(ctx.request.body.limit) || 10;
         let skip = (page - 1) * limit;
-        let level = Number( ctx.query.level)||10;
-        let pattern = Number(ctx.query.pattern);
-        let sortWay = Number(ctx.query.sortway)||-1;//default:descending order
-        console.log(ctx.query);
-        let books = await BookModel.find({"level":{$lte:level}}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
-        ctx.body = books;
-}
-
+        let level = Number( ctx.request.body.level)||10;
+        let pattern = ctx.request.body.pattern;
+        let category=ctx.request.body.category;
+    
+        let myCategory={
+            1:"Classical Literature",
+            2:"Historical Fiction",
+            3:"Science Fiction",
+            4:"Detective & Mystery",
+            5:"Fantasy",
+            6:"Romance",
+            7:"Children Books",
+            8:"Biographies & Memoirs",
+            9:"Art",
+            10:"Modern Novel",
+            11:"Parenting&Families",
+            12:"Other"
+        };
+        let tmp = [myCategory[category]];
+        let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
+        if(category==0){
+            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
+            }
+        else{
+            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay,cover :-1}).skip(skip).limit(limit).exec();
+        }
+    ctx.status =200;
+};
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -167,44 +187,13 @@ const GetCommentNum = async(ctx)=>{
     ctx.status=200;
 }
 
-const recommandByCategory = async(ctx) =>{
-    let page = ctx.request.body.page || 1;
-    let limit = Number(ctx.request.body.limit) || 10;
-    let skip = (page - 1) * limit;
-    let level = Number(ctx.request.body.level)||10;
-    let pattern = Number(ctx.request.body.pattern);
-    /*category:{"全部0", "文学1 5570", "历史2 187", "科学3Science Fiction 207", "侦探4 47", "奇幻5 0", "爱情6 3", "儿童7 1602", "传记8Biographies & Memoirs 0", "艺术9Art 121", "现代10Modern Novel 4999
-", "家庭11   0", "其他12 Other   2778"} */
-    let myCategory={
-        1:"Classical Literature",
-        2:"Historical Fiction",
-        3:"Science Fiction",
-        4:"Detective & Mystery",
-        5:"Fantasy",
-        6:"Romance",
-        7:"Children Books",
-        8:"Biographies & Memoirs",
-        9:"Art",
-        10:"Modern Novel",
-        11:"Parenting&Families",
-        12:"Other"
-    };
-    var tmp=[myCategory[pattern]];
-    if(pattern==0){
-        ctx.body = await BookModel.find({"level":{$lte:level}}).sort({"cover":-1}).skip(skip).limit(limit).exec();
-    }else{
-        ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).sort({"cover":-1}).skip(skip).limit(limit).exec()
-    }
-    ctx.status =200;
-}
 module.exports.securedRouters = {
   'POST /book/like': like
 };
 
 module.exports.routers = {
-  'POST /recommandByCategory':recommandByCategory,
   'GET /GetTotalCommentNum/:bookid':GetCommentNum,
-  'GET /recommandByLevel':recommandByLevel,
+  'POST /recommandByLevel':recommandByLevel,
   'GET /book': list,
   'GET /book/:id': getInfoById,
   'POST /book': create,
