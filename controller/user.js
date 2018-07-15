@@ -307,7 +307,6 @@ const getRecommendedBooks = async (ctx) => {
     try {
         let token = jwt.getToken(ctx)
         let userId = token.id;
-        console.log(userId)
         let user = await UserModel.findById(userId)
         let userBookList = []
         user.books.forEach(book => {
@@ -320,7 +319,11 @@ const getRecommendedBooks = async (ctx) => {
         }).select({
             segments: 0
         }).sort({
-            download: -1
+            likeNum: -1,
+            numberOfReading:-1,
+            cover:-1,
+            downloads:-1,
+            CommentNum:-1
         }).limit(3).exec();
         ctx.body = books;
         ctx.status = 200;
