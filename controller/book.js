@@ -107,9 +107,7 @@ const recommandByLevel = async(ctx)=>{
         let limit = Number(ctx.request.body.limit) || 10;
         let skip = (page - 1) * limit;
         let level = Number( ctx.request.body.level)||10;
-        let pattern = ctx.request.body.pattern;
         let category=ctx.request.body.category;
-    
         let myCategory={
             1:"Classical Literature",
             2:"Historical Fiction",
@@ -126,11 +124,12 @@ const recommandByLevel = async(ctx)=>{
         };
         let tmp = [myCategory[category]];
         let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
+        let pattern = ctx.request.body.pattern;
         if(category==0){
-            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
+            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay}).skip(skip).limit(limit).exec();
             }
         else{
-            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
+            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,cover :-1}).skip(skip).limit(limit).exec();
         }
     ctx.status =200;
 };
