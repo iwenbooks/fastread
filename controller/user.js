@@ -336,7 +336,7 @@ const getRecommendedBooks = async (ctx) => {
             }
             return shuffled.slice(min);
         }
-        ctx.body =await getRandomArrayElement(books,5);
+        ctx.body =await getRandomArrayElement(books,3);
         ctx.status = 200;
     } catch (error) {
         ctx.status = 401;
