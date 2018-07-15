@@ -242,9 +242,7 @@ const updateBookProgress = async (ctx) => {
                 user.books[i].segment = updateProgress;
                 user.books[i].whetherOrNotToRead=judge;
                 user.books[i].currentSegment =book.segments.indexOf(updateBookProgress.toString());
-                
-                user.book[i].totalSegment = book.segments.length;
-                console.log(user.book[i].totalSegment);
+                user.books[i].totalSegment = book.segments.length;
             }
         }
         user = await user.save();
