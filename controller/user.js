@@ -123,7 +123,7 @@ const myInfo = async (ctx) => {
             }
         ).exec();
     ctx.status = 200;
-    ctx.body = user;
+    ctx.body = user[0];
 };
 
 const getMyComments = async (ctx) => {
