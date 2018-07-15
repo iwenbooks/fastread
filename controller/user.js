@@ -315,8 +315,10 @@ const getRecommendedBooks = async (ctx) => {
         console.log(user)
         let books = await BookModel.find({
             level: user.level,
-            _id: { "$nin": userBookList },
-        }).select({
+            _id: { "$nin": userBookList} ,
+            commentary: {"$exists": true, "$regex": /^.{5,}$/}
+        })
+            .select({
             segments: 0
         }).sort({
             cover:-1,
