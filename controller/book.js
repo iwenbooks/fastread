@@ -126,13 +126,13 @@ const recommandByLevel = async(ctx)=>{
         let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
         let pattern = ctx.request.body.pattern;
         if(category==0){
-            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay}).skip(skip).limit(limit).exec();
+            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
             }
         else{
-            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,cover :-1}).skip(skip).limit(limit).exec();
+            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
         }
     ctx.status =200;
-};
+}
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
