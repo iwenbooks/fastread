@@ -223,34 +223,38 @@ const updateWords = async (ctx) => {
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
     let updateProgress = ctx.request.body.segment;
-    
-    let book = await BookModel.findById(updateBook)
-    if (book.segments.indexOf(updateProgress.toString()) < 0) {
-        ctx.status = 401
-        ctx.body = { error: "Invalid segment" }
-        return;
-    }
-    let judge=false;
-    if(book.segments[book.segments.length-1]==updateBookProgress.toString()){
-        judge =true;
-    }
-    let token = jwt.getToken(ctx)
-    let userId = token.id;
-    let user = await UserModel.findById(userId);
-    for (var i = 0; i < user.books.length; i++) {
-        if (String(user.books[i].book) === updateBook) {
-            user.books[i].segment = updateProgress;
-            user.books[i].whetherOrNotToRead=judge;
-            user.books[i].currentSegment =book.segments.indexOf(updateBookProgress.toString());
-            user.book[i].totalSegment = book.segments.length;
-            console.log(user.book[i].totalSegment);
+    try {
+        let book = await BookModel.findById(updateBook)
+        if (book.segments.indexOf(updateProgress.toString()) < 0) {
+            ctx.status = 401
+            ctx.body = { error: "Invalid segment" }
+            return;
         }
+        let judge=false;
+        if(book.segments[book.segments.length-1]==updateBookProgress.toString()){
+            judge =true;
+        }
+        let token = jwt.getToken(ctx)
+        let userId = token.id;
+        let user = await UserModel.findById(userId);
+        for (var i = 0; i < user.books.length; i++) {
+            if (String(user.books[i].book) === updateBook) {
+                user.books[i].segment = updateProgress;
+                user.books[i].whetherOrNotToRead=judge;
+                user.books[i].currentSegment =book.segments.indexOf(updateBookProgress.toString());
+                
+                user.book[i].totalSegment = book.segments.length;
+                console.log(user.book[i].totalSegment);
+            }
+        }
+        user = await user.save();
+        ctx.status = 200;
+        ctx.body = {};
+    } catch (error) {
+        ctx.status = 401;
+        ctx.body = { error: "error" }
     }
-    user = await user.save();
-    ctx.status = 200;
-    ctx.body = {};
-  
-}
+};
 const addBook = async (ctx) => {
     // TODO: use user token
     let newBookId = ctx.request.body.book
