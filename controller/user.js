@@ -106,12 +106,11 @@ const register = async (ctx) => {
         ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME }
     }
 }
-
 const myInfo = async (ctx) => {
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel
-        .findById(userId)
+        .find({"_id":userId},{"books.segment":0})
         .populate(
             {
                 path: 'books.book',
@@ -125,7 +124,7 @@ const myInfo = async (ctx) => {
         ).exec();
     ctx.status = 200;
     ctx.body = user;
-}
+};
 
 const getMyComments = async (ctx) => {
     let page = ctx.query.page || 1;
