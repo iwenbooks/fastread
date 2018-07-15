@@ -234,7 +234,6 @@ const updateBookProgress = async (ctx) => {
         if(book.segments[book.segments.length-1]==updateBookProgress.toString()){
             judge =true;
         }
-
         let token = jwt.getToken(ctx)
         let userId = token.id;
         let user = await UserModel.findById(userId);
@@ -242,6 +241,8 @@ const updateBookProgress = async (ctx) => {
             if (String(user.books[i].book) === updateBook) {
                 user.books[i].segment = updateProgress;
                 user.books[i].whetherOrNotToRead=judge;
+                user.books[i].currentSegment =book.segments.indexOf(updateBookProgress.toString());
+                user.book[i].totalSegment = book.segments.length;
             }
         }
         user = await user.save();
@@ -252,7 +253,6 @@ const updateBookProgress = async (ctx) => {
         ctx.body = { error: "error" }
     }
 }
-
 const addBook = async (ctx) => {
     // TODO: use user token
     let newBookId = ctx.request.body.book
