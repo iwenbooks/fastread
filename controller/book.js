@@ -130,7 +130,7 @@ const recommandByLevel = async(ctx)=>{
             ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
             }
         else{
-            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay,cover :-1}).skip(skip).limit(limit).exec();
+            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({pattern:sortWay}).skip(skip).limit(limit).exec();
         }
     ctx.status =200;
 };
