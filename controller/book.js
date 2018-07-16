@@ -133,6 +133,7 @@ const recommandByLevel = async(ctx)=>{
         }
     ctx.status =200;
 }
+
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -161,7 +162,11 @@ const search = async(ctx)=>{
             }
             if(!judge){
                 tmp.push(res[i][j]);
-                vote.push(1);
+                if(i==0||i==1){
+                    vote.push(1);
+                }else{
+                    vote.push(5);
+                }
             }        
         }
     }
