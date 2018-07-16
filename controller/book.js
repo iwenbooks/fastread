@@ -139,12 +139,18 @@ const search = async(ctx)=>{
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
-    let res1=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
-    let res2 =await BookModel.find({"author":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
+    let tmpSearchQuery = RegExp("^"+searchQuery)
+    let res1=await BookModel.find({"bookname":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
+    let res2 =await BookModel.find({"author":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
+    let res3=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
+    let res4 =await BookModel.find({"author":{$regex:searchQuery,
+    "$options":"i"}}).skip(skip).limit(limit).exec();
     searchQuery=searchQuery.trim().split(/\s+/)
     let res=[];
     res.push(res1);
     res.push(res2);
+    res.push(res3);
+    res.push(res4);
     for(let item of searchQuery){
         res.push(await BookModel.find({$or:[{"bookname":{$regex:item,"$options":'i'}},{"author":{$regex:item,"$options":'i'}}]}).skip(skip).limit(limit).exec()); 
     }
@@ -162,13 +168,20 @@ const search = async(ctx)=>{
             }
             if(!judge){
                 tmp.push(res[i][j]);
-                if(i==0||i==1){
-                    vote.push(1);
-                }else{
+                if(i==0){
+                    vote.push(15);
+                }else if(i==1){
                     vote.push(10);
                 }
-            }        
-        }
+                else if(i==2||i==3){
+                    vote.push(5);
+                }
+                else{
+                    vote.push(1);
+                }
+                    
+            }
+        }        
     }
     let maxIndex;
     for(let i=0;i<tmp.length-1;i++){
