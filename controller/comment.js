@@ -30,7 +30,6 @@ const commentBook = async (ctx) => {
     let bookInfo = await BookModel.findById(ctx.request.body.book).exec()
     let token = jwt.getToken(ctx)
     let userId = token.id
-
     let comment = new CommentModel({
         'user': userId,
         'content': ctx.request.body.content
@@ -38,12 +37,11 @@ const commentBook = async (ctx) => {
     let newComment = await comment.save()
 
     bookInfo.comments.push(newComment._id)
+    bookInfo.commentNum+=1;
     let updatedBook = await bookInfo.save()
-
     ctx.status = 200;
     ctx.body = {};
 }
-
 const getCommentsBySegmentId = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
