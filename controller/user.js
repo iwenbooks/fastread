@@ -259,7 +259,9 @@ const addBook = async (ctx) => {
     // TODO: use user token
     let newBookId = ctx.request.body.book
     try {
-        let book = await BookModel.findById(newBookId)
+        let book = await BookModel.findById(newBookId);
+        let num = book.numberOfReading+1;
+        await BookModel.update({"_id":newBookId},{"numberOfReading":num});
         let token = jwt.getToken(ctx)
         let userId = token.id;
         let user = await UserModel.findById(userId);
