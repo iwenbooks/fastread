@@ -198,10 +198,16 @@ const search = async(ctx)=>{
     ctx.body=tmp;
     ctx.status=200;
 };
-const GetCommentNum = async(ctx)=>{
+const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
     let newlength = book.comments.length;
     await BookModel.update({"_id":ctx.params.bookid},{$set:{"CommentNum":newlength}})
+    const result ={
+        "likeNum":book.likeNum,
+        "numberOfReading":book.numberOfReading,
+        "CommentNum":newlength
+    };
+    ctx.body = result;
     ctx.status=200;
 };
 const searchByFirstAlphabet=async(ctx)=>{
@@ -224,7 +230,7 @@ module.exports.securedRouters = {
 
 module.exports.routers = {
   'POST /searchByFirstAlphabet':searchByFirstAlphabet,
-  'GET /GetTotalCommentNum/:bookid':GetCommentNum,
+  'GET /GetBookReadingInfo/:bookid':GetBookReadingInfo,
   'POST /recommandByLevel':recommandByLevel,
   'GET /book': list,
   'GET /book/:id': getInfoById,
