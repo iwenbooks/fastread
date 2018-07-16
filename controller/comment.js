@@ -37,11 +37,12 @@ const commentBook = async (ctx) => {
     let newComment = await comment.save()
 
     bookInfo.comments.push(newComment._id)
-    bookInfo.commentNum+=1;
+    bookInfo.CommentNum+=1;
     let updatedBook = await bookInfo.save()
     ctx.status = 200;
     ctx.body = {};
 }
+
 const getCommentsBySegmentId = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
