@@ -184,13 +184,27 @@ const GetCommentNum = async(ctx)=>{
     let newlength = book.comments.length;
     await BookModel.update({"_id":ctx.params.bookid},{$set:{"CommentNum":newlength}})
     ctx.status=200;
-}
+};
+const searchByFirstAlphabet=async(ctx)=>{
+    let page = Number(ctx.request.body.page);
+    let limit = Number(ctx.request.body.limit);
+    let skip = limit*(page-1); 
+    let query= ctx.request.body.search;
+    let pattern = ctx.request.body.pattern;
+    let re = RegExp("^"+query);
+    console.log(re);
+    let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}}).sort({"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
+    ctx.body = book;
+    ctx.status = 200;
+ };
+
 
 module.exports.securedRouters = {
   'POST /book/like': like
 };
 
 module.exports.routers = {
+  'POST /searchByFirstAlphabet':searchByFirstAlphabet,
   'GET /GetTotalCommentNum/:bookid':GetCommentNum,
   'POST /recommandByLevel':recommandByLevel,
   'GET /book': list,
