@@ -165,7 +165,7 @@ const search = async(ctx)=>{
                 if(i==0||i==1){
                     vote.push(1);
                 }else{
-                    vote.push(5);
+                    vote.push(10);
                 }
             }        
         }
