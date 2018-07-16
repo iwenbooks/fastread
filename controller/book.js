@@ -138,11 +138,12 @@ const search = async(ctx)=>{
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
-    let res1=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}})
-    console.log(res1)
+    let res1=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
+    let res2 =await BookModel.find({"author":{$reget:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec());
     searchQuery=searchQuery.trim().split(/\s+/)
-    console.log(searchQuery);
     let res=[];
+    res.push(res1);
+    res.push(res2);
     for(let item of searchQuery){
         res.push(await BookModel.find({$or:[{"bookname":{$regex:item,"$options":'i'}},{"author":{$regex:item,"$options":'i'}}]}).skip(skip).limit(limit).exec()); 
     }
