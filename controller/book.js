@@ -143,6 +143,7 @@ const search = async(ctx)=>{
     let searchQuery = ctx.query.search;
     let queryLength = searchQuery.length;
     let tmpSearchQuery = RegExp("^"+searchQuery)
+    let res0=await BookModel.find({"bookname":searchQuery}).skip(skip).limit(limit).exec();
     let res1=await BookModel.find({"bookname":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
     let res2 =await BookModel.find({"author":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
     let res3=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
@@ -150,6 +151,7 @@ const search = async(ctx)=>{
     "$options":"i"}}).skip(skip).limit(limit).exec();
     searchQuery=searchQuery.trim().split(/\s+/)
     let res=[];
+    res.push(res0);
     res.push(res1);
     res.push(res2);
     res.push(res3);
@@ -174,11 +176,14 @@ const search = async(ctx)=>{
             if(!judge){
                 tmp.push(res[i][j]);
                 if(i==0){
-                    vote.push(100-lengthDifference);
+                    vote.push(200-lengthDifference);
                 }else if(i==1){
-                    vote.push(25-lengthDifference);
+                    vote.push(100-lengthDifference);
                 }
-                else if(i==2||i==3){
+                else if(i==2){
+                    vote.push(50-lengthDifference);
+                }
+                else if(i==3||i==4){
                     vote.push(10-lengthDifference);
                 }
                 else{
@@ -202,8 +207,7 @@ const search = async(ctx)=>{
     }
     ctx.body=tmp;
     ctx.status=200;
-};
-
+}
 
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
