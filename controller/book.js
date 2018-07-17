@@ -139,6 +139,7 @@ const search = async(ctx)=>{
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
+    let queryLength = searchQuery.length;
     let tmpSearchQuery = RegExp("^"+searchQuery)
     let res1=await BookModel.find({"bookname":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
     let res2 =await BookModel.find({"author":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
@@ -159,6 +160,8 @@ const search = async(ctx)=>{
     for(let i = 0 ; i < res.length ; i++){
         for (let j = 0 ; j < res[i].length ;j++){
             let temp = res[i][j]["bookname"];
+            let bookNameLength = temp.length;
+            let lengthDifference= Math.abs(bookNameLength-queryLength)*2;
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
                 if(tmp[k]["bookname"]==temp){
@@ -169,15 +172,15 @@ const search = async(ctx)=>{
             if(!judge){
                 tmp.push(res[i][j]);
                 if(i==0){
-                    vote.push(25);
+                    vote.push(25-lengthDifference);
                 }else if(i==1){
-                    vote.push(10);
+                    vote.push(10-lengthDifference);
                 }
                 else if(i==2||i==3){
-                    vote.push(5);
+                    vote.push(5-lengthDifference);
                 }
                 else{
-                    vote.push(1);
+                    vote.push(1-lengthDifference);
                 }
                     
             }
@@ -198,6 +201,7 @@ const search = async(ctx)=>{
     ctx.body=tmp;
     ctx.status=200;
 };
+
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
     let newlength = book.comments.length;
