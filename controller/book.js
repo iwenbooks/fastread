@@ -169,7 +169,7 @@ const search = async(ctx)=>{
             if(!judge){
                 tmp.push(res[i][j]);
                 if(i==0){
-                    vote.push(15);
+                    vote.push(25);
                 }else if(i==1){
                     vote.push(10);
                 }
