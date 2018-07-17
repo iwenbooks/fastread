@@ -215,7 +215,18 @@ const search = async(ctx)=>{
     ctx.body=tmp;
     ctx.status=200;
 };
-
+const GetBookReadingInfo = async(ctx)=>{
+    let book = await BookModel.findById(ctx.params.bookid);
+    let newlength = book.comments.length;
+    await BookModel.update({"_id":ctx.params.bookid},{$set:{"CommentNum":newlength}})
+    const result ={
+        "likeNum":book.likeNum,
+        "numberOfReading":book.numberOfReading,
+        "CommentNum":newlength
+    };
+    ctx.body = result;
+    ctx.status=200;
+}
 const searchByFirstAlphabet=async(ctx)=>{
     let page = Number(ctx.request.body.page);
     let limit = Number(ctx.request.body.limit);
