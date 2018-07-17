@@ -166,13 +166,14 @@ const search = async(ctx)=>{
             let temp = res[i][j]["bookname"];
             let bookNameLength = temp.length;
             let lengthDifference= Math.abs(bookNameLength-queryLength)*10;
+            console.log(temp,'\t',lengthDifference);
             if(lengthDifference<=5){
                 lengthDifference=-50;
             }
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
                 if(tmp[k]["bookname"]==temp){
-                    vote[k]+=1;
+                    vote[k]+=10;
                     judge =true;
                 }
             }
