@@ -166,11 +166,10 @@ const search = async(ctx)=>{
             let bookNameLength = temp.length;
             let lengthDifference= Math.abs(bookNameLength-queryLength);
             console.log(temp,'\t',lengthDifference);
-            if((i<=4)&&lengthDifference<=5){
-                lengthDifference=-200;
-            }
-            else{
-                lengthDifference*=10;
+            if(lengthDifference<=5){
+                lengthDifference=-100;
+            }else{
+                lengthDifference*=5;
             }
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
@@ -215,7 +214,7 @@ const search = async(ctx)=>{
     }
     ctx.body=tmp;
     ctx.status=200;
-}
+};
 
 const searchByFirstAlphabet=async(ctx)=>{
     let page = Number(ctx.request.body.page);
