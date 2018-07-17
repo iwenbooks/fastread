@@ -143,7 +143,7 @@ const search = async(ctx)=>{
     let searchQuery = ctx.query.search;
     const queryLength = searchQuery.length;
     let tmpSearchQuery = RegExp("^"+searchQuery)
-    let res0=await BookModel.find({"bookname":searchQuery}).skip(skip).limit(limit).exec();
+    let res0=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
     let res1=await BookModel.find({"bookname":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
     let res2 =await BookModel.find({"author":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
     let res3=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
@@ -167,7 +167,10 @@ const search = async(ctx)=>{
             let bookNameLength = temp.length;
             let lengthDifference= Math.abs(bookNameLength-queryLength);
             console.log(temp,'\t',lengthDifference);
-            if((i<=4)&&(lengthDifference<=5)){
+            if((i<=5)&&(lengthDifference<=5)){
+                if(i==0){
+                    lengthDifference=-300;
+                }
                 lengthDifference=-100;
             }else{
                 lengthDifference*=5;
