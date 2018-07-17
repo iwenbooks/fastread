@@ -205,20 +205,25 @@ const search = async(ctx)=>{
         }        
     }
     let maxIndex;
-    for(let i=0;i<tmp.length-1;i++){
+    for(let i=0;i<vote.length-1;i++){
         maxIndex = i;
-        for(let j = i+1;j<tmp.length;j++){
-            if(tmp[j]>tmp[maxIndex]){
+        for(let j = i+1;j<vote.length;j++){
+            if(vote[j]>vote[maxIndex]){
                 maxIndex = j;
             }
         }
         let temp = tmp[i];
+        let temp2= vote[i];
         tmp[i]=tmp[maxIndex];
+        vote[i]=vote[maxIndex];
         tmp[maxIndex]=temp;
+        vote[maxIndex]=temp2;
     }
     ctx.body=tmp;
     ctx.status=200;
-};
+}
+
+
 
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
