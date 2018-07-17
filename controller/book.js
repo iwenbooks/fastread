@@ -135,6 +135,7 @@ const recommandByLevel = async(ctx)=>{
 }
 
 
+
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -162,7 +163,7 @@ const search = async(ctx)=>{
         for (let j = 0 ; j < res[i].length ;j++){
             let temp = res[i][j]["bookname"];
             let bookNameLength = temp.length;
-            let lengthDifference= Math.abs(bookNameLength-queryLength)*5;
+            let lengthDifference= Math.abs(bookNameLength-queryLength)*10;
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
                 if(tmp[k]["bookname"]==temp){
@@ -202,6 +203,7 @@ const search = async(ctx)=>{
     ctx.body=tmp;
     ctx.status=200;
 };
+
 
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
