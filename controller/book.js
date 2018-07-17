@@ -134,6 +134,7 @@ const recommandByLevel = async(ctx)=>{
     ctx.status =200;
 }
 
+
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -161,7 +162,7 @@ const search = async(ctx)=>{
         for (let j = 0 ; j < res[i].length ;j++){
             let temp = res[i][j]["bookname"];
             let bookNameLength = temp.length;
-            let lengthDifference= Math.abs(bookNameLength-queryLength)*2;
+            let lengthDifference= Math.abs(bookNameLength-queryLength)*5;
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
                 if(tmp[k]["bookname"]==temp){
@@ -172,15 +173,15 @@ const search = async(ctx)=>{
             if(!judge){
                 tmp.push(res[i][j]);
                 if(i==0){
-                    vote.push(25-lengthDifference);
+                    vote.push(50-lengthDifference);
                 }else if(i==1){
-                    vote.push(10-lengthDifference);
+                    vote.push(25-lengthDifference);
                 }
                 else if(i==2||i==3){
-                    vote.push(5-lengthDifference);
+                    vote.push(10-lengthDifference);
                 }
                 else{
-                    vote.push(1-lengthDifference);
+                    vote.push(5-lengthDifference);
                 }
                     
             }
