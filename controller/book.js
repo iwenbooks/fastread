@@ -140,8 +140,8 @@ const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
-    const searchQuery = ctx.query.search;
-    let queryLength = searchQuery.length;
+    let searchQuery = ctx.query.search;
+    const queryLength = searchQuery.length;
     let tmpSearchQuery = RegExp("^"+searchQuery)
     let res0=await BookModel.find({"bookname":searchQuery}).skip(skip).limit(limit).exec();
     let res1=await BookModel.find({"bookname":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
@@ -216,6 +216,7 @@ const search = async(ctx)=>{
     ctx.body=tmp;
     ctx.status=200;
 };
+
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
     let newlength = book.comments.length;
