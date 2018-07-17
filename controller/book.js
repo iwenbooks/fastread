@@ -135,11 +135,12 @@ const recommandByLevel = async(ctx)=>{
 }
 
 
+
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
-    let searchQuery = ctx.query.search;
+    const searchQuery = ctx.query.search;
     let queryLength = searchQuery.length;
     let tmpSearchQuery = RegExp("^"+searchQuery)
     let res0=await BookModel.find({"bookname":searchQuery}).skip(skip).limit(limit).exec();
@@ -166,7 +167,7 @@ const search = async(ctx)=>{
             let bookNameLength = temp.length;
             let lengthDifference= Math.abs(bookNameLength-queryLength);
             console.log(temp,'\t',lengthDifference);
-            if(lengthDifference<=5){
+            if((i<=4)&&(lengthDifference<=5)){
                 lengthDifference=-100;
             }else{
                 lengthDifference*=5;
