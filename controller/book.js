@@ -174,7 +174,7 @@ const search = async(ctx)=>{
             if(!judge){
                 tmp.push(res[i][j]);
                 if(i==0){
-                    vote.push(50-lengthDifference);
+                    vote.push(100-lengthDifference);
                 }else if(i==1){
                     vote.push(25-lengthDifference);
                 }
