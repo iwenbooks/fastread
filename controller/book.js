@@ -177,10 +177,10 @@ const search = async(ctx)=>{
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
                 if(tmp[k]["bookname"]==temp){
-                    vote[k]+=50;
+                    vote[k]+=70;
                     judge =true;
                 }else{
-                    vote[k]-=5;
+                    vote[k]-=10;
                 }
             }
             if(!judge){
@@ -220,7 +220,8 @@ const search = async(ctx)=>{
     }
     ctx.body=tmp;
     ctx.status=200;
-}
+};
+
 
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
