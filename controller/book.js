@@ -135,7 +135,6 @@ const recommandByLevel = async(ctx)=>{
 }
 
 
-
 const search = async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -217,6 +216,7 @@ const search = async(ctx)=>{
     ctx.body=tmp;
     ctx.status=200;
 }
+
 const searchByFirstAlphabet=async(ctx)=>{
     let page = Number(ctx.request.body.page);
     let limit = Number(ctx.request.body.limit);
