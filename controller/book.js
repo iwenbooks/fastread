@@ -177,10 +177,10 @@ const search = async(ctx)=>{
             let judge = false;
             for(let k = 0;k<tmp.length; k++){
                 if(tmp[k]["bookname"]==temp){
-                    vote[k]+=70;
+                    vote[k]+=50;
                     judge =true;
                 }else{
-                    vote[k]-=10;
+                    vote[k]-=5;
                 }
             }
             if(!judge){
@@ -220,7 +220,7 @@ const search = async(ctx)=>{
     }
     ctx.body=tmp;
     ctx.status=200;
-};
+}
 
 
 const GetBookReadingInfo = async(ctx)=>{
