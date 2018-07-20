@@ -244,7 +244,7 @@ const updateBookProgress = async (ctx) => {
             {"_id":userId,
             "books":{$elemMatch: {book:updateBook}}},
             {$set:{"books.$.whetherOrNotToRead":judge,"books.$.currentSegment":index,
-            "books.$.totoalSegment":segmentLength ,
+            "books.$.totalSegment":segmentLength ,
             "books.$.segment":updateProgress
             }})   
         ctx.status = 200;
@@ -260,6 +260,8 @@ const addBook = async (ctx) => {
     let newBookId = ctx.request.body.book
     try {
         let book = await BookModel.findById(newBookId);
+        let totalSegmentLength = book.segments.length;
+        console.log(totalSegmentLength);
         let num = book.numberOfReading+1;
         await BookModel.update({"_id":newBookId},{$set:{"numberOfReading":num}});
         let token = jwt.getToken(ctx)
@@ -271,10 +273,10 @@ const addBook = async (ctx) => {
                 ctx.throw(400, 'The book has already been added in user\'s read list!')
             }
         });
-
         user.books.push({
             book: newBookId,
-            segment: book.segments[0]
+            segment: book.segments[0],
+            totalSegment:totalSegmentLength
         })
         user = await user.save();
         ctx.status = 200;
