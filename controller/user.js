@@ -530,7 +530,7 @@ const getLevelWord= async(ctx)=>{
     let user = await UserModel.findById(userId).exec();
     let haveReadWord =user["word"];
     let segment = await SegmentModel.findById(segmentId).exec();
-    content = segment["content"];
+    let content = segment["content"];
     let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
     let words = wordList.filter((word,index,self)=>{
         word =word.toLocaleLowerCase();
