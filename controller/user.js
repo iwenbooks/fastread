@@ -537,7 +537,7 @@ const getLevelWord= async(ctx)=>{
         word =word.toLocaleLowerCase();
         return word.length>=2&&self.indexOf(word)===index;
     }) 
-    let wordDir = await WordModel.find({"level":user.level}).exec();
+    let wordDir = await WordModel.find({"level":user.level},{"explanations":0}).exec();
     let resWord=[];
     for(let i=0;i<words.length;i++){
         let tempWord=words[i];
