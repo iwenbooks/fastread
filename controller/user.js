@@ -523,19 +523,20 @@ const unLikeBook=async(ctx)=>{
     await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
     ctx.status =200;  
 }
+
 const getLevelWord= async(ctx)=>{
     let segmentId = ctx.request.body.id;
     let token  =jwt.getToken(ctx);
     let userId=token.id;
     let user = await UserModel.findById(userId).exec();
-    let haveReadWord =user["word"];
+    let haveReadWord =user["words"];
     let segment = await SegmentModel.findById(segmentId).exec();
-    console.log(segment);
     let content = segment["content"];
     let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
     let words = wordList.filter((word,index,self)=>{
         word =word.toLocaleLowerCase();
-        return word.length>=2&&self.indexOf(word)===index;}) 
+        return word.length>=2&&self.indexOf(word)===index;
+    }) 
     let wordDir = await WordModel.find({"level":user.level}).exec();
     let resWord=[];
     for(let i=0;i<words.length;i++){
@@ -547,9 +548,10 @@ const getLevelWord= async(ctx)=>{
             }
         }
     }
+    console.log(resWord);
     for(let i=0;i<resWord.length;i++){
         for(let j=0;j<haveReadWord.length;j++){
-            if(haveReadWord[j]==resWord[i]){
+            if(haveReadWord[j]["word"]==resWord[i]["word"]){
                 resWord.splice(i,1);
             }
         }
