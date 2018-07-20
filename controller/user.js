@@ -522,8 +522,52 @@ const unLikeBook=async(ctx)=>{
     ctx.status =200;  
 
 }
-
+const getLevelWord= async(ctx)=>{
+    let segmentId = ctx.request.body.id;
+    let token  =jwt.getToken(ctx);
+    let userId=token.id;
+    let user = await UserModel.findById(userId).exec();
+    let haveReadWord =user["word"];
+    let segment = await SegmentModel.findById(segmentId).exec();
+    content = segment["content"];
+    let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
+    let words = wordList.filter((word,index,self)=>{
+        word =word.toLocaleLowerCase();
+        return word.length>=2&&self.indexOf(word)===index;}) 
+    let wordDir = await WordModel.find({"level":level}).exec();
+    let resWord=[];
+    for(let i=0;i<words.length;i++){
+        let tempWord=words[i];
+        for(let j=0;j<wordDir.length;j++){
+            if(tempWord==wordDir[j]['word']){
+                resWord.push(wordDir[j]);
+                break;
+            }
+        }
+    }
+    for(let i=0;i<resWord.length;i++){
+        for(let j=0;j<haveReadWord.length;j++){
+            if(haveReadWord[j]==resWord[i]){
+                resWord.splice(i,1);
+            }
+        }
+    }
+    function getRandomArrayElement(arr,count) {
+        let shuffled  =arr.slice(0),i=arr.length,min = i-count,temp,index;
+        while (i-->min) {
+            index =Math.floor((i+1)*Math.random());
+            temp = shuffled[index];
+            shuffled[index] = shuffled[i];
+            shuffled[i] = temp;  
+        }
+        return shuffled.slice(min);
+    }
+    let wordLength = resWord.length>10?10:resWord.length;
+    let result=getRandomArrayElement(resWord,wordLength);
+    ctx.body=result;
+}
 module.exports.securedRouters = {
+    'POST /getLevelWord':getLevelWord,
     'GET /totalAnswers/:query':totalAnswers,
     'GET /totalCorrectAnswers/:query':totalCorrectAnswers,
     'GET /totalLearnedWords/:query':totalLearnedWords,
