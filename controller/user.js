@@ -522,8 +522,8 @@ const unLikeBook=async(ctx)=>{
     let likesNum = book["likeNum"]-1;
     await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
     ctx.status =200;  
-
-}const getLevelWord= async(ctx)=>{
+}
+const getLevelWord= async(ctx)=>{
     let segmentId = ctx.request.body.id;
     let token  =jwt.getToken(ctx);
     let userId=token.id;
