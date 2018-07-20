@@ -51,7 +51,30 @@ const auth = async (ctx) => {
         ctx.body = { error: "Invalid login" }
     }
 }
-
+const authByPhone = async(ctx)=>{
+    let phoneNumber =ctx.request.body.phone;
+    let password  =ctx.request.body.password;
+    let user = await UserModel.findOne({"phone":phoneNumber});
+    if (user) {
+        let shasum = crypto.createHash('sha1');
+        shasum.update(password);
+        if (user.password === shasum.digest('hex')) {
+            ctx.status = 200;
+            ctx.body = {
+                token: jwt.issue({
+                    id: user._id,
+                    user: user.username
+                })
+            }
+        } else {
+            ctx.status = 403;
+            ctx.body = { error: "Invalid login" };
+        }
+    } else {
+        ctx.status = 401;
+        ctx.body = { error: "Invalid login" }
+    }
+}
 const authByWechat = async (ctx) => {
     let wechatOpenId = ctx.request.body.wechatOpenId;
     let avatar = ctx.request.body.avatar;
@@ -602,5 +625,6 @@ module.exports.routers = {
     'POST /auth': auth,
     'POST /user': register,
     'POST /authByWechat': authByWechat,
+    'POST /authByPhone':authByPhone,
     'GET /user/:id': getInfoById
 };
