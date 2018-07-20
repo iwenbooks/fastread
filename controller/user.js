@@ -6,6 +6,7 @@ const UserModel = require('../model/user');
 const BookModel = require('../model/book');
 const CommentModel = require('../model/comment');
 const SegmentModel = require("../model/segment");
+const WordModel = require('../model/word');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 const request = require('request');
 //wechat app:
