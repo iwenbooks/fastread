@@ -556,6 +556,11 @@ const getLevelWord= async(ctx)=>{
     let segment = await SegmentModel.findById(segmentId).exec();
     if(segment){
         let content = segment["content"];
+        if(content.length>50000){
+            let randomWord = content[Math.ceil(Math.random()*100)].toLocaleLowerCase();
+            let num = randomWord>"m"?50000:0;
+            content=content.slice(num,num+50000);
+        }
         let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
         let words = wordList.filter((word,index,self)=>{
             word =word.toLocaleLowerCase();
@@ -572,7 +577,6 @@ const getLevelWord= async(ctx)=>{
                 }
             }
         }
-        console.log(resWord);
         for(let i=0;i<resWord.length;i++){
             for(let j=0;j<haveReadWord.length;j++){
                 if(haveReadWord[j]["word"]==resWord[i]["word"]){
