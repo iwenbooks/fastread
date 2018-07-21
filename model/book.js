@@ -21,7 +21,12 @@ const bookSchema = new Schema({
     "comments": [
         {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
     ],
-    "CommentNum":{type:Number,default:0}
+    "CommentNum":{type:Number,default:0},
+
+    "Score":{
+        "ratings":{type:Number,default:0},
+        "ratingVal":{type:Number,default:0}
+    }
 });
 
 bookSchema.pre('save', function (next) {

@@ -240,7 +240,7 @@ const GetBookReadingInfo = async(ctx)=>{
     };
     ctx.body = result;
     ctx.status=200;
-}
+};
 const searchByFirstAlphabet=async(ctx)=>{
     let page = Number(ctx.request.body.page);
     let limit = Number(ctx.request.body.limit);
@@ -253,7 +253,6 @@ const searchByFirstAlphabet=async(ctx)=>{
     ctx.body = book;
     ctx.status = 200;
  };
-
 
 module.exports.securedRouters = {
   'POST /book/like': like
