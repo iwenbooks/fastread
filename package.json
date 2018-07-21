@@ -9,6 +9,7 @@
   "author": "wfnuser",
   "license": "ISC",
   "dependencies": {
+    "co-busboy": "^1.4.0",
     "jsonwebtoken": "^8.2.1",
     "koa": "^2.5.0",
     "koa-body": "^4.0.4",

@@ -41,14 +41,20 @@ const getInfoById = async (ctx) => {
                 "comments":0,
                 "commentNum":0
             }
-        }) 
+        });
+    if(bookInfo==null){
+        ctx.status = 404;
+        ctx.body = {error:"Invalid bookID"}
+        return ;
+    }
+    console.log(bookInfo);
     let tmp = [];
     for(let i of bookInfo.segments){
         tmp.push(i['_id']);
     }
     bookInfo.segments = tmp;    
     ctx.body = bookInfo;
-}
+};
 
 const create = async ctx => {
   let bookModel = ctx.request.body;
