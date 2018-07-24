@@ -252,14 +252,14 @@ const updateBookProgress = async (ctx) => {
     let userId = token.id;
     try{
         let book = await BookModel.findById(updateBook);
-        if ( index< 0) {
+        if ( index< 0||index>book.segments.length) {
             ctx.status = 401;
             ctx.body = { error: "Invalid segment" };
             return;
         }
         let judge=false;
         let segmentLength=book.segments.length;
-        let currentUser= await UserModel.findById(userId).exec();
+        let currentUser= await UserModel.findById(userId);
         if(segmentLength==index){
             judge =true;
             let num=currentUser.status.totalReadingBooks+1;
@@ -276,7 +276,7 @@ const updateBookProgress = async (ctx) => {
         ctx.body = {};
     }
     catch(error){
-        ctx.body={error:"error"};
+        ctx.body={error:error};
         ctx.status = 401;
     }  
 };
