@@ -374,7 +374,7 @@ const getRecommendedBooks = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-}
+};
 
 const updateRecord = async (ctx) => {
     try {

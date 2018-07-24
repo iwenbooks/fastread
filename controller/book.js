@@ -109,36 +109,40 @@ const uploadCover = async ctx => {
   ctx.body = {};
 };
 const recommandByLevel = async(ctx)=>{
-        let page = ctx.request.body.page || 1;
-        let limit = Number(ctx.request.body.limit) || 10;
-        let skip = (page - 1) * limit;
-        let level = Number( ctx.request.body.level)||10;
-        let category=ctx.request.body.category;
-        let myCategory={
-            1:"Classical Literature",
-            2:"Historical Fiction",
-            3:"Science Fiction",
-            4:"Detective & Mystery",
-            5:"Fantasy",
-            6:"Romance",
-            7:"Children Books",
-            8:"Biographies & Memoirs",
-            9:"Art",
-            10:"Modern Novel",
-            11:"Parenting&Families",
-            12:"Other"
-        };
-        let tmp = [myCategory[category]];
-        let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
-        let pattern = ctx.request.body.pattern;
-        if(category==0){
-            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
-            }
-        else{
-            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
+    let page = ctx.request.body.page || 1;
+    let limit = Number(ctx.request.body.limit) || 10;
+    let skip = (page - 1) * limit;
+    let level = Number( ctx.request.body.level)||10;
+    let category=ctx.request.body.category;
+    let myCategory={
+        1:"Classical Literature",
+        2:"Historical Fiction",
+        3:"Science Fiction",
+        4:"Detective & Mystery",
+        5:"Fantasy",
+        6:"Romance",
+        7:"Children Books",
+        8:"Biographies & Memoirs",
+        9:"Art",
+        10:"Modern Novel",
+        11:"Parenting&Families",
+        12:"Other"
+    };
+    let tmp = [myCategory[category]];
+    let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
+    let pattern = ctx.request.body.pattern;
+    console.log(pattern);
+    if(pattern=="smart"){
+        pattern ="﻿goodreads_ratingVal";
+    }
+    if(category==0){
+        ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
         }
+    else{
+        ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
+    }
     ctx.status =200;
-}
+};
 
 
 const search = async(ctx)=>{
@@ -252,8 +256,7 @@ const searchByFirstAlphabet=async(ctx)=>{
     let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}}).sort({"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
     ctx.body = book;
     ctx.status = 200;
- };
-
+};
 module.exports.securedRouters = {
   'POST /book/like': like
 };
