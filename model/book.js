@@ -22,10 +22,8 @@ const bookSchema = new Schema({
         {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
     ],
     "CommentNum":{type:Number,default:0},
-    "goodreads_rating":{type:Number,default:0},
+    "goodreads_ratings":{type:Number,default:0},
     "goodreads_ratingVal":{type:Number,default:0}
-
-
 });
 
 bookSchema.pre('save', function (next) {
