@@ -244,41 +244,48 @@ const updateWords = async (ctx) => {
     user = await user.save();
     ctx.status = 200;
     ctx.body = {};
-}
+};
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
     let index = ctx.request.body.segment;
     let token = jwt.getToken(ctx);
     let userId = token.id;
-    try{
+    try {
         let book = await BookModel.findById(updateBook);
-        if ( index< 0||index>book.segments.length) {
+        if (index < 0 || index > book.segments.length) {
             ctx.status = 401;
-            ctx.body = { error: "Invalid segment" };
+            ctx.body = {error: "Invalid segment"};
             return;
         }
-        let judge=false;
-        let segmentLength=book.segments.length;
-        let currentUser= await UserModel.findById(userId);
-        if(segmentLength==index){
-            judge =true;
-            let num=currentUser.status.totalReadingBooks+1;
-            await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingBooks":num}});
+        let judge = false;
+        let segmentLength = book.segments.length;
+        let currentUser = await UserModel.findById(userId);
+        if (segmentLength == index) {
+            judge = true;
+            let num = currentUser.status.totalReadingBooks + 1;
+            await UserModel.findByIdAndUpdate(userId, {$set: {"status.totalReadingBooks": num}});
         }
-        await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalChapters":totalChapter}});
+        let totalChapter = currentUser.status.totalChapters;
+        await UserModel.findByIdAndUpdate(userId, {$set: {"status.totalChapters": totalChapter}});
         await UserModel.update(
-            {"_id":userId,
-            "books":{$elemMatch: {book:updateBook}}},
-            {$set:{"books.$.whetherOrNotToRead":judge,"books.$.currentSegment":index,
-            "books.$.totalSegment":segmentLength
-            }});
+            {
+                "_id": userId,
+                "books": {$elemMatch: {book: updateBook}}
+            },
+            {
+                $set: {
+                    "books.$.whetherOrNotToRead": judge, "books.$.currentSegment": index,
+                    "books.$.totalSegment": segmentLength
+                }
+            });
         ctx.status = 200;
         ctx.body = {};
     }
+
     catch(error){
         ctx.body={error:error};
         ctx.status = 401;
-    }  
+    }
 };
 const addBook = async (ctx) => {
     // TODO: use user token
