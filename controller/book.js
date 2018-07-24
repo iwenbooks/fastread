@@ -4,6 +4,7 @@ const jwt = require('../middleware/jwt');
 const BookModel = require('../model/book');
 const fs = require('fs');
 const config = require('../config');
+const commonFunction =require("../middleware/common_function");
 
 const list = async ctx => {
   let page = ctx.query.page || 1;
@@ -131,17 +132,24 @@ const recommandByLevel = async(ctx)=>{
         let tmp = [myCategory[category]];
         let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
         let pattern = ctx.request.body.pattern;
-        if(pattern=="smart"){
-            pattern="goodreads_ratingVal"
-        }
         if(category==0){
-            ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
+            if(pattern=="smart"){
+                let tempRes =await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({"goodreads_ratingVal":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
+                ctx.body = await commonFunction.getRandomArrayElement(tempRes,limit);
+                return;
+            }
+            else ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
             }
         else{
-            ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
+            if(pattern=="smart"){
+                let tempRes =await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({"goodreads_ratingVal":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
+                ctx.body = await commonFunction.getRandomArrayElement(tempRes,limit);
+            }
+            else ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
         }
     ctx.status =200;
-}
+};
+
 
 
 const search = async(ctx)=>{

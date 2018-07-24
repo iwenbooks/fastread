@@ -8,10 +8,11 @@ const CommentModel = require('../model/comment');
 const SegmentModel = require("../model/segment");
 const WordModel = require('../model/word');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
+const commonFunction = require('../middleware/common_function');
 const request = require('request');
 //wechat app:
-const appid="wx7a4f658c7ff6cee3"
-const appsecret="56c48cca391a9463a74803c5f625833c"
+const appid="wx7a4f658c7ff6cee3";
+const appsecret="56c48cca391a9463a74803c5f625833c";
 const loginForWechat = async(ctx)=>{
     let url ="https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+appsecret+"&js_code="+ctx.params.code+"&grant_type=authorization_code";
     console.log(url);
@@ -107,7 +108,7 @@ const authByWechat = async (ctx) => {
             }
         } catch (error) {
             ctx.status = 403;
-            console.log(error)
+            console.log(error);
             ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME }
         }
     }
@@ -359,17 +360,7 @@ const getRecommendedBooks = async (ctx) => {
             downloads:-1,
             CommentNum:-1
         }).limit(30).exec();
-        function getRandomArrayElement(arr,count) {
-            let shuffled  =arr.slice(0),i=arr.length,min = i-count,temp,index;
-            while (i-->min) {
-                index =Math.floor((i+1)*Math.random());
-                temp = shuffled[index];
-                shuffled[index] = shuffled[i];
-                shuffled[i] = temp;  
-            }
-            return shuffled.slice(min);
-        }
-        ctx.body =await getRandomArrayElement(books,3);
+        ctx.body =await commonFunction.getRandomArrayElement(books,3);
         ctx.status = 200;
     } catch (error) {
         ctx.status = 401;
@@ -586,18 +577,8 @@ const getLevelWord= async(ctx)=>{
                 }
             }
         }
-        function getRandomArrayElement(arr,count) {
-            let shuffled  =arr.slice(0),i=arr.length,min = i-count,temp,index;
-            while (i-->min) {
-                index =Math.floor((i+1)*Math.random());
-                temp = shuffled[index];
-                shuffled[index] = shuffled[i];
-                shuffled[i] = temp;  
-            }
-            return shuffled.slice(min);
-        }
         let wordLength = resWord.length>10?10:resWord.length;
-        let result=getRandomArrayElement(resWord,wordLength);
+        let result=await commonFunction.getRandomArrayElement(resWord,wordLength);
         ctx.body=result;
     }else{
         ctx.status = 404;
