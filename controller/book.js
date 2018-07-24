@@ -266,20 +266,29 @@ const searchByFirstAlphabet=async(ctx)=>{
     ctx.body = book;
     ctx.status = 200;
  };
+const ImdbAlgorithm = async(ctx)=>{
+    const average_ratingVal =﻿ 3.64278616819345;
+    const m = 10000;
+    await BookModel.find().forEach(function (item) {
+        let IMDB=item.goodreads_ratingVal*(item.goodreads_ratings/(item.goodreads_ratings+m)+(m/(item.goodreads_ratings+m)))*average_ratingVal;
+        BookModel.update({"_id":item._id},{$set:{"IMDB":IMDB}})
+    })
+};
 
 module.exports.securedRouters = {
-  'POST /book/like': like
+    'POST /book/like': like
 };
 
 module.exports.routers = {
-  'POST /searchByFirstAlphabet':searchByFirstAlphabet,
-  'GET /GetBookReadingInfo/:bookid':GetBookReadingInfo,
-  'POST /recommandByLevel':recommandByLevel,
-  'GET /book': list,
-  'GET /book/:id': getInfoById,
-  'POST /book': create,
-  'GET /getBookByLevel/:level': getBookByLevel,
-  'PUT /book/:book': updateInfo,
-  'GET /search':search,
-  'POST /uploadCover/:id': uploadCover
+    'POST /searchByFirstAlphabet':searchByFirstAlphabet,
+    'GET /GetBookReadingInfo/:bookid':GetBookReadingInfo,
+    'GET /updateData':ImdbAlgorithm,
+    'POST /recommandByLevel':recommandByLevel,
+    'GET /book': list,
+    'GET /book/:id': getInfoById,
+    'POST /book': create,
+    'GET /getBookByLevel/:level': getBookByLevel,
+    'PUT /book/:book': updateInfo,
+    'GET /search':search,
+    'POST /uploadCover/:id': uploadCover
 };
