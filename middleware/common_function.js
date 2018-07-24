@@ -9,8 +9,3 @@ module.exports.getRandomArrayElement=function(arr,count) {
     }
     return shuffled.slice(min);
 };
-
-
-
-
-
