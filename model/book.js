@@ -2,7 +2,6 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
 const bookSchema = new Schema({
     "bookname": { type: String },
     "author": { type: String },
@@ -24,13 +23,7 @@ const bookSchema = new Schema({
     "CommentNum":{type:Number,default:0},
     "goodreads_rating":{ type:Number,default:0},
     "goodreads_ratingVal":{ type:Number,default:0}
-
-
 });
-
-
-
-
 bookSchema.pre('save', function (next) {
     this.updated = Date.now();
     next();
