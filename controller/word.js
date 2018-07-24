@@ -70,12 +70,12 @@ const create = async (ctx) => {
         // TODO: error code
         ctx.body = { "error": "error" }
     }
-}
+};
 
 const getInfoById = async (ctx) => {
     let wordInfo = await WordModel.findById(ctx.params.id).exec()
     ctx.body = wordInfo
-}
+};
 
 module.exports.securedRouters = {
 };

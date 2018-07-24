@@ -351,6 +351,7 @@ const getRecommendedBooks = async (ctx) => {
             .select({
             segments: 0
         }).sort({
+            goodreads_rating:-1,
             cover:-1,
             likeNum: -1,
             numberOfReading:-1,
