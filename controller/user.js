@@ -335,14 +335,13 @@ const removeBook = async (ctx) => {
 
 const getRecommendedBooks = async (ctx) => {
     try {
-        let token = jwt.getToken(ctx)
+        let token = jwt.getToken(ctx);
         let userId = token.id;
-        let user = await UserModel.findById(userId)
-        let userBookList = []
+        let user = await UserModel.findById(userId);
+        let userBookList = [];
         user.books.forEach(book => {
             userBookList.push(book.book)
         });
-        console.log(user)
         let books = await BookModel.find({
             level: user.level,
             _id: { "$nin": userBookList} ,
@@ -350,7 +349,8 @@ const getRecommendedBooks = async (ctx) => {
         })
             .select({
             segments: 0
-        }).sort({
+        }).collation({"locale": "en", numericOrdering:true})
+            .sort({
             goodreads_rating:-1,
             cover:-1,
             likeNum: -1,
