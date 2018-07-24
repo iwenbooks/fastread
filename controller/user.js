@@ -250,7 +250,7 @@ const updateBookProgress = async (ctx) => {
     let index = ctx.request.body.segment;
     let token = jwt.getToken(ctx);
     let userId = token.id;
-    //try {
+    try {
         let book = await BookModel.findById(updateBook);
         if (index < 0 || index > book.segments.length) {
             ctx.status = 401;
@@ -265,7 +265,7 @@ const updateBookProgress = async (ctx) => {
             let num = currentUser.status.totalReadingBooks + 1;
             await UserModel.findByIdAndUpdate(userId, {$set: {"status.totalReadingBooks": num}});
         }
-        let totalChapter = currentUser.status.totalChapters;
+        let totalChapter = currentUser.status.totalChapters+1;
         await UserModel.findByIdAndUpdate(userId, {$set: {"status.totalChapters": totalChapter}});
         await UserModel.update(
             {
@@ -280,11 +280,11 @@ const updateBookProgress = async (ctx) => {
             });
         ctx.status = 200;
         ctx.body = {};
-    //}
-    /*catch(error){
+    }
+    catch(error){
         ctx.body={error:error};
         ctx.status = 401;
-    }*/
+    }
 };
 const addBook = async (ctx) => {
     // TODO: use user token
