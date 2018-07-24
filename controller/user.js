@@ -332,7 +332,6 @@ const removeBook = async (ctx) => {
         ctx.body = { error: error }
     }
 }
-
 const getRecommendedBooks = async (ctx) => {
     try {
         let token = jwt.getToken(ctx)
@@ -351,11 +350,11 @@ const getRecommendedBooks = async (ctx) => {
             .select({
             segments: 0
         }).sort({
+                
             goodreads_rating:-1,
             cover:-1,
             likeNum: -1,
             numberOfReading:-1,
-            downloads:-1,
             CommentNum:-1
         }).limit(30).exec();
         function getRandomArrayElement(arr,count) {
@@ -374,7 +373,9 @@ const getRecommendedBooks = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-}
+};
+
+
 
 const updateRecord = async (ctx) => {
     try {
