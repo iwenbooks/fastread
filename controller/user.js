@@ -351,7 +351,7 @@ const getRecommendedBooks = async (ctx) => {
             segments: 0
         }).collation({"locale": "en", numericOrdering:true})
             .sort({
-            goodreads_rating:-1,
+            goodreads_ratings:-1,
             goodreads_ratingVal:-1,
             cover:-1,
             likeNum: -1,
