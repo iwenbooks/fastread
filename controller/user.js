@@ -248,8 +248,9 @@ const updateWords = async (ctx) => {
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
     let index = ctx.request.body.segment;
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
     try{
-    
         let book = await BookModel.findById(updateBook);
         if ( index< 0) {
             ctx.status = 401;
@@ -258,11 +259,13 @@ const updateBookProgress = async (ctx) => {
         }
         let judge=false;
         let segmentLength=book.segments.length;
+        let currentUser= await UserModel.findById(userId).exec();
         if(segmentLength==index){
             judge =true;
+            let num=currentUser.status.totalReadingBooks+1;
+            await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingBooks":num}});
         }
-        let token = jwt.getToken(ctx);
-        let userId = token.id;
+        await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalChapters":totalChapter}});
         await UserModel.update(
             {"_id":userId,
             "books":{$elemMatch: {book:updateBook}}},
@@ -276,7 +279,7 @@ const updateBookProgress = async (ctx) => {
         ctx.body={error:"error"};
         ctx.status = 401;
     }  
-}
+};
 const addBook = async (ctx) => {
     // TODO: use user token
     let newBookId = ctx.request.body.book;
@@ -328,7 +331,7 @@ const removeBook = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-}
+};
 
 const getRecommendedBooks = async (ctx) => {
     try {
@@ -422,7 +425,7 @@ const updateStatus = async (ctx) => {
 };
 
 const consecutiveRTime=async (ctx)=>{
-    let token = jwt.getToken(ctx)
+    let token = jwt.getToken(ctx);
     let userId= token.id;
     let result;
     let user = await UserModel.findById(userId);
@@ -456,7 +459,7 @@ const totalReadingBooks = async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingBooks":result}});
     ctx.body = result;
     ctx.status = 200;
-}
+};
 
 const totalAnswers = async(ctx)=>{
     let token = jwt.getToken(ctx);
@@ -516,7 +519,6 @@ const likeBook = async(ctx)=>{
         {$set:{"books.$.like":true     
         }});
     let book =await BookModel.findById(userLikeBookId);
-    console.log(book);
     let likesNum = book["likeNum"]+1;
     await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) ;
     ctx.status =200;    
