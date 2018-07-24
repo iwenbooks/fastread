@@ -131,6 +131,9 @@ const recommandByLevel = async(ctx)=>{
         let tmp = [myCategory[category]];
         let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
         let pattern = ctx.request.body.pattern;
+        if(pattern=="smart"){
+            pattern="goodreads_ratingVal"
+        }
         if(category==0){
             ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
             }
