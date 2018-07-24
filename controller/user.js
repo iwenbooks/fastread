@@ -157,7 +157,7 @@ const getMyComments = async (ctx) => {
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
 
-    let token = jwt.getToken(ctx)
+    let token = jwt.getToken(ctx);
     let userId = token.id;
 
     let myComments = await CommentModel
@@ -247,32 +247,28 @@ const updateWords = async (ctx) => {
 }
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
-    let updateProgress = ctx.request.body.segment;
+    let index = ctx.request.body.segment;
     try{
     
         let book = await BookModel.findById(updateBook);
-        let index=book.segments.indexOf(updateProgress.toString());
         if ( index< 0) {
-            ctx.status = 401
-            ctx.body = { error: "Invalid segment" }
+            ctx.status = 401;
+            ctx.body = { error: "Invalid segment" };
             return;
         }
         let judge=false;
         let segmentLength=book.segments.length;
-        if(book.segments[segmentLength-1]==updateProgress.toString()){
+        if(segmentLength==index){
             judge =true;
         }
-        let token = jwt.getToken(ctx)
-        console.log(segmentLength,index);
+        let token = jwt.getToken(ctx);
         let userId = token.id;
-        console.log(updateProgress);
         await UserModel.update(
             {"_id":userId,
             "books":{$elemMatch: {book:updateBook}}},
             {$set:{"books.$.whetherOrNotToRead":judge,"books.$.currentSegment":index,
-            "books.$.totalSegment":segmentLength ,
-            "books.$.segment":updateProgress
-            }})   
+            "books.$.totalSegment":segmentLength
+            }});
         ctx.status = 200;
         ctx.body = {};
     }
@@ -283,14 +279,14 @@ const updateBookProgress = async (ctx) => {
 }
 const addBook = async (ctx) => {
     // TODO: use user token
-    let newBookId = ctx.request.body.book
+    let newBookId = ctx.request.body.book;
     try {
         let book = await BookModel.findById(newBookId);
         let totalSegmentLength = book.segments.length;
         console.log(totalSegmentLength);
         let num = book.numberOfReading+1;
         await BookModel.update({"_id":newBookId},{$set:{"numberOfReading":num}});
-        let token = jwt.getToken(ctx)
+        let token = jwt.getToken(ctx);
         let userId = token.id;
         let user = await UserModel.findById(userId);
         // Check if the book already been read
@@ -303,7 +299,7 @@ const addBook = async (ctx) => {
             book: newBookId,
             segment: book.segments[0],
             totalSegment:totalSegmentLength
-        })
+        });
         user = await user.save();
         ctx.status = 200;
         ctx.body = totalSegmentLength;
@@ -314,7 +310,7 @@ const addBook = async (ctx) => {
 }
 
 const removeBook = async (ctx) => {
-    let newBookId = ctx.request.body.book
+    let newBookId = ctx.request.body.book;
     try {
         let token = jwt.getToken(ctx);
         let userId = token.id;
@@ -326,7 +322,7 @@ const removeBook = async (ctx) => {
                 tmp.push(user.books[i]);
             }
         }
-        await UserModel.update({"_id":userId},{"books":tmp})
+        await UserModel.update({"_id":userId},{"books":tmp});
         ctx.body = {};
     } catch (error) {
         ctx.status = 401;
@@ -370,9 +366,9 @@ const getRecommendedBooks = async (ctx) => {
 
 const updateRecord = async (ctx) => {
     try {
-        let token = jwt.getToken(ctx)
+        let token = jwt.getToken(ctx);
         let userId = token.id;
-        let user = await UserModel.findById(userId)
+        let user = await UserModel.findById(userId);
 
         let book = ctx.request.body.book;
         let segment = ctx.request.body.segment;
@@ -382,8 +378,8 @@ const updateRecord = async (ctx) => {
 
         for (var i = 0; i < user.records.length; i++) {
             if (String(user.records[i].segment) === segment) {
-                user.records[i].time = time
-                user.records.score = score
+                user.records[i].time = time;
+                user.records.score = score;
                 isNewRecord = false;
             }
         }
@@ -403,10 +399,10 @@ const updateRecord = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-}
+};
 
 const updateStatus = async (ctx) => {
-    let token = jwt.getToken(ctx)
+    let token = jwt.getToken(ctx);
     let userId = token.id;
     let status = ctx.request.body.status;
 
@@ -420,10 +416,10 @@ const updateStatus = async (ctx) => {
         ctx.status = 200;
         ctx.body = {};
     } catch (error) {
-        ctx.status = 403
+        ctx.status = 403;
         ctx.body = { error: error }
     }
-}
+};
 
 const consecutiveRTime=async (ctx)=>{
     let token = jwt.getToken(ctx)
@@ -470,7 +466,7 @@ const totalAnswers = async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalAnswers":result}});
     ctx.body = result;
     ctx.status = 200;
-}
+};
 
 const totalCorrectAnswers = async(ctx)=>{
     let token = jwt.getToken(ctx);
@@ -480,7 +476,7 @@ const totalCorrectAnswers = async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalCorrectAnswers":result}});
     ctx.body = result;
     ctx.status = 200;
-}
+};
 
 const totalLearnedWords=async(ctx)=>{
     let token = jwt.getToken(ctx);
@@ -491,7 +487,7 @@ const totalLearnedWords=async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalLearnedWords":result}});
     ctx.body = result;
     ctx.status = 200;
-}
+};
 const totalChapters=async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId=token.id;
@@ -500,7 +496,7 @@ const totalChapters=async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalChapters":result}});
     ctx.body = result;
     ctx.status = 200;
-}
+};
 const totalReadingTime=async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId=token.id;
@@ -509,7 +505,7 @@ const totalReadingTime=async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{$set:{"status.totalReadingTime":result}});
     ctx.body = result;
     ctx.status = 200;
-}
+};
 const likeBook = async(ctx)=>{
     let userLikeBookId = ctx.request.body.book;
     let token = jwt.getToken(ctx);
@@ -518,13 +514,13 @@ const likeBook = async(ctx)=>{
         {"_id":userId,
         "books":{$elemMatch: {book:userLikeBookId}}},
         {$set:{"books.$.like":true     
-        }})
+        }});
     let book =await BookModel.findById(userLikeBookId);
     console.log(book);
     let likesNum = book["likeNum"]+1;
-    await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
+    await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) ;
     ctx.status =200;    
-}
+};
 const unLikeBook=async(ctx)=>{
     let userLikeBookId = ctx.request.body.book;
     let token = jwt.getToken(ctx);
@@ -533,12 +529,12 @@ const unLikeBook=async(ctx)=>{
         {"_id":userId,
         "books":{$elemMatch: {book:userLikeBookId}}},
         {$set:{"books.$.like":false     
-        }})
+        }});
     let book =await BookModel.findById(userLikeBookId);
     let likesNum = book["likeNum"]-1;
-    await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}}) 
+    await BookModel.update({"_id":userLikeBookId},{$set:{"likeNum":likesNum}});
     ctx.status =200;  
-}
+};
 
 const getLevelWord= async(ctx)=>{
     let segmentId = ctx.request.body.id;

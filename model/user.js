@@ -9,7 +9,6 @@ const userSchema = new Schema({
     "password": { type: String },
     "books": [{
         book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
-        segment: { type: mongoose.Schema.Types.ObjectId, ref: 'Segment' },
         whetherOrNotToRead:{type:Boolean,default:false},
         like:{type:Boolean,default:false},
         currentSegment:{type:Number,default:0},
