@@ -24,6 +24,8 @@ const bookSchema = new Schema({
     "CommentNum":{type:Number,default:0},
     "goodreads_rating":{type:Number,default:0},
     "goodreads_ratingVal":{type:Number,default:0}
+
+
 });
 
 bookSchema.pre('save', function (next) {

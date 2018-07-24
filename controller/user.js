@@ -350,9 +350,7 @@ const getRecommendedBooks = async (ctx) => {
         })
             .select({
             segments: 0
-        }
-            ).collation({"locale": "en", numericOrdering:true})
-            .sort({
+        }).sort({
             goodreads_rating:-1,
             cover:-1,
             likeNum: -1,
@@ -376,7 +374,7 @@ const getRecommendedBooks = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-};
+}
 
 const updateRecord = async (ctx) => {
     try {
