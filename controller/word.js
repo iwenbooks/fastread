@@ -73,7 +73,7 @@ const create = async (ctx) => {
 };
 
 const getInfoById = async (ctx) => {
-    let wordInfo = await WordModel.findById(ctx.params.id).exec()
+    let wordInfo = await WordModel.findById(ctx.params.id).exec();
     ctx.body = wordInfo
 };
 
