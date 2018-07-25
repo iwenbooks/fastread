@@ -120,14 +120,12 @@ const recommandByLevel = async(ctx)=>{
             2:"Historical Fiction",
             3:"Science Fiction",
             4:"Detective & Mystery",
-            5:"Fantasy",
-            6:"Romance",
-            7:"Children Books",
-            8:"Biographies & Memoirs",
-            9:"Art",
-            10:"Modern Novel",
-            11:"Parenting&Families",
-            12:"Other"
+            5:"Children Books",
+            6:"Biographies & Memoirs",
+            7:"Art",
+            8:"Modern Novel",
+            9:"Non Fiction",
+            10:"Other"
         };
         let tmp = [myCategory[category]];
         let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
@@ -265,7 +263,7 @@ const searchByFirstAlphabet=async(ctx)=>{
     let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}}).sort({"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
     ctx.body = book;
     ctx.status = 200;
- };
+};
 
 
 module.exports.securedRouters = {
