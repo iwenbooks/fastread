@@ -1,4 +1,5 @@
 const config = {
-  cover_path: '/Users/mc/Documents/Work/U-Sing/workspace/fastread/covers/'
+    cover_path: '/home/qinghao/www/data/covers',
+    avatar_path:'/home/qinghao/www/data/avatars/'
 };
 module.exports = config;

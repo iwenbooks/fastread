@@ -164,20 +164,20 @@ const getMyComments = async (ctx) => {
         .find({ 'user': userId })
         .skip(skip)
         .limit(limit)
-        .exec()
+        .exec();
     ctx.body = myComments
-}
+};
 
 const getInfoById = async (ctx) => {
     let userInfo = await UserModel
         .findById(ctx.params.id)
         .select("_id avatar username nickname")
-        .exec()
+        .exec();
     ctx.body = userInfo
-}
+};
 
 const updateInfo = async (ctx) => {
-    let token = jwt.getToken(ctx)
+    let token = jwt.getToken(ctx);
     let userId = token.id;
     let user = await UserModel.findByIdAndUpdate(
         userId,
@@ -188,7 +188,7 @@ const updateInfo = async (ctx) => {
 }
 
 const updatePhone = async (ctx) => {
-    let token = jwt.getToken(ctx)
+    let token = jwt.getToken(ctx);
     let userId = token.id;
     let phone = ctx.request.body.phone;
 
@@ -588,8 +588,20 @@ const getLevelWord= async(ctx)=>{
         ctx.status = 404;
         ctx.body={error:"invalid segment ID"}
     }
-}
+};
+const uploadAvatar = async ctx => {
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
+    let path = config.avatar_path + userId + '.jpg';
+    ctx.req.part.pipe(
+        fs.createWriteStream(path)
+    );
+    await UserModel.findByIdAndUpdate(userId,{"avatar":path});
+    ctx.status = 200;
+    ctx.body = {};
+};
 module.exports.securedRouters = {
+    'POST /uploadAvatar':uploadAvatar,
     'POST /getLevelWord':getLevelWord,
     'GET /totalAnswers/:query':totalAnswers,
     'GET /totalCorrectAnswers/:query':totalCorrectAnswers,

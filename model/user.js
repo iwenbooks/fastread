@@ -37,8 +37,10 @@ const userSchema = new Schema({
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true },
     "settings": {
-        "font-size": { type: Number, default: 14 },
-        "background": { type: Number, default: 0 }
+        "font-size": { type: Number, default: 0 },
+        "background": { type: Number, default: 0 },
+        "nightMode":{type: Boolean,default:false},
+        "pageTurningEffect":{type: Boolean,default:false}
     },
     "status": {
         "totalReadingTime": { type: Number, default: 0 },
