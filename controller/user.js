@@ -591,19 +591,9 @@ const getLevelWord= async(ctx)=>{
         ctx.body={error:"invalid segment ID"}
     }
 };
-const uploadAvatar = async ctx => {
-    let token = jwt.getToken(ctx);
-    let userId = token.id;
-    let path = config.avatar_path + userId + '.jpg';
-    let stream = fs.createWriteStream(path);
-    part.pipe(stream);
-    await UserModel.findByIdAndUpdate(userId,{"avatar":path});
-    ctx.status = 200;
-    ctx.body = {};
-};
+
 
 module.exports.securedRouters = {
-    'POST /uploadAvatar':uploadAvatar,
     'POST /getLevelWord':getLevelWord,
     'GET /totalAnswers/:query':totalAnswers,
     'GET /totalCorrectAnswers/:query':totalCorrectAnswers,
