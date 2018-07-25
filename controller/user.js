@@ -596,7 +596,7 @@ const uploadAvatar = async ctx => {
     let userId = token.id;
     let path = config.avatar_path + userId + '.jpg';
     console.log(path);
-    let file = ctx.request.file;
+    let file = ctx.request;
     console.log(file);
     await fs.writeFile(path,file,function (err) {
         if(err){
