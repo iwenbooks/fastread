@@ -260,7 +260,7 @@ const searchByFirstAlphabet=async(ctx)=>{
     let pattern = ctx.request.body.pattern;
     let re = RegExp("^"+query);
     console.log(re);
-    let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}}).sort({"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
+    let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}}).sort({"IMDB":-1,"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
     ctx.body = book;
     ctx.status = 200;
 };
