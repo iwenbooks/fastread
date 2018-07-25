@@ -105,7 +105,6 @@ const uploadCover = async ctx => {
   ctx.req.part.pipe(
     fs.createWriteStream(config.cover_path + ctx.params.id + '.jpg')
   );
-
   ctx.status = 200;
   ctx.body = {};
 };

@@ -1,7 +1,8 @@
 'use strict';
 
 const crypto = require('crypto');
-const jwt = require('../middleware/jwt')
+const jwt = require('../middleware/jwt');
+const fs = require('fs');
 const UserModel = require('../model/user');
 const BookModel = require('../model/book');
 const CommentModel = require('../model/comment');
