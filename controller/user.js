@@ -595,7 +595,6 @@ const uploadAvatar = async ctx => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let path = config.avatar_path + userId + '.jpg';
-    let file =await ctx.req.file.filename;
     let stream = fs.createWriteStream(path);
     part.pipe(stream);
     await UserModel.findByIdAndUpdate(userId,{"avatar":path});
