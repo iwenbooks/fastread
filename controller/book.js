@@ -132,20 +132,20 @@ const recommandByLevel = async(ctx)=>{
         let pattern = ctx.request.body.pattern;
         if(category==0){
             if(pattern=="smart"){
-                let tempRes =await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({"IMDB":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
+                let tempRes =await BookModel.find({"level":{$lte:level}},{"_id":1,"bookname":1,"author":1,"cover":1}).collation({"locale": "en", numericOrdering:true}).sort({"IMDB":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
                 let num = tempRes.length<limit ? tempRes.length:limit;
                 ctx.body = await commonFunction.getRandomArrayElement(tempRes,num);
                 return;
             }
-            else ctx.body = await BookModel.find({"level":{$lte:level}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
+            else ctx.body = await BookModel.find({"level":{$lte:level}},{"_id":1,"bookname":1,"author":1,"cover":1}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
             }
         else{
             if(pattern=="smart"){
-                let tempRes =await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({"IMDB":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
+                let tempRes =await BookModel.find({"level":{$lte:level},"category":{$in:tmp}},{"_id":1,"bookname":1,"author":1,"cover":1}).collation({"locale": "en", numericOrdering:true}).sort({"IMDB":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
                 let num = tempRes.length<limit ? tempRes.length:limit;
                 ctx.body = await commonFunction.getRandomArrayElement(tempRes,num);
             }
-            else ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
+            else ctx.body = await BookModel.find({"level":{$lte:level},"category":{$in:tmp}},{"_id":1,"bookname":1,"author":1,"cover":1}).collation({"locale": "en", numericOrdering:true}).sort({[`${pattern}`]:sortWay,"cover":-1}).skip(skip).limit(limit).exec();
         }
     ctx.status =200;
 };
@@ -260,7 +260,7 @@ const searchByFirstAlphabet=async(ctx)=>{
     let pattern = ctx.request.body.pattern;
     let re = RegExp("^"+query);
     console.log(re);
-    let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}}).sort({"IMDB":-1,"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
+    let book = await BookModel.find({[`${pattern}`]:{$regex:re,$options:"i"}},{"_id":1,"bookname":1,"author":1,"cover":1}).sort({"IMDB":-1,"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
     ctx.body = book;
     ctx.status = 200;
 };
