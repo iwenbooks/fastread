@@ -5,7 +5,6 @@ const Router = require('koa-router');
 const jwt = require("./middleware/jwt");
 const router = new Router();
 const securedRouter = new Router();
-const dataFix = require("./middleware/dataFix");
 securedRouter.use(jwt.errorHandler()).use(jwt.jwt());
 function add_rule(router, securedRouter, rule) {
     for (let key in rule['securedRouters']) {

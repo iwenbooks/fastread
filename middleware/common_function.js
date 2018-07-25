@@ -1,4 +1,5 @@
 "use strict";
+//random fetch  list's elements with fixed number.
 module.exports.getRandomArrayElement=function(arr,count) {
     let shuffled  =arr.slice(0),i=arr.length,min = i-count,temp,index;
     while (i-->min) {
