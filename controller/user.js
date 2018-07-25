@@ -596,9 +596,13 @@ const uploadAvatar = async ctx => {
     let userId = token.id;
     let path = config.avatar_path + userId + '.jpg';
     console.log(path);
-    ctx.req.part.pipe(
-        fs.createWriteStream(path)
-    );
+    let file = ctx.body;
+    console.log(file);
+    await fs.writeFile(path,file,function (err) {
+        if(err){
+            console.log(err);
+        }
+    });
     await UserModel.findByIdAndUpdate(userId,{"avatar":path});
     ctx.status = 200;
     ctx.body = {};
