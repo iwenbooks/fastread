@@ -593,6 +593,7 @@ const uploadAvatar = async ctx => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let path = config.avatar_path + userId + '.jpg';
+    console.log(path);
     ctx.req.part.pipe(
         fs.createWriteStream(path)
     );
