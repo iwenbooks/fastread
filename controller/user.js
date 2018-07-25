@@ -7,6 +7,7 @@ const BookModel = require('../model/book');
 const CommentModel = require('../model/comment');
 const SegmentModel = require("../model/segment");
 const WordModel = require('../model/word');
+const config = require('../config');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 const commonFunction = require('../middleware/common_function');
 const request = require('request');
