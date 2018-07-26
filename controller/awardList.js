@@ -51,8 +51,8 @@ const getAward = async(ctx)=>{
         .sort({"books.bookname":-1}).
         skip(skip).
         limit(limit);
-    console.log(book);
-    ctx.body = book;
+    console.log(book.books);
+    ctx.body = book.books;
     ctx.status=200;
 }
 
