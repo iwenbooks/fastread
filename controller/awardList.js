@@ -34,25 +34,32 @@ const getAward = async(ctx)=>{
     let skip = (page - 1) * limit;
     let mylevel = Number(ctx.query.level)||10;
     let award = ctx.query.award;
-    console.log(award);
-    let book = await AwardListModel.find({"name":award})
-        .populate(
-            {
-                path:'books',
-                select:{
-                    "_id":1,
-                    "cover":1,
-                    "author":1,
-                    "bookname":1,
-                    "commentary":1
+    try {
+        let book = await AwardListModel.find({"name": award})
+            .populate(
+                {
+                    path: 'books',
+                    select: {
+                        "_id": 1,
+                        "cover": 1,
+                        "author": 1,
+                        "bookname": 1,
+                        "commentary": 1
+                    },
+                    match: {"level": {$lte: mylevel}}
                 }
-            }
-        )
-        .sort({"books.bookname":-1}).
-        skip(skip).
-        limit(limit).exec();
-    ctx.body = book[0]["books"];
-    ctx.status=200;
+            )
+            .sort({"books.bookname": -1}).skip(skip).limit(limit).exec();
+        let books = book[0]["books"];
+        ctx.status = 200;
+    }
+    catch (err) {
+        ctx.status=401;
+        ctx.body ={
+            error:"error"
+        }
+
+    }
 }
 
 module.exports.securedRouters = {
