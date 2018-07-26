@@ -13,7 +13,13 @@ const segmentSchema = new Schema({
     "comments": [
         {type: mongoose.Schema.Types.ObjectId, ref: 'Comment'}
     ],
-    "commentNum":{type:Number, default:0}
+    "commentNum":{type:Number, default:0},
+    "questions":[
+        {
+            "question":{type:String,default:''},
+            "answer":[]
+    }
+    ]
 
 });
 

@@ -1,7 +1,8 @@
 'use strict';
 
-const jwt = require('../middleware/jwt')
+const jwt = require('../middleware/jwt');
 const SegmentModel = require('../model/segment');
+const commonFunction=require('../middleware/common_function');
 
 const list = async (ctx) => {
     let page = Number(ctx.query.page) || 1;
@@ -41,17 +42,35 @@ const updateWordsList = async (ctx) => {
         words[i] = words[i].replace(pattern, '')
     }
     ctx.body = words
-}
+};
+const weChatQuestion = async(ctx)=>{
+    try
+    {
+        let segmentId = ctx.request.body.id;
+        let segment = await SegmentModel.findById(segmentId, {"questions": 1}).exec();
+        let questions = segment.questions;
+        let num = questions.length > 10 ? 10 : questions.length;
+        let result = commonFunction.getRandomArrayElement(questions, num);
+        ctx.body = result;
+        ctx.status = 200;
+    }
+    catch (err) {
+        ctx.status = 400;
+        ctx.body = {error:"error"}
+
+    }
+};
 const SegmentCommentNum = async(ctx)=>{
     let id = ctx.params.myid;
     let segment = await SegmentModel.findById(id);
     ctx.body = segment.commentNum;
     ctx.status=200;
-}
+};
 module.exports.securedRouters = {
 };
 
 module.exports.routers = {
+    'POST /segment/weChatQuestion':weChatQuestion,
     'GET /SegmentCommentNum/:myid':SegmentCommentNum,
     'GET /segment': list,
     'POST /segment': create,
