@@ -51,8 +51,13 @@ const getAward = async(ctx)=>{
             )
             .sort({"books.bookname": -1}).skip(skip).limit(limit).exec();
         console.log(book);
-        ctx.body = book[0]["books"];
-        ctx.status = 200;
+        if(book.length<1)
+            ctx.body = [];
+        else {
+
+            ctx.body = book[0]["books"];
+            ctx.status = 200;
+        }
     }
     catch (err) {
         ctx.status=401;
@@ -61,7 +66,7 @@ const getAward = async(ctx)=>{
         }
 
     }
-}
+};
 
 module.exports.securedRouters = {
 };
