@@ -29,7 +29,7 @@ const create = async (ctx) => {
     }
 }
 const getAward = async(ctx)=>{
-    let page = ctx.query.page || 1;
+    let page = Number(ctx.query.page) || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let mylevel = Number(ctx.query.level)||10;
