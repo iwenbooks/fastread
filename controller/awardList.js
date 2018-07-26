@@ -12,7 +12,7 @@ const getAwardListBooks = async (ctx) => {
     let books = awardListInfo.books.filter(
         each => each.level == level
     )
-    books = books.slice((page - 1) * limit, page * limit)
+    books = books.slice((page - 1) * limit, page * limit);
     ctx.body = books;
 }
 
@@ -46,16 +46,19 @@ const getAward = async(ctx)=>{
                         "bookname": 1,
                         "commentary": 1
                     },
-                    match: {"level": {$lte: mylevel}}
+                    match: {"level": {$lte: mylevel}},
+                    options:{
+                        limit:limit,
+                        skip:skip
+                    }
                 }
-            )
-            .sort({"books.bookname": -1}).skip(skip).limit(limit).exec();
-        console.log(book);
+            ).exec();
         if(book.length<1)
             ctx.body = [];
         else {
 
-            ctx.body = book[0]["books"];
+            let result= book[0]["books"].sort();
+            ctx.body =result;
             ctx.status = 200;
         }
     }
