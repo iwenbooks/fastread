@@ -6,15 +6,13 @@ const getAwardListBooks = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
     let level = ctx.query.level || 1;
-
     let awardListInfo = await AwardListModel.findById(ctx.params.id)
         .populate('books', '_id level')
-        .exec()
+        .exec();
     let books = awardListInfo.books.filter(
         each => each.level == level
     )
     books = books.slice((page - 1) * limit, page * limit)
-
     ctx.body = books;
 }
 
@@ -54,7 +52,7 @@ const getAward = async(ctx)=>{
         skip(skip).
         limit(limit);
     console.log(book);
-    ctx.body = book.books;
+    ctx.body = book;
     ctx.status=200;
 }
 
