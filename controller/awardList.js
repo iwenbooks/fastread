@@ -37,9 +37,24 @@ const getAward = async(ctx)=>{
     let mylevel = Number(ctx.query.level)||10;
     let award = ctx.query.award;
     console.log(award);
-    let book = await AwardListModel.find({"name":award}).populate({path:'books'}).sort({"books.level":-1}).skip(skip).limit(limit);
+    let book = await AwardListModel.find({"name":award,"level":{$lte:mylevel}})
+        .populate(
+            {
+                path:'books',
+                select:{
+                    "_id":1,
+                    "cover":1,
+                    "author":1,
+                    "bookname":1,
+                    "commentary":1
+                }
+            }
+        )
+        .sort({"books.bookname":-1}).
+        skip(skip).
+        limit(limit);
     console.log(book);
-    ctx.body = book;
+    ctx.body = book.books;
     ctx.status=200;
 }
 
