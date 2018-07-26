@@ -35,7 +35,7 @@ const getAward = async(ctx)=>{
     let mylevel = Number(ctx.query.level)||10;
     let award = ctx.query.award;
     console.log(award);
-    let book = await AwardListModel.find({"name":award,"level":{$lte:mylevel}})
+    let book = await AwardListModel.find({"name":award})
         .populate(
             {
                 path:'books',
