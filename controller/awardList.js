@@ -52,7 +52,7 @@ const getAward = async(ctx)=>{
         skip(skip).
         limit(limit);
     console.log(book.books);
-    ctx.body = book.books;
+    ctx.body = book;
     ctx.status=200;
 }
 
