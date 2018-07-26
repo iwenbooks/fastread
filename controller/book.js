@@ -140,7 +140,7 @@ const recommandByLevel = async(ctx)=>{
             }
         else{
             if(pattern=="smart"){
-                let tempRes =await BookModel.find({"level":{$lte:level},"category":{$in:tmp}},{"_id":1,"bookname":1,"author":1,"cover":1}).collation({"locale": "en", numericOrdering:true}).sort({"IMDB":sortWay,"cover":-1}).skip(skip).limit(3*limit).exec();
+                let tempRes =await BookModel.find({"level":{$lte:level},"category":{$in:tmp}},{"_id":1,"bookname":1,"author":1,"cover":1}).collation({"locale": "en", numericOrdering:true}).sort({"IMDB":sortWay,"cover":-1}).skip(skip*3).limit(3*limit).exec();
                 let num = tempRes.length<limit ? tempRes.length:limit;
                 ctx.body = await commonFunction.getRandomArrayElement(tempRes,num);
             }
