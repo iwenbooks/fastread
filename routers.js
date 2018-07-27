@@ -1,10 +1,11 @@
 'use strict';
 
-const fs = require('fs')
+const fs = require('fs');
 const Router = require('koa-router');
 const jwt = require("./middleware/jwt");
 const router = new Router();
 const securedRouter = new Router();
+const fileRouter = new Router();
 securedRouter.use(jwt.errorHandler()).use(jwt.jwt());
 function add_rule(router, securedRouter, rule) {
     for (let key in rule['securedRouters']) {
@@ -51,8 +52,8 @@ function add_rule(router, securedRouter, rule) {
     }
 }
 
-// Import all controllers
 function add_rules(router, securedRouter) {
+// Import all controllers
     let files = fs.readdirSync(__dirname + '/controller');
     let js_files = files.filter((f) => {
         return f.endsWith('.js');
@@ -60,7 +61,7 @@ function add_rules(router, securedRouter) {
     for (let f of js_files) {
         console.log(`process controller: ${f}...`);
         let rule = require(__dirname + '/controller/' + f);
-        add_rule(router, securedRouter, rule);
+        add_rule(router, securedRouter,rule);
     }
 }
 

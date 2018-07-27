@@ -2,7 +2,6 @@
 
 const crypto = require('crypto');
 const jwt = require('../middleware/jwt');
-const fs = require('fs');
 const UserModel = require('../model/user');
 const BookModel = require('../model/book');
 const CommentModel = require('../model/comment');
@@ -373,7 +372,18 @@ const getRecommendedBooks = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-}
+};
+const updateSetting = async(ctx)=>{
+    try {
+        let token = jwt.getToken(ctx);
+        let userId = token.id;
+        let user = await UserModel.findByIdAndUpdate(userId, ctx.request.body);
+        ctx.status =200;
+    }catch (e) {
+        ctx.status=400;
+        ctx.body = {error:"Bad Request"}
+    }
+};
 
 const updateRecord = async (ctx) => {
     try {
@@ -591,9 +601,8 @@ const getLevelWord= async(ctx)=>{
         ctx.body={error:"invalid segment ID"}
     }
 };
-
-
 module.exports.securedRouters = {
+    'POST /updateSetting':updateSetting,
     'POST /getLevelWord':getLevelWord,
     'GET /totalAnswers/:query':totalAnswers,
     'GET /totalCorrectAnswers/:query':totalCorrectAnswers,
@@ -618,6 +627,7 @@ module.exports.securedRouters = {
     'POST /like':likeBook,
     'POST /unlike':unLikeBook
 };
+
 
 module.exports.routers = {
     'GET /loginForWechat/:code':loginForWechat,

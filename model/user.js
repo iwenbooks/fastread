@@ -40,7 +40,7 @@ const userSchema = new Schema({
         "font-size": { type: Number, default: 0 },
         "background": { type: Number, default: 0 },
         "nightMode":{type: Boolean,default:false},
-        "pageTurningEffect":{type: Boolean,default:false}
+        "pageTurningEffect":{type: Number,default:0}
     },
     "status": {
         "totalReadingTime": { type: Number, default: 0 },
