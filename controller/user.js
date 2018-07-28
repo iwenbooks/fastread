@@ -722,6 +722,8 @@ const getLevelWord= async(ctx)=>{
     }
 };
 module.exports.securedRouters = {
+    'GET /getCollectWords':getCollectWords,
+    'POST /whetherInCollectWords':whetherInCollectWords,
     'GET /getWords':getWords,
     'POST /updateSetting':updateSetting,
     'POST /getLevelWord':getLevelWord,
