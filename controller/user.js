@@ -137,7 +137,7 @@ const myInfo = async (ctx) => {
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel
-        .find({"_id":userId},{"books.segment":0,"words.times":0,"words._id":0})
+        .find({"_id":userId},{"books.segment":0,"words":0})
         .populate(
             {
                 path: 'books.book',
@@ -149,7 +149,16 @@ const myInfo = async (ctx) => {
                 },
 
             }
-        ).populate(
+        )
+        .exec();
+    ctx.status = 200;
+    ctx.body = user[0];
+};
+const getWords=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId= token.id;
+    let user = await UserModel.find({"_id":userId},{"words.word":1})
+        .populate(
             {
                 path:'words.word',
                 select:{
@@ -157,12 +166,13 @@ const myInfo = async (ctx) => {
                     word:1
                 }
             }
+
         )
         .exec();
-    ctx.status = 200;
-    ctx.body = user[0];
-};
+    ctx.status =200;
+    ctx.body=user;
 
+};
 const getMyComments = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -612,6 +622,7 @@ const getLevelWord= async(ctx)=>{
     }
 };
 module.exports.securedRouters = {
+    'GET /getWords':getWords,
     'POST /updateSetting':updateSetting,
     'POST /getLevelWord':getLevelWord,
     'GET /totalAnswers/:query':totalAnswers,
