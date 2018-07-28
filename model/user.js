@@ -22,6 +22,12 @@ const userSchema = new Schema({
         score: { type: Number },
         time: { type: Number }
     }],
+    "collectWords":[
+        {
+            word:{type:mongoose.Schema.Types.ObjectId,ref:'Word'}
+        }
+    ],
+
     "words": [{
         word: { type: mongoose.Schema.Types.ObjectId, ref: 'Word' },
         times: { type: Number }

@@ -278,6 +278,32 @@ const updateWords = async (ctx) => {
     ctx.status = 200;
     ctx.body = {};
 };
+const updateCollectWords = async (ctx) => {
+    // TODO: use user token
+    let updateWords = ctx.request.body.updateWords;
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
+    let user = await UserModel.findById(userId);
+    updateWords.forEach(word => {
+        let isNewWord = true;
+        for (var i = 0; i < user.words.length; i++) {
+            if (String(user.words[i].word) === word) {
+                user.words[i].times++;
+                isNewWord = false;
+            }
+        }
+        if (isNewWord) {
+            user.collectWords.push({
+                word: word,
+            })
+        }
+    });
+    user = await user.save();
+    ctx.status = 200;
+    ctx.body = {};
+};
+
+
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
     let index = ctx.request.body.segment;
@@ -350,6 +376,26 @@ const addBook = async (ctx) => {
         ctx.body = { error: error }
     }
 }
+const removeCollectWord=async(ctx)=>{
+    let removeWord = ctx.request.body.word;
+    try{
+        let token = jwt.getToken(ctx);
+        let userId=token.id;
+        let user = await UserModel.findById(userId);
+        let tmp=[];
+        for(let i=0;i<user.collectWords.length;i++){
+            if(user.collectWords[i]['word']!=removeWord){
+                tmp.push(user.collectWords[i]);
+            }
+        }
+        await UserModel.update({"_id":userId},{"collectWords":tmp})
+        ctx.body={}
+    }catch (err) {
+        ctx.status=401;
+        ctx.body={error:err}
+
+    }
+};
 
 const removeBook = async (ctx) => {
     let newBookId = ctx.request.body.book;
@@ -649,9 +695,11 @@ module.exports.securedRouters = {
     'GET /myComments': getMyComments,
     'POST /updateLevel': updateLevel,
     'POST /updateWords': updateWords,
+    'POST /updateCollectWords':updateCollectWords,
     'POST /updateBookProgress': updateBookProgress,
     'POST /user/book': addBook,
     'DEL /user/book': removeBook,
+    'DEL /removeCollectWord':removeCollectWord,
     'PUT /user': updateInfo,
     'GET /recommend': getRecommendedBooks,
     'POST /user/record': updateRecord,
