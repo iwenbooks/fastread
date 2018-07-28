@@ -134,10 +134,10 @@ const register = async (ctx) => {
     }
 }
 const myInfo = async (ctx) => {
-    let token = jwt.getToken(ctx)
+    let token = jwt.getToken(ctx);
     let userId = token.id;
     let user = await UserModel
-        .find({"_id":userId},{"books.segment":0,"words":0})
+        .find({"_id":userId},{"books.segment":0,"words":0,"collectWords":0})
         .populate(
             {
                 path: 'books.book',
@@ -182,9 +182,52 @@ const getWords=async(ctx)=>{
         ctx.body=[];
     }
     ctx.status =200;
-
-
 };
+const getCollectWords=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId= token.id;
+    let user = await UserModel.find({"_id":userId},{"collectWords.word":1})
+        .populate(
+            {
+                path:'collectWords.word',
+                select:{
+                    id:1,
+                    word:1
+                }
+            }
+
+        )
+        .exec();
+    try {
+        let result = user[0]["collectWords"];
+        let finalRes = [];
+        for(let item of  result){
+            finalRes.push(item.word);
+        }
+        ctx.body =finalRes;
+
+    }
+    catch (e) {
+        ctx.body=[];
+    }
+    ctx.status =200;
+};
+const whetherInCollectWords= async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId= token.id;
+    let judgeWord = ctx.request.body.word;
+    let user = await UserModel.find({"_id":userId},{"collectWords.word":1}).exec();
+    for(let item of user.collectWords){
+        if(item.word==judgeWord){
+            ctx.body =true;
+            ctx.status=200;
+            return;
+        }
+    }
+    ctx.body=false;
+    ctx.status=200;
+};
+
 const getMyComments = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
