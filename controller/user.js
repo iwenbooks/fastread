@@ -295,6 +295,8 @@ const updateLevel = async (ctx) => {
 }
 
 const updateWords = async (ctx) => {
+
+
     // TODO: use user token
     let updateWords = ctx.request.body.updateWords
     let token = jwt.getToken(ctx)
@@ -345,6 +347,16 @@ const updateCollectWords = async (ctx) => {
     ctx.body = {};
 };
 
+const tmpTest = async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId= token.id;
+    let word =await WordModel.find({}).limit(50000).exec();
+    await UserModel.findByIdAndUpdate(userId,{"collectWords":word});
+    ctx.status=200;
+    ctx.body={};
+
+
+};
 
 const updateBookProgress = async (ctx) => {
     let updateBook = ctx.request.body.book;
@@ -722,6 +734,7 @@ const getLevelWord= async(ctx)=>{
     }
 };
 module.exports.securedRouters = {
+    'GET /tmpTest':tmpTest,
     'GET /getCollectWords':getCollectWords,
     'POST /whetherInCollectWords':whetherInCollectWords,
     'GET /getWords':getWords,
