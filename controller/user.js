@@ -286,9 +286,8 @@ const updateCollectWords = async (ctx) => {
     let user = await UserModel.findById(userId);
     updateWords.forEach(word => {
         let isNewWord = true;
-        for (var i = 0; i < user.words.length; i++) {
-            if (String(user.words[i].word) === word) {
-                user.words[i].times++;
+        for (var i = 0; i < user.collectWords.length; i++) {
+            if (String(user.collectWords[i].word) === word) {
                 isNewWord = false;
             }
         }
