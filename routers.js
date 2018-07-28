@@ -5,7 +5,6 @@ const Router = require('koa-router');
 const jwt = require("./middleware/jwt");
 const router = new Router();
 const securedRouter = new Router();
-const fileRouter = new Router();
 securedRouter.use(jwt.errorHandler()).use(jwt.jwt());
 function add_rule(router, securedRouter, rule) {
     for (let key in rule['securedRouters']) {
@@ -15,6 +14,9 @@ function add_rule(router, securedRouter, rule) {
             console.log(`register URL mapping: GET ${path}`);
         } else if (key.startsWith('POST ')) {
             let path = key.substring(5);
+            if(path=="/uploadAvatar"){
+                securedRouter.post(path,)
+            }
             securedRouter.post(path, rule['securedRouters'][key]);
             console.log(`register URL mapping: POST ${path}`);
         } else if (key.startsWith('DEL ')) {

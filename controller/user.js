@@ -137,7 +137,7 @@ const myInfo = async (ctx) => {
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel
-        .find({"_id":userId},{"books.segment":0})
+        .find({"_id":userId},{"books.segment":0,"words.times":0,"words._id":0})
         .populate(
             {
                 path: 'books.book',
@@ -146,9 +146,19 @@ const myInfo = async (ctx) => {
                     bookname: 1,
                     cover:1,
                     category:1
+                },
+
+            }
+        ).populate(
+            {
+                path:'words.word',
+                select:{
+                    id:1,
+                    word:1
                 }
             }
-        ).exec();
+        )
+        .exec();
     ctx.status = 200;
     ctx.body = user[0];
 };
