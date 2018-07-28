@@ -217,7 +217,7 @@ const whetherInCollectWords= async(ctx)=>{
     let userId= token.id;
     let judgeWord = ctx.request.body.word;
     let user = await UserModel.find({"_id":userId},{"collectWords.word":1}).exec();
-    for(let item of user.collectWords){
+    for(let item of user[0].collectWords){
         if(item.word==judgeWord){
             ctx.body =true;
             ctx.status=200;
