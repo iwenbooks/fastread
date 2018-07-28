@@ -169,8 +169,20 @@ const getWords=async(ctx)=>{
 
         )
         .exec();
+    try {
+        let result = user[0]["words"];
+        let finalRes = [];
+        for(let item of  result){
+            finalRes.push(item.word);
+        }
+        ctx.body =finalRes;
+
+    }
+    catch (e) {
+        ctx.body=[];
+    }
     ctx.status =200;
-    ctx.body=user;
+
 
 };
 const getMyComments = async (ctx) => {
