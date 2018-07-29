@@ -298,11 +298,15 @@ const updateWords = async (ctx) => {
 
 
     // TODO: use user token
-    let updateWords = ctx.request.body.updateWords
-    let token = jwt.getToken(ctx)
+    let updateWords = ctx.request.body.updateWords;
+    let token = jwt.getToken(ctx);
     let userId = token.id;
     let user = await UserModel.findById(userId);
-
+    let level  = user.level;
+    let learnWordsNum = user.words.length;
+    let totalLevelWord = await WordModel.find({"level":level}).count();
+    console.log(totalLevelWord,'\t',learnWordsNum);
+    let judgeExceedLevelWords = learnWordsNum/totalLevelWord>0.7?true:false;
     updateWords.forEach(word => {
         let isNewWord = true;
         for (var i = 0; i < user.words.length; i++) {
@@ -321,7 +325,7 @@ const updateWords = async (ctx) => {
 
     user = await user.save();
     ctx.status = 200;
-    ctx.body = {};
+    ctx.body = judgeExceedLevelWords;
 };
 const updateCollectWords = async (ctx) => {
     // TODO: use user token
@@ -354,8 +358,6 @@ const tmpTest = async(ctx)=>{
     await UserModel.findByIdAndUpdate(userId,{"collectWords":word});
     ctx.status=200;
     ctx.body={};
-
-
 };
 
 const updateBookProgress = async (ctx) => {
