@@ -713,7 +713,7 @@ const getLevelWord= async(ctx)=>{
     let userId=token.id;
     let user = await UserModel.findById(userId).exec();
     let haveReadWord =user.words;
-    console.log(haveReadWord);
+    console.log("haveReadWord:/n",haveReadWord);
     let segment = await SegmentModel.findById(segmentId).exec();
     if(segment){
         let content = segment["content"];
@@ -737,15 +737,16 @@ const getLevelWord= async(ctx)=>{
                     break;
                 }
             }
-        }
-        console.log(resWord);
+        };
+        console.log("resWord/n",resWord);
+        /*
         for(let i=0;i<resWord.length;i++){
             for(let j=0;j<haveReadWord.length;j++){
                 if(haveReadWord[j].word==resWord[i].word){
                     resWord.splice(i,1);
                 }
             }
-        }
+        }*/
         let wordLength = resWord.length>10?10:resWord.length;
         let result=await commonFunction.getRandomArrayElement(resWord,wordLength);
         ctx.body=result;
