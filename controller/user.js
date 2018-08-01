@@ -712,7 +712,8 @@ const getLevelWord= async(ctx)=>{
     let token  =jwt.getToken(ctx);
     let userId=token.id;
     let user = await UserModel.findById(userId).exec();
-    let haveReadWord =user["words"];
+    let haveReadWord =user.words;
+    console.log(haveReadWord);
     let segment = await SegmentModel.findById(segmentId).exec();
     if(segment){
         let content = segment["content"];
@@ -725,7 +726,7 @@ const getLevelWord= async(ctx)=>{
         let words = wordList.filter((word,index,self)=>{
             word =word.toLocaleLowerCase();
             return word.length>=2&&self.indexOf(word)===index;
-        }) 
+        }) ;
         let wordDir = await WordModel.find({"level":user.level},{"explanations":0}).exec();
         let resWord=[];
         for(let i=0;i<words.length;i++){
@@ -737,9 +738,10 @@ const getLevelWord= async(ctx)=>{
                 }
             }
         }
+
         for(let i=0;i<resWord.length;i++){
             for(let j=0;j<haveReadWord.length;j++){
-                if(haveReadWord[j]["word"]==resWord[i]["word"]){
+                if(haveReadWord[j].word._id==resWord[i].word._id){
                     resWord.splice(i,1);
                 }
             }
