@@ -235,6 +235,12 @@ const uploadAvatar = async ctx => {
     ctx.req.part.pipe(
       fs.createWriteStream(config.avatar_path + userId + '.jpg')
     );
+    let user = await UserModel.findByIdAndUpdate(
+        userId,
+        {
+            'avatar': 'http://202.120.38.146:8688/avatars/'+userId+'.jpg'
+        }
+    );
     ctx.status = 200;
     ctx.body = {};
 };
