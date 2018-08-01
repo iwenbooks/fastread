@@ -765,7 +765,7 @@ const deleteComments = async(ctx)=>{
     }
 };
 module.exports.securedRouters = {
-    "deleteComments":deleteComments,
+    "DEL /deleteComments":deleteComments,
     'GET /tmpTest':tmpTest,
     'GET /getCollectWords':getCollectWords,
     'POST /whetherInCollectWords':whetherInCollectWords,
