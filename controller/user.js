@@ -246,15 +246,12 @@ const uploadAvatar = async ctx => {
 };
   
 const getMyComments = async (ctx) => {
-    let page = ctx.query.page || 1;
+    let page = Number(ctx.query.page) || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
-
     let token = jwt.getToken(ctx);
     let userId = token.id;
-
-    let myComments = await CommentModel
-        .find({ 'user': userId })
+    let myComments = await CommentModel.find({"user":userId})
         .skip(skip)
         .limit(limit)
         .exec();
@@ -753,7 +750,22 @@ const getLevelWord= async(ctx)=>{
         ctx.body={error:"invalid segment ID"}
     }
 };
+const deleteComments = async(ctx)=>{
+    try {
+        let token = jwt.getToken(ctx);
+        let userId = token.id;
+        let commentId = ctx.request.body.commentId;
+        await CommentModel.remove({"_id": commentId, "user": userId}).exec();
+        ctx.status = 200;
+        ctx.body = {};
+    }catch (e) {
+        ctx.throw(401);
+        ctx.body={error:"Invlid ID"}
+
+    }
+};
 module.exports.securedRouters = {
+    "deleteComments":deleteComments,
     'GET /tmpTest':tmpTest,
     'GET /getCollectWords':getCollectWords,
     'POST /whetherInCollectWords':whetherInCollectWords,
