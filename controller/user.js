@@ -738,10 +738,10 @@ const getLevelWord= async(ctx)=>{
                 }
             }
         }
-
+        console.log(resWord);
         for(let i=0;i<resWord.length;i++){
             for(let j=0;j<haveReadWord.length;j++){
-                if(haveReadWord[j].word._id==resWord[i].word._id){
+                if(haveReadWord[j].word==resWord[i].word){
                     resWord.splice(i,1);
                 }
             }
