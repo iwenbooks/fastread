@@ -259,8 +259,11 @@ const searchByFirstAlphabet=async(ctx)=>{
     let query= ctx.request.body.search;
     let re = RegExp("^"+query);
     let book = await BookModel.find({"author":{$regex:re,$options:"i"}},{"author":1}).sort({"IMDB":-1,"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
-    ctx.body = book;
-    console.log(book);
+    let result = [];
+    for(let i in book){
+        result.push(i["author"])
+    }
+    ctx.body = result;
     ctx.status = 200;
 };
 
