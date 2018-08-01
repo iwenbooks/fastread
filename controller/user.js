@@ -11,6 +11,7 @@ const config = require('../config');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 const commonFunction = require('../middleware/common_function');
 const request = require('request');
+const fs = require('fs');
 //wechat app:
 const appid="wx7a4f658c7ff6cee3";
 const appsecret="56c48cca391a9463a74803c5f625833c";
@@ -228,6 +229,16 @@ const whetherInCollectWords= async(ctx)=>{
     ctx.status=200;
 };
 
+const uploadAvatar = async ctx => {
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+    ctx.req.part.pipe(
+      fs.createWriteStream(config.avatar_path + userId + '.jpg')
+    );
+    ctx.status = 200;
+    ctx.body = {};
+};
+  
 const getMyComments = async (ctx) => {
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -765,7 +776,8 @@ module.exports.securedRouters = {
     'PUT /user/phone': updatePhone,
     'PUT /user/status': updateStatus,
     'POST /like':likeBook,
-    'POST /unlike':unLikeBook
+    'POST /unlike':unLikeBook,
+    'POST /uploadAvatar': uploadAvatar
 };
 
 
