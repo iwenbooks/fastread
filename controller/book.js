@@ -252,7 +252,7 @@ const GetBookReadingInfo = async(ctx)=>{
     ctx.body = result;
     ctx.status=200;
 };
-const searchByFirstAlphabet=async(ctx)=>{
+const searchByFirstAlphabetOfAuthor=async(ctx)=>{
     let page = Number(ctx.request.body.page);
     let limit = Number(ctx.request.body.limit);
     let skip = limit*(page-1); 
@@ -266,13 +266,23 @@ const searchByFirstAlphabet=async(ctx)=>{
     ctx.body = result;
     ctx.status = 200;
 };
+const searchByAuthor = async(ctx)=>{
+    let page = Number(ctx.request.body.page);
+    let limit = Number(ctx.request.body.limit);
+    let skip = limit*(page-1);
+    let author = ctx.request.body.author;
+    let book = await BookModel.find({"author":author}).sort({"IMDB":-1,"likeNum":-1,"cover":-1,"commentary":-1}).skip(skip).limit(limit).exec();
+    ctx.body = book;
+    ctx.status = 200;
 
+};
 module.exports.securedRouters = {
     'POST /book/like': like
 };
 
 module.exports.routers = {
-    'POST /searchByFirstAlphabet':searchByFirstAlphabet,
+    'POST /searchByAuthor':searchByAuthor,
+    'POST /searchByFirstAlphabetOfAuthor':searchByFirstAlphabetOfAuthor,
     'GET /GetBookReadingInfo/:bookid':GetBookReadingInfo,
     'POST /recommandByLevel':recommandByLevel,
     'GET /book': list,
