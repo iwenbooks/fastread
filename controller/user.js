@@ -781,7 +781,6 @@ const updatePassword = async(ctx)=>{
     }
 };
 module.exports.securedRouters = {
-    'POST /updatePassword':updatePassword,
     "DEL /deleteComments":deleteComments,
     'GET /tmpTest':tmpTest,
     'GET /getCollectWords':getCollectWords,
@@ -818,6 +817,7 @@ module.exports.securedRouters = {
 
 
 module.exports.routers = {
+    'POST /updatePassword':updatePassword,
     'GET /loginForWechat/:code':loginForWechat,
     'GET /user': list,
     'POST /auth': auth,
