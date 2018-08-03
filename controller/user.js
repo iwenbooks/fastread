@@ -773,7 +773,7 @@ const updatePassword = async(ctx)=>{
     let userId = user["_id"];
     console.log(userId);
     if(user.length>0){
-        await UserModel.findByIdAndUpdate(userId,{"password":password}).exec();
+        await UserModel.update({"_id":userId},{$set:{"password":password}});
         ctx.status=200;
     }else {
         ctx.status=401;
