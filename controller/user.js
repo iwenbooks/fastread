@@ -779,7 +779,6 @@ const updatePassword = async(ctx)=>{
         ctx.status=401;
         ctx.body={};
     }
-
 };
 module.exports.securedRouters = {
     'POST /updatePassword':updatePassword,
