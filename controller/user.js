@@ -771,7 +771,7 @@ const updatePassword = async(ctx)=>{
     console.log(password);
     let user = await UserModel.find({"phone":phone});
     console.log(user);
-    let userId =user["_id"];
+    let userId =user[0]["_id"];
     console.log(userId);
     if(user.length>0){
         await UserModel.update({"_id":userId},{$set:{"password":password}});
