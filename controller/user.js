@@ -765,11 +765,9 @@ const deleteComments = async(ctx)=>{
     }
 };
 const updatePassword = async(ctx)=>{
-    let token  = jwt.getToken(ctx);
-    let userId = token.id;
     let phone = ctx.request.body.phone;
     let password = ctx.request.body.password;//目前默认为post已经经过sha1加密的字符串
-    let user = await UserModel.find({"_id":userId,"phone":phone}).exec();
+    let user = await UserModel.find({"phone":phone}).exec();
     if(user.length>0){
         await UserModel.findByIdAndUpdate(userId,{"password":password}).exec();
         ctx.status=200;
