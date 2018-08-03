@@ -769,7 +769,8 @@ const updatePassword = async(ctx)=>{
     let password = ctx.request.body.password;//目前默认为post已经经过sha1加密的字符串
     console.log(phone);
     console.log(password);
-    let user = await UserModel.find({"phone":phone}).exec();
+    let user = await UserModel.find({"phone":phone});
+    console.log(user);
     let userId = user["_id"];
     console.log(userId);
     if(user.length>0){
