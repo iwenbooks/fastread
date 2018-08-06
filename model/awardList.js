@@ -5,7 +5,9 @@ const Schema = mongoose.Schema;
 
 const awardListSchema = new Schema({
     "name": { type: String, index: { unique: true, dropDups: true } },
-    "books": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }]
+    "books": [{ type: mongoose.Schema.Types.ObjectId, ref: 'Book' }],
+    "abstract": { type: String},
+    "cover": { type: String}
 });
 
 awardListSchema.pre('save', function (next) {

@@ -21,8 +21,14 @@
     1.修复getLevelWord
     2.getMyComment
     3.删除comments接口
-    4.找回密码接口。 备注：目前默认传给服务器用户的新密码已经经过加密
+    4.找回密码接口。
     5.brower by author 的两个接口
+
+8月3号：
+    修复找回密码的接口
+    修改award的接口
+
+
 
 
 

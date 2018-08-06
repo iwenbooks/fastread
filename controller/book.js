@@ -119,13 +119,16 @@ const recommandByLevel = async(ctx)=>{
             1:"Classical Literature",
             2:"Historical Fiction",
             3:"Science Fiction",
-            4:"Detective & Mystery",
-            5:"Children Books",
-            6:"Biographies & Memoirs",
-            7:"Art",
-            8:"Modern Novel",
-            9:"Non Fiction",
-            10:"Other"
+            4:"Romance",
+            5:"Short Books",
+            6:"Detective & Mystery",
+            7:"Children Books",
+            8:"Biographies & Memoirs",
+            9:"Art",
+            10:"Modern Novel",
+            11:"Non Fiction",
+            12:"Parenting & Families",
+            13:"Other"
         };
         let tmp = [myCategory[category]];
         let sortWay = Number(ctx.request.body.sortway)||-1;//default:descending order
@@ -150,32 +153,51 @@ const recommandByLevel = async(ctx)=>{
     ctx.status =200;
 };
 
-
+//const search = async(ctx)=>{
+//	let searchQuery = ctx.query.search;
+//	let limit = Number(ctx.query.limit) || 10;
+//    let skip = (page - 1) * limit;
+//	let res=await BookModel.find({$or:[{"bookname":{$regex:searchQuery,"$options":"i"}},
+//	{"author":{$regex:searchQuery,"$options":"i"}}]}).skip(skip).limit(limit).exec();
+//	ctx.body=res;
+//    ctx.status=200;
+//}
 
 const search = async(ctx)=>{
+	let catg=new Array("","Classical Literature","Historical Fiction","Science Fiction","Romance","Short Books","Detective & Mystery","Children Books","Biographies & Memoirs","Art","Modern Novel","Non Fiction","Parenting & Families","Other");
     let page = ctx.query.page || 1;
+	//let page=10
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
+	let category=  Number(ctx.query.category)||0;
     const queryLength = searchQuery.length;
-    let tmpSearchQuery = RegExp("^"+searchQuery)
-    let res0=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
-    let res1=await BookModel.find({"bookname":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
-    let res2 =await BookModel.find({"author":{$regex:tmpSearchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
-    let res3=await BookModel.find({"bookname":{$regex:searchQuery,"$options":"i"}}).skip(skip).limit(limit).exec();
-    let res4 =await BookModel.find({"author":{$regex:searchQuery,
-    "$options":"i"}}).skip(skip).limit(limit).exec();
-    searchQuery=searchQuery.trim().split(/\s+/)
-    let res=[];
+    let tmpSearchQuery = RegExp("^"+searchQuery);
+	let res0=[];
+	let res1=[];
+	console.log("category:",category)
+	console.log("limi:",limit)
+	console.log("page:",page)
+	let res=[];
+	
+	if (category==0){
+		res0=await BookModel.find({$or:[{"bookname":{$regex:searchQuery,"$options":"i"}},
+	{"author":{$regex:searchQuery,"$options":"i"}}]}).skip(skip).limit(limit).exec();
+		res1=await BookModel.find({$text: {$search:searchQuery}},{score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).skip(skip).limit(limit).exec();
+	//res0=await BookModel.find({$or:[{"bookname":{$regex:searchQuery,"$options":"i"}},
+	//{"author":{$regex:searchQuery,"$options":"i"}}]}).skip(skip).limit(limit).exec();
+	}
+	else 
+	{
+		res0=await BookModel.find({$or:[{$and:[{"bookname":{$regex:searchQuery,"$options":"i"}},{"category":catg[category]}]},
+{$and:[{"author":{$regex:searchQuery,"$options":"i"}},{"category":catg[category]}]}]}).skip(skip).limit(limit).exec();
+		res1=await BookModel.find({$and:[{$text: {$search:searchQuery}},{"category":catg[category]}]}, {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).skip(skip).limit(limit).exec();
+	
+	}
+	//let res=[];
     res.push(res0);
-    res.push(res1);
-    res.push(res2);
-    res.push(res3);
-    res.push(res4);
-    for(let item of searchQuery){
-        res.push(await BookModel.find({$or:[{"bookname":{$regex:item,"$options":'i'}},{"author":{$regex:item,"$options":'i'}}]}).skip(skip).limit(limit).exec()); 
-    }
-    let tmp =[];
+	res.push(res1);
+	let tmp =[];
     let vote = [];
     for(let i = 0 ; i < res.length ; i++){
         for (let j = 0 ; j < res[i].length ;j++){
@@ -235,7 +257,7 @@ const search = async(ctx)=>{
         tmp[maxIndex]=temp;
         vote[maxIndex]=temp2;
     }
-    ctx.body=tmp;
+	ctx.body=tmp.reverse();
     ctx.status=200;
 }
 

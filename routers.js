@@ -1,5 +1,4 @@
 'use strict';
-
 const fs = require('fs');
 const Router = require('koa-router');
 const jwt = require("./middleware/jwt");

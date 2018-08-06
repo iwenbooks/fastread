@@ -29,7 +29,8 @@ const getAward = async(ctx)=>{
                         "cover": 1,
                         "author": 1,
                         "bookname": 1,
-                        "commentary": 1
+                        "commentary": 1,
+                        "category": 1
                     },
                     match: {"level": {$lte: mylevel}},
                     options:{
@@ -56,11 +57,16 @@ const getAward = async(ctx)=>{
     }
 };
 
+const getAwardList = async(ctx)=>{
+    let awardList = await AwardListModel.find().select("name abstract cover").exec();
+    ctx.body = awardList;
+};
 
 module.exports.securedRouters = {
 };
 
 module.exports.routers = {
     'GET /getAward':getAward,
-    'POST /awardList': create
+    'POST /awardList': create,
+    'GET /getAwardList':getAwardList
 };
