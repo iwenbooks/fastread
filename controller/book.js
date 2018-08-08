@@ -213,11 +213,12 @@ function editDist(a,b)
    // printf("%d\n", dp[lenb]);
 	return dp[lenb];
 }
+
 const search = async(ctx)=>{
 	let catg=new Array("","Classical Literature","Historical Fiction","Science Fiction","Romance","Detective & Mystery","Children Books","Biographies & Memoirs","Art","Modern Novel","Non Fiction","Parenting & Families","Short Books","Other");
     let page = ctx.query.page || 1;
 	//let page=10
-    let limit = Number(ctx.query.limit)*20 || 10;
+    let limit = (Number(ctx.query.limit) || 10)*20;
     let skip = (page - 1) * limit;
     let searchQuery = ctx.query.search;
 	console.log("searchQuery:",searchQuery)
@@ -247,8 +248,37 @@ const search = async(ctx)=>{
 	
 	}
 	//let res=[];
-    res.push(res0);
-	res.push(res1);
+	console.log("res0:",res0,res0.length,"dssa")
+	let resTag=0;
+	if(res0.length!=0)
+	{
+	    res.push(res0);
+		resTag=1;
+	}
+	if(res1.length!=0)
+	{
+		res.push(res1);
+		resTag=1;
+	}
+	console.log("resssss:",res,res.length,":resend")
+	if(resTag==0)
+	{
+		for(let t=1;t<queryLength;t++)
+		{
+			let newsq=searchQuery.substring(0,t)+" "+searchQuery.substring(t,queryLength);
+			console.log("newsq:",newsq,"newsqend")
+			if (category==0)
+			{
+				res1=await BookModel.find({$text: {$search:newsq}}).skip(skip).limit(limit/20).exec();
+			}
+			else 
+			{
+				res1=await BookModel.find({$and:[{$text: {$search:newsq}},{"category":catg[category]}]}, {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).skip(skip).limit(limit/20).exec();
+			}
+			res.push(res1);
+		}
+		
+	}
 	let tmp =[];
     let vote = [];
     for(let i = 0 ; i < res.length ; i++){
@@ -345,7 +375,6 @@ const search = async(ctx)=>{
 	ctx.body=tmp;
     ctx.status=200;
 }
-
 
 const GetBookReadingInfo = async(ctx)=>{
     let book = await BookModel.findById(ctx.params.bookid);
