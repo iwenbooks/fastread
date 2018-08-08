@@ -46,7 +46,8 @@ const userSchema = new Schema({
         "font-size": { type: Number, default: 0 },
         "background": { type: Number, default: 0 },
         "nightMode":{type: Boolean,default:false},
-        "pageTurningEffect":{type: Number,default:0}
+        "pageTurningEffect":{type: Number,default:0},
+        "only-my-level":{type: Boolean,default:false}
     },
     "status": {
         "totalReadingTime": { type: Number, default: 0 },
