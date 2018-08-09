@@ -769,16 +769,24 @@ const deleteComments = async(ctx)=>{
     let token  =jwt.getToken(ctx);
     let commentId = ctx.request.body.commentId;
     let comment = await CommentModel.findById(commentId);
-    let book = await BookModel.findById(comment["book"]);
-    let commentNum = book["CommentNum"]-1;
-    let tmp = [];
-    for (let i = 0; i < book["comments"].length; i++){
-        if (book["comments"][i] != commentId){
-            tmp.push(book["comments"][i]);
+    let segmentId = comment["segment"]
+    if (segmentId != null) {
+        let segment =  await SegmentModel.findById(segmentId);
+        let commentNum = segment["commentNum"] - 1;
+        await SegmentModel.update({"_id":segmentId}, {$set:{"commentNum":commentNum}}).exec();
+    }
+    else {
+        let book = await BookModel.findById(comment["book"]);
+        let commentNum = book["CommentNum"]-1;
+        let tmp = [];
+        for (let i = 0; i < book["comments"].length; i++){
+            if (book["comments"][i] != commentId){
+                tmp.push(book["comments"][i]);
+            }
         }
+        await BookModel.update({"_id":comment["book"]},{$set:{"CommentNum":commentNum, "comments":tmp}}).exec();
     }
     await CommentModel.remove({"_id":commentId}).exec();
-    await BookModel.update({"_id":comment["book"]},{$set:{"CommentNum":commentNum, "comments":tmp}}).exec();
     ctx.status = 200;
 }
 module.exports.securedRouters = {

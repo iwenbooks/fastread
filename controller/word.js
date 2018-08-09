@@ -34,7 +34,7 @@ const getTestSet = async (ctx) => {
         let  word =await randomFetch({ level: levels[i] }, { limit: limit });
         if(word!=undefined){       
             console.log(word[0]["word"][0]);
-            if(/^[A-Z]+$/.test(word[0]["word"][0])){
+            if(/^[A-Z]*/.test(word[0]["word"][0])){
                 i--;
             }else{
                 words.push(word);
@@ -73,15 +73,23 @@ const create = async (ctx) => {
 };
 
 const getInfoById = async (ctx) => {
-    let wordInfo = await WordModel.findById(ctx.params.id).exec();
+    let wordInfo = await WordModel.findById(ctx.params.id);
     ctx.body = wordInfo
+    ctx.status = 200;
 };
 
 const getInfoByWord = async (ctx) => {
     let wordInfo = await WordModel.find({
         word: ctx.params.word
-    }).exec();
+    });
     ctx.body = wordInfo[0];
+};
+
+const updateByWord = async (ctx) => {
+    let chineseExplanations = ctx.request.body.chineseExplanations;
+    let word = ctx.request.body.word
+    await WordModel.update({"word":word},{$set:{"chineseExplanations":chineseExplanations}}).exec();
+    ctx.status = 200;
 };
 
 module.exports.securedRouters = {
@@ -92,5 +100,6 @@ module.exports.routers = {
     'GET /word': list,
     'GET /test': getTestSet,
     'GET /word/:id': getInfoById,
-    'GET /wordname/:word': getInfoByWord
+    'GET /wordname/:word': getInfoByWord,
+    'POST /word/update': updateByWord
 };
