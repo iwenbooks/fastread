@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const jwt = require('../middleware/jwt')
 const WordModel = require('../model/word');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
+const path = require('path');
 
 const list = async (ctx) => {
     let page = ctx.query.page || 1;
@@ -79,8 +80,14 @@ const getInfoById = async (ctx) => {
 };
 
 const getInfoByWord = async (ctx) => {
+    let word = ctx.params.word;
+    var java = require("java");
+    java.classpath.push(path.resolve(__dirname, './src'));
+    java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
+    let lemma = java.callStaticMethodSync("lemmatizer.Lemmatize", "getLemma", word);
+    if(lemma == "O") lemma = word;
     let wordInfo = await WordModel.find({
-        word: ctx.params.word
+        word: lemma
     });
     ctx.body = wordInfo[0];
 };
