@@ -81,11 +81,23 @@ const getInfoById = async (ctx) => {
 
 const getInfoByWord = async (ctx) => {
     let word = ctx.params.word;
-    var java = require("java");
-    java.classpath.push(path.resolve(__dirname, './src'));
-    java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
-    let lemma = java.callStaticMethodSync("lemmatizer.Lemmatize", "getLemma", word);
-    if(lemma == "O") lemma = word;
+
+    let lemma = null;
+    let tryTimes = 3;
+    while(tryTimes > 0){
+        try{
+            var java = require("java");
+            java.classpath.push(path.resolve(__dirname, './src'));
+            java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
+            lemma = java.callStaticMethodSync("lemmatizer.Lemmatize", "getLemma", word);
+            break;
+        }
+        catch(e){
+            tryTimes -= 1;
+        }
+    }
+    if(lemma == null || lemma == "O") lemma = word;
+
     let wordInfo = await WordModel.find({
         word: lemma
     });
