@@ -16,7 +16,7 @@ const appid="wx7a4f658c7ff6cee3";
 const appsecret="56c48cca391a9463a74803c5f625833c";
 const loginForWechat = async(ctx)=>{
     let url ="https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+appsecret+"&js_code="+ctx.params.code+"&grant_type=authorization_code";
-    console.log(url);
+    // console.log(url);
     ctx.body =await request(url);
     ctx.status=200;
 }
@@ -109,7 +109,7 @@ const authByWechat = async (ctx) => {
             }
         } catch (error) {
             ctx.status = 403;
-            console.log(error);
+            // console.log(error);
             ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME }
         }
     }
@@ -281,12 +281,14 @@ const updatePhone = async (ctx) => {
 }
 
 const updateLevel = async (ctx) => {
+    let newLevel = ctx.request.body.level;
+    newLevel = newLevel > 9 ? 9 : newLevel;
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel.findByIdAndUpdate(
         userId,
         {
-            level: ctx.request.body.level
+            level: newLevel
         }
     );
     ctx.status = 200;
@@ -294,8 +296,6 @@ const updateLevel = async (ctx) => {
 }
 
 const updateWords = async (ctx) => {
-
-
     // TODO: use user token
     let updateWords = ctx.request.body.updateWords;
     let token = jwt.getToken(ctx);
@@ -303,10 +303,13 @@ const updateWords = async (ctx) => {
     let user = await UserModel.findById(userId);
     let level  = user.level;
     let learnWordsNum = user.words.length;
-    let totalLevelWord = await WordModel.find({"level":level}).count();
-    console.log(totalLevelWord,'\t',learnWordsNum);
+    let totalLevelWord = 0;
+    for(let i = 0; i <= level && i < 9; i++){
+        totalLevelWord += await WordModel.find({"level":i}).count();
+    }
+    // console.log(totalLevelWord,'\t',learnWordsNum);
     let judgeExceedLevelWords = learnWordsNum/totalLevelWord>0.7?true:false;
-    updateWords.forEach(word => {
+    updateWords.forEach(word => {90
         let isNewWord = true;
         for (var i = 0; i < user.words.length; i++) {
             if (String(user.words[i].word) === word) {
@@ -406,7 +409,7 @@ const addBook = async (ctx) => {
     try {
         let book = await BookModel.findById(newBookId);
         let totalSegmentLength = book.segments.length;
-        console.log(totalSegmentLength);
+        // console.log(totalSegmentLength);
         let num = book.numberOfReading+1;
         await BookModel.update({"_id":newBookId},{$set:{"numberOfReading":num}});
         let token = jwt.getToken(ctx);
@@ -459,7 +462,7 @@ const removeBook = async (ctx) => {
         let userId = token.id;
         let user = await UserModel.findById(userId);
         let tmp = [];
-        console.log(1111);
+        // console.log(1111);
         for(let i = 0;i<user.books.length;i++){
             if(user.books[i]["book"]!=newBookId){
                 tmp.push(user.books[i]);
@@ -720,48 +723,58 @@ const unLikeBook=async(ctx)=>{
 };
 
 const getLevelWord= async(ctx)=>{
-    let segmentId = ctx.request.body.id;
-    let token  =jwt.getToken(ctx);
-    let userId=token.id;
-    let user = await UserModel.findById(userId).exec();
-    let haveReadWord =user["words"];
-    let segment = await SegmentModel.findById(segmentId).exec();
-    if(segment){
-        let content = segment["content"];
-        if(content.length>50000){
-            let randomWord = content[Math.ceil(Math.random()*100)].toLocaleLowerCase();
-            let num = randomWord>"m"?50000:0;
-            content=content.slice(num,num+50000);
-        }
-        let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
-        let words = wordList.filter((word,index,self)=>{
-            word =word.toLocaleLowerCase();
-            return word.length>=2&&self.indexOf(word)===index;
-        }) 
-        let wordDir = await WordModel.find({"level":user.level},{"explanations":0}).exec();
-        let resWord=[];
-        for(let i=0;i<words.length;i++){
-            let tempWord=words[i];
-            for(let j=0;j<wordDir.length;j++){
-                if(tempWord==wordDir[j]['word']){
-                    resWord.push(wordDir[j]);
-                    break;
+    try{
+        let segmentId = ctx.request.body.id;
+        let token = jwt.getToken(ctx);
+        let userId=token.id;
+        let user = await UserModel.findById(userId).exec();
+        let haveReadWord =user["words"];
+        let segment = await SegmentModel.findById(segmentId).exec();
+        if(segment){
+            let content = segment["content"];
+            if(content.length>50000){
+                let randomWord = content[Math.ceil(Math.random()*100)].toLocaleLowerCase();
+                let num = randomWord>"m"?50000:0;
+                let endIdx = num + 50000 >= content.length ? content.length : num + 50000;
+                // content=content.slice(num,num+50000);
+                content=content.slice(num,endIdx);
+            }
+            let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
+            content = null;
+            let words = wordList.filter((word,index,self)=>{
+                word =word.toLocaleLowerCase();
+                return word.length>=2&&self.indexOf(word)===index;
+            }) 
+            let userLevel = user.level > 9 ? 0 : user.level;
+            let wordDir = await WordModel.find({"level":user.level},{"explanations":0}).exec();
+            let resWord=[];
+            for(let i=0;i<words.length;i++){
+                let tempWord=words[i];
+                for(let j=0;j<wordDir.length;j++){
+                    if(tempWord==wordDir[j]['word']){
+                        resWord.push(wordDir[j]);
+                        break;
+                    }
                 }
             }
-        }
-        for(let i=0;i<resWord.length;i++){
-            for(let j=0;j<haveReadWord.length;j++){
-                if(haveReadWord[j]["word"]==resWord[i]["word"]){
-                    resWord.splice(i,1);
+            for(let i=0;i<resWord.length;i++){
+                for(let j=0;j<haveReadWord.length;j++){
+                    if(haveReadWord[j]["word"]==resWord[i]["word"]){
+                        resWord.splice(i,1);
+                    }
                 }
             }
+            let wordLength = resWord.length>10?10:resWord.length;
+            let result=await commonFunction.getRandomArrayElement(resWord,wordLength);
+            ctx.body=result;
+        }else{
+            ctx.status = 404;
+            ctx.body={error:"invalid segment ID"}
         }
-        let wordLength = resWord.length>10?10:resWord.length;
-        let result=await commonFunction.getRandomArrayElement(resWord,wordLength);
-        ctx.body=result;
-    }else{
-        ctx.status = 404;
-        ctx.body={error:"invalid segment ID"}
+    }
+    catch(e){
+        ctx.status = 400;
+        ctx.body={error:"exception"}
     }
 };
 
