@@ -315,39 +315,47 @@ const updateLevel = async (ctx) => {
 }
 
 const updateWords = async (ctx) => {
+
     // TODO: use user token
     let updateWords = ctx.request.body.updateWords;
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let user = await UserModel.findById(userId);
     let level  = user.level;
-    let learnWordsNum = user.words.length;
-    let totalLevelWord = 0;
-    for(let i = 0; i <= level && i < 9; i++){
-        totalLevelWord += await WordModel.find({"level":i}).count();
-    }
-    // console.log(totalLevelWord,'\t',learnWordsNum);
-    let judgeExceedLevelWords = learnWordsNum/totalLevelWord>0.7?true:false;
-    updateWords.forEach(word => {90
+
+    for (let i = 0; i < updateWords.length; i++) {
         let isNewWord = true;
-        for (var i = 0; i < user.words.length; i++) {
-            if (String(user.words[i].word) === word) {
-                user.words[i].times++;
+        for (let j = 0; j < user.words.length; j++) {
+            if (String(user.words[j].word) == updateWords[i]) {
+                user.words[j].times++;
                 isNewWord = false;
             }
         }
+        let wordInfo = await WordModel.findById(updateWords[i])
         if (isNewWord) {
             user.words.push({
-                word: word,
-                times: 1
+                word: updateWords[i],
+                times: 1,
+                level: wordInfo['level']
             })
         }
-    });
-
+    }
     user = await user.save();
+
+    let learnWordsNum = 0;
+    for (let i = 0; i < user.words.length; i++) {
+        if ('level' in user.words[i] && user.words[i]['level'] == level) {
+            learnWordsNum++;
+        }
+    }
+    let totalLevelWord = await WordModel.find({"level":level}).count();
+    console.log(totalLevelWord,'\t',learnWordsNum); 
+    let judgeExceedLevelWords = learnWordsNum/totalLevelWord>0.7?true:false;
+
     ctx.status = 200;
     ctx.body = judgeExceedLevelWords;
 };
+
 const updateCollectWords = async (ctx) => {
     // TODO: use user token
     let updateWords = ctx.request.body.updateWords;
