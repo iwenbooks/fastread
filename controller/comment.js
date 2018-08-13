@@ -20,10 +20,17 @@ const commentSegment = async (ctx) => {
         'segment': ctx.request.body.segment
     })
     let newComment = await comment.save()
-
-    segmentInfo.comments.push(newComment._id)
-    let updatedSegment = await segmentInfo.save()
-
+    let newComments = []
+    for (let i = 0; i < segmentInfo["comments"].length; i++) {
+        let comment = await CommentModel.findById(segmentInfo["comments"][i]);
+        if (comment != null) {
+            newComments.push(segmentInfo["comments"][i]);
+        }
+    }
+    newComments.push(newComment._id);
+    segmentInfo.comments = newComments;
+    segmentInfo.commentNum = newComments.length;
+    let updateSegment = await segmentInfo.save();
     ctx.status = 200;
     ctx.body = {};
 }
@@ -38,10 +45,17 @@ const commentBook = async (ctx) => {
         'book': ctx.request.body.book
     })
     let newComment = await comment.save()
-
-    bookInfo.comments.push(newComment._id)
-    bookInfo.CommentNum+=1;
-    let updatedBook = await bookInfo.save()
+    let newComments = []
+    for (let i = 0; i < bookInfo["comments"].length; i++) {
+        let comment = await CommentModel.findById(bookInfo["comments"][i]);
+        if (comment != null) {
+            newComments.push(bookInfo["comments"][i]);
+        }
+    }
+    newComments.push(newComment._id);
+    bookInfo.comments = newComments;
+    bookInfo.CommentNum = newComments.length;
+    await bookInfo.save();
     ctx.status = 200;
     ctx.body = {};
 }

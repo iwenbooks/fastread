@@ -49,7 +49,6 @@ const getInfoById = async (ctx) => {
         ctx.body = {error:"Invalid bookID"}
         return ;
     }
-    console.log(bookInfo);
     let tmp = [];
     for(let i of bookInfo.segments){
         tmp.push(i['_id']);
@@ -220,15 +219,12 @@ const search = async(ctx)=>{
 	//let page=10
     let limit = (Number(ctx.query.limit) || 10)*20;
     let skip = (page - 1) * limit;
-    let searchQuery = ctx.query.search;
-	console.log("searchQuery:",searchQuery)
+    let searchQuery = " "+ctx.query.search+" ";
 	let category=  Number(ctx.query.category)||0;
-	console.log("cate:",catg[category])
     const queryLength = searchQuery.length;
     let tmpSearchQuery = RegExp("^"+searchQuery);
 	let res0=[];
 	let res1=[]
-	console.log("********************************************");
 	//console.log("category:",category)
 	//console.log("limi:",limit)
 	//console.log("page:",page)
@@ -248,7 +244,7 @@ const search = async(ctx)=>{
 	
 	}
 	//let res=[];
-	console.log("res0:",res0,res0.length,"dssa")
+	console.log("res0:",res0.length,"dssa")
 	let resTag=0;
 	if(res0.length!=0)
 	{
@@ -260,20 +256,21 @@ const search = async(ctx)=>{
 		res.push(res1);
 		resTag=1;
 	}
-	console.log("resssss:",res,res.length,":resend")
-	if(resTag==0)
+	console.log("resssss:",res.length,":resend")
+	let resTest=await BookModel.find({$text: {$search:searchQuery}}).skip(skip).limit(1).exec();
+	if(resTag==0&&resTest.length<=5)
 	{
+		
 		for(let t=1;t<queryLength;t++)
 		{
 			let newsq=searchQuery.substring(0,t)+" "+searchQuery.substring(t,queryLength);
-			console.log("newsq:",newsq,"newsqend")
 			if (category==0)
 			{
-				res1=await BookModel.find({$text: {$search:newsq}}).skip(skip).limit(limit/20).exec();
+				res1=await BookModel.find({$text: {$search:newsq}}).skip(skip).limit(limit*5).exec();
 			}
 			else 
 			{
-				res1=await BookModel.find({$and:[{$text: {$search:newsq}},{"category":catg[category]}]}, {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).skip(skip).limit(limit/20).exec();
+				res1=await BookModel.find({$and:[{$text: {$search:newsq}},{"category":catg[category]}]}, {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}}).skip(skip).limit(limit*5).exec();
 			}
 			res.push(res1);
 		}
@@ -281,12 +278,12 @@ const search = async(ctx)=>{
 	}
 	let tmp =[];
     let vote = [];
-    for(let i = 0 ; i < res.length ; i++){
-        for (let j = 0 ; j < res[i].length ;j++){
+    for(let i = 0 ; i < res.length ; i++)
+	{
+        for (let j = 0 ; j < res[i].length ;j++)
+		{
             let tempBook = res[i][j]["bookname"];
 			let tempAuthor=res[i][j]["author"];
-			///////////////////////////////////////
-			//let bookNameLength = tempBook.length+tempAuthor.length;
 			let sqstr=searchQuery.split(' ');  
 			let sqstrLen=sqstr.length;
 			let maxSubstrLen=0;
@@ -301,61 +298,28 @@ const search = async(ctx)=>{
 			else
 				maxSubstrLen= Math.max(maxSubStr(tempBook,searchQuery),maxSubStr(tempAuthor,searchQuery));
 			editLength=Math.min(editDist(tempBook,searchQuery),editDist(tempAuthor,searchQuery));
-			//console.log(editDist(tempBook,searchQuery),editDist(tempAuthor,searchQuery))
-			///////////////////////////////////////new code ends 
-			/////////////////////////////////////////original code starts
-            //let bookNameLength = tempBook.length+tempAuthor.length;
-            //let maxSubstrLen= Math.max(maxSubStr(tempBook,searchQuery),maxSubStr(tempAuthor,searchQuery));
-			//let editLength=Math.min(editDist(tempBook,searchQuery),editDist(tempAuthor,searchQuery));
-			//console.log(editDist(tempBook,searchQuery),editDist(tempAuthor,searchQuery))
-			///////////////////////////////////////////original code ends
-			//let scoreF=Math.min(editDist(searchQuery,tempBook),editDist(searchQuery,tempAuthor));
 			let score=1.0/editLength+maxSubstrLen;
-            console.log(tempBook,'\t',editLength,maxSubstrLen,score);
-//           if((i<=5)&&(score<=5)){
-//                if(i==0){
-//                    score=-300;
-//                }
-//                score=-100;
-//            }else{
-//                score*=5;
-//            }
-            let judge = false;
-            for(let k = 0;k<tmp.length; k++)
+            
+			if(score>2.2)
 			{
-                if(tmp[k]["bookname"]==tempBook)
+				let judge = false;
+				for(let k = 0;k<tmp.length; k++)
 				{
-                    //vote[k]+=50;
-                    judge =true;
-					break;
-                }
-				//else{
-                //    vote[k]-=5;
-                //}
-            }
-            if(!judge){
-                tmp.push(res[i][j]);
-				vote.push(score);
-//                if(i==0){
-//                    vote.push(200-score);
-//                }else if(i==1){
-//                    vote.push(100-score);
-//                }
-//                else if(i==2){
-//                    vote.push(50-score);
-//                }
-//               else if(i==3||i==4){
-//                    vote.push(10-score);
-//                }
-//                else{
-//                    vote.push(5-score);
-//                }
-                    
-            }
+					if(tmp[k]["bookname"]==tempBook)
+					{
+						//vote[k]+=50;
+						judge =true;
+						break;
+					}
+				}
+				if(!judge){
+					tmp.push(res[i][j]);
+					vote.push(score);
+				}
+			}
         }        
     }
     let maxIndex;
-	console.log("sss*******************************");
 	let voteLen=vote.length;
 	for(let i=0;i<voteLen;i++)
 	{

@@ -11,6 +11,9 @@ const config = require('../config');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 const commonFunction = require('../middleware/common_function');
 const request = require('request');
+const path = require('path');
+const fs = require('fs');
+
 //wechat app:
 const appid="wx7a4f658c7ff6cee3";
 const appsecret="56c48cca391a9463a74803c5f625833c";
@@ -113,26 +116,42 @@ const authByWechat = async (ctx) => {
             ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME }
         }
     }
-}
+};
 
 const register = async (ctx) => {
     let username = ctx.request.body.username;
     let password = ctx.request.body.password;
+    let phone = ctx.request.body.phone;
 
-    let user = new UserModel({
-        username: username,
-        password: password,
-        level: -1
-    })
-    try {
-        let newUser = await user.save();
-        ctx.status = 200;
-        ctx.body = {};
-    } catch (error) {
+    let findUsername = await UserModel.find({"username":username});
+    if (findUsername.length == 0) {
+        let findPhone = await UserModel.find({"phone":phone});
+        if (findPhone.length == 0) {
+            let user = new UserModel({
+                username: username,
+                password: password,
+                phone: phone,
+                level: -1
+            });
+
+            try {
+                let newUser = await user.save();
+                ctx.status = 200;
+                ctx.body = {};
+            } catch (error) {
+                ctx.status = 401;
+                ctx.body = {};
+            }
+        } else{
+            ctx.status = 403;
+            ctx.body = { "errorCode": ERRORCODE.DUPLICATE_PHONE };
+        }
+    } else {
         ctx.status = 403;
-        ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME }
+        ctx.body = { "errorCode": ERRORCODE.DUPLICATE_USERNAME };
     }
-}
+};
+
 const myInfo = async (ctx) => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
@@ -732,6 +751,7 @@ const getLevelWord= async(ctx)=>{
         let segment = await SegmentModel.findById(segmentId).exec();
         if(segment){
             let content = segment["content"];
+			/*
             if(content.length>50000){
                 let randomWord = content[Math.ceil(Math.random()*100)].toLocaleLowerCase();
                 let num = randomWord>"m"?50000:0;
@@ -739,42 +759,92 @@ const getLevelWord= async(ctx)=>{
                 // content=content.slice(num,num+50000);
                 content=content.slice(num,endIdx);
             }
-            let wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
-            content = null;
-            let words = wordList.filter((word,index,self)=>{
-                word =word.toLocaleLowerCase();
-                return word.length>=2&&self.indexOf(word)===index;
-            }) 
+			*/
+            let wordList = [];
+            let wordsId = [];
             let userLevel = user.level > 9 ? 0 : user.level;
-            let wordDir = await WordModel.find({"level":user.level},{"explanations":0}).exec();
             let resWord=[];
-            for(let i=0;i<words.length;i++){
-                let tempWord=words[i];
-                for(let j=0;j<wordDir.length;j++){
-                    if(tempWord==wordDir[j]['word']){
-                        resWord.push(wordDir[j]);
+
+            if("words" in segment){
+                wordList = segment['words'];
+            }
+            if(wordList.length == 0){
+                wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
+                content = null;
+                wordList = wordList.filter((word,index,self)=>{
+                    word =word.toLocaleLowerCase();
+                    return word.length>=2&&self.indexOf(word)===index;
+                }) 
+
+                let resultArr = null;
+
+                let tryTimes = 3;
+                while(tryTimes > 0){
+                    try{
+                        var java = require("java");
+                        java.classpath.push(path.resolve(__dirname, './src'));
+                        java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
+                        var runInterface = java.newInstanceSync("lemmatizer.LemmatizeText");
+                        java.callMethodSync(runInterface, "lemmatizeWordList", 
+                                            JSON.stringify(wordList)
+                                            );
+                        let resultStr = java.callMethodSync(runInterface, "getLemmaListJson");
+
+                        resultArr = JSON.parse(resultStr);
                         break;
                     }
-                }
-            }
-            for(let i=0;i<resWord.length;i++){
-                for(let j=0;j<haveReadWord.length;j++){
-                    if(haveReadWord[j]["word"]==resWord[i]["word"]){
-                        resWord.splice(i,1);
+                    catch(e){
+                        tryTimes -= 1;
                     }
                 }
+
+                let allWordDir = await WordModel.find({"level":{$gte: 1, $lte: 9}},{"explanations":0}).exec();
+
+                for(let i=0;i<resultArr.length;i++){
+                    let tempWord=resultArr[i];
+                    for(let j=0;j<allWordDir.length;j++){
+                        if(tempWord==allWordDir[j]['word']){
+                            wordsId.push(allWordDir[j]['id']);
+                            if(allWordDir[j]['level'] == userLevel){
+                                resWord.push(allWordDir[j]);
+                            }
+                            break;
+                        }
+                    }
+                }
+                await SegmentModel.findByIdAndUpdate(segmentId, {$set: {"words": wordsId}});
             }
-            let wordLength = resWord.length>10?10:resWord.length;
-            let result=await commonFunction.getRandomArrayElement(resWord,wordLength);
+            else{
+                for(let i = 0; i < wordList.length; i++){
+                    let wordInfo = await WordModel.findById(wordList[i],{"explanations":0});
+                    if(wordInfo['level'] == userLevel)
+                        resWord.push(wordInfo);
+                }
+            }
+            let learnWord = [];
+            for(let i=0;i<resWord.length;i++){
+                let k = 0;
+                for(let j=0;j<haveReadWord.length;j++){
+                    if(haveReadWord[j]["word"].toString() == resWord[i]["word"].toString()){
+                        k = 1;
+                    }
+                }
+                if (k == 0) {
+                    learnWord.push(resWord[i]);
+                }
+            }
+            let wordLength = learnWord.length>10?10:learnWord.length;
+            let result=await commonFunction.getRandomArrayElement(learnWord,wordLength);
             ctx.body=result;
         }else{
             ctx.status = 404;
-            ctx.body={error:"invalid segment ID"}
+            ctx.body={error:"invalid segment ID"};
         }
     }
     catch(e){
+        console.log("400 exception: " + e);
         ctx.status = 400;
-        ctx.body={error:"exception"}
+        ctx.body={error:"exception"};
     }
 };
 
@@ -802,6 +872,34 @@ const deleteComments = async(ctx)=>{
     await CommentModel.remove({"_id":commentId}).exec();
     ctx.status = 200;
 }
+const updatePassword = async(ctx)=>{
+    let phone = ctx.request.body.phone;
+    let password = ctx.request.body.password;//目前默认为post已经经过sha1加密的字符串
+    let user = await UserModel.find({"phone":phone}).exec();
+    if(user.length>0){
+        await UserModel.update({"phone":phone},{$set:{"password":password}}).exec();
+        ctx.status=200;
+    }else {
+        ctx.status=401;
+        ctx.body={};
+    }
+
+};
+const uploadAvatar = async ctx => {
+    let token = jwt.getToken(ctx)
+    let userId = token.id;
+    ctx.req.part.pipe(
+      fs.createWriteStream(config.avatar_path + userId + '.jpg')
+    );
+    let user = await UserModel.findByIdAndUpdate(
+        userId,
+        {
+            'avatar': 'http://202.120.38.146:8688/avatars/'+userId+'.jpg'
+        }
+    );
+    ctx.status = 200;
+    ctx.body = {};
+};
 module.exports.securedRouters = {
     'GET /tmpTest':tmpTest,
     'GET /getCollectWords':getCollectWords,
@@ -833,7 +931,8 @@ module.exports.securedRouters = {
     'PUT /user/status': updateStatus,
     'POST /like':likeBook,
     'POST /unlike':unLikeBook,
-    'DEL /deleteComments': deleteComments
+    'DEL /deleteComments': deleteComments,
+    'POST /uploadAvatar': uploadAvatar
 };
 
 
@@ -844,5 +943,6 @@ module.exports.routers = {
     'POST /user': register,
     'POST /authByWechat': authByWechat,
     'POST /authByPhone':authByPhone,
+    'POST /updatePassword':updatePassword, 
     'GET /user/:id': getInfoById
 };

@@ -17,6 +17,7 @@ const CONSTANTS = {
 		11:"Parenting & Families",
 		12:"Short Books",
 		13:"Other"
-    }
+    },
+    version:"0.2"
 }
 module.exports = CONSTANTS;

@@ -35,7 +35,7 @@ const getTestSet = async (ctx) => {
         let  word =await randomFetch({ level: levels[i] }, { limit: limit });
         if(word!=undefined){       
             console.log(word[0]["word"][0]);
-            if(/^[A-Z]*/.test(word[0]["word"][0])){
+            if(/^[A-Z].*/.test(word[0]["word"][0])){
                 i--;
             }else{
                 words.push(word);
@@ -79,7 +79,7 @@ const getInfoById = async (ctx) => {
     ctx.status = 200;
 };
 
-const getInfoByWord = async (ctx) => {
+const getLemmaByWord = async (ctx) => {
     let word = ctx.params.word;
 
     let lemma = null;
@@ -111,14 +111,27 @@ const updateByWord = async (ctx) => {
     ctx.status = 200;
 };
 
+
+const getInfoByWord = async (ctx) => {
+    let wordInfo = await WordModel.find({"word":ctx.params.word});
+    if (wordInfo.length > 0) {
+        ctx.body = wordInfo[0]
+        ctx.status = 200;
+    } else {
+        ctx.status = 204;
+    }
+};
+
 module.exports.securedRouters = {
 };
+
 
 module.exports.routers = {
     'POST /word': create,
     'GET /word': list,
     'GET /test': getTestSet,
     'GET /word/:id': getInfoById,
+    'GET /wordlemma/:word': getLemmaByWord,
     'GET /wordname/:word': getInfoByWord,
     'POST /word/update': updateByWord
 };

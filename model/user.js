@@ -7,6 +7,7 @@ const Schema = mongoose.Schema;
 const userSchema = new Schema({
     "username": { type: String, index: { unique: true, sparse: true } },
     "password": { type: String },
+    "app_version": { type: String },
     "books": [{
         book: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
         whetherOrNotToRead:{type:Boolean,default:false},
@@ -30,7 +31,8 @@ const userSchema = new Schema({
 
     "words": [{
         word: { type: mongoose.Schema.Types.ObjectId, ref: 'Word' },
-        times: { type: Number }
+        times: { type: Number },
+        level: { type: Number }
     }],
     "level": { type: Number },
     "nickname": { type: String, default: "" },
