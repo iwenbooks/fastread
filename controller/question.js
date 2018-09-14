@@ -18,7 +18,8 @@ const generateQuestion = async(ctx)=>{
     {
         let segmentId = ctx.request.body.segment;
         let segmentObj = await SegmentModel.findById(segmentId).exec();
-        let segment = segmentObj["content"]
+        let segment = segmentObj["content"];
+        let segmentOrd = segmentObj['name'];
         
         let learningWordsId = ctx.request.body.words;
         let learningWordsInfo={};
@@ -99,7 +100,8 @@ const generateQuestion = async(ctx)=>{
                 java.callMethodSync(runInterface, "preprocess", 
                                     JSON.stringify(segment), 
                                     JSON.stringify(learningWordsInfo), 
-                                    JSON.stringify(learntWordsInfo)
+                                    JSON.stringify(learntWordsInfo),
+                                    segmentOrd
                                     // JSON.stringify(altWordsInfo)
                                     );
                 let resultStr = java.callMethodSync(runInterface, "getResultJson");

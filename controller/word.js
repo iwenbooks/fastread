@@ -45,6 +45,28 @@ const getTestSet = async (ctx) => {
     ctx.body = words;
     ctx.status=200;
 }
+const getTestSetWord = async (ctx) => {
+    let levels = ctx.params.levels || [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    let limit = ctx.params.limit || 10;
+    let words = []
+    for (let i = 0; i < levels.length; i++) {
+        let  word =await randomFetch({ level: levels[i] }, { limit: limit });
+        if(word!=undefined){       
+            console.log(word[0]["word"][0]);
+            if(/^[A-Z].*/.test(word[0]["word"][0])){
+                i--;
+            }else{
+                let wordlist = []
+                for (let i in word) {
+                    wordlist.push(word[i].word)
+                }
+                words.push(wordlist);
+            }
+        }
+    }
+    ctx.body = words;
+    ctx.status=200;
+}
 const create = async (ctx) => {
     let word = ctx.request.body.word;
     let level = ctx.request.body.level;
@@ -79,9 +101,7 @@ const getInfoById = async (ctx) => {
     ctx.status = 200;
 };
 
-const getLemmaByWord = async (ctx) => {
-    let word = ctx.params.word;
-
+function getLemma(word){
     let lemma = null;
     let tryTimes = 3;
     while(tryTimes > 0){
@@ -97,10 +117,22 @@ const getLemmaByWord = async (ctx) => {
         }
     }
     if(lemma == null || lemma == "O") lemma = word;
+    return lemma;
+}
 
+const getLemmaByWord = async (ctx) => {
+    let word = ctx.params.word;
+    let lemma = getLemma(word);
     let wordInfo = await WordModel.find({
         word: lemma
     });
+    if(wordInfo.length == 0){
+        word = word.toLowerCase();
+        lemma = getLemma(word);
+        wordInfo = await WordModel.find({
+            word: lemma
+        });
+    }
     ctx.body = wordInfo[0];
 };
 
@@ -130,6 +162,7 @@ module.exports.routers = {
     'POST /word': create,
     'GET /word': list,
     'GET /test': getTestSet,
+    'GET /testword': getTestSetWord,
     'GET /word/:id': getInfoById,
     'GET /wordlemma/:word': getLemmaByWord,
     'GET /wordname/:word': getInfoByWord,

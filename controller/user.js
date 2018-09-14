@@ -302,6 +302,7 @@ const updatePhone = async (ctx) => {
 const updateLevel = async (ctx) => {
     let newLevel = ctx.request.body.level;
     newLevel = newLevel > 9 ? 9 : newLevel;
+    newLevel = newLevel < 1 ? 1 : newLevel;
     let token = jwt.getToken(ctx)
     let userId = token.id;
     let user = await UserModel.findByIdAndUpdate(
@@ -784,7 +785,7 @@ const getLevelWord= async(ctx)=>{
                     return word.length>=2&&self.indexOf(word)===index;
                 }) 
 
-                let resultArr = null;
+                let resultArr = [];
 
                 let tryTimes = 3;
                 while(tryTimes > 0){
@@ -806,6 +807,19 @@ const getLevelWord= async(ctx)=>{
                     }
                 }
 
+                let lemmaSuccess = null;
+                if(resultArr == null){
+                    lemmaSuccess = false;
+                    resultArr = wordList;
+                }
+                else{
+                    if(resultArr.length == 0){
+                        lemmaSuccess = false;
+                        resultArr = wordList;
+                    }
+                    else lemmaSuccess = true;
+                }
+
                 let allWordDir = await WordModel.find({"level":{$gte: 1, $lte: 9}},{"explanations":0}).exec();
 
                 for(let i=0;i<resultArr.length;i++){
@@ -820,7 +834,8 @@ const getLevelWord= async(ctx)=>{
                         }
                     }
                 }
-                await SegmentModel.findByIdAndUpdate(segmentId, {$set: {"words": wordsId}});
+                if(lemmaSuccess)
+                    await SegmentModel.findByIdAndUpdate(segmentId, {$set: {"words": wordsId}});
             }
             else{
                 for(let i = 0; i < wordList.length; i++){
@@ -829,11 +844,12 @@ const getLevelWord= async(ctx)=>{
                         resWord.push(wordInfo);
                 }
             }
+
             let learnWord = [];
             for(let i=0;i<resWord.length;i++){
                 let k = 0;
                 for(let j=0;j<haveReadWord.length;j++){
-                    if(haveReadWord[j]["word"].toString() == resWord[i]["word"].toString()){
+                    if(haveReadWord[j]["word"].toString() == resWord[i]["id"].toString()){
                         k = 1;
                     }
                 }
