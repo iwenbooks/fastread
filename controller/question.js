@@ -2,8 +2,8 @@
 
 const jwt = require('../middleware/jwt');
 const commonFunction=require('../middleware/common_function');
-const SegmentModel = require('../model/segment')
-const BookModel = require('../model/book')
+const SegmentModel = require('../model/segment');
+const BookModel = require('../model/book');
 const WordModel = require('../model/word');
 const UserModel = require('../model/user');
 const path = require('path');
@@ -12,7 +12,6 @@ java.classpath.push(path.resolve(__dirname, './src'));
 java.classpath.push(path.resolve(__dirname, './src/lib/stanford-ner-3.4.1.jar'));
 java.classpath.push(path.resolve(__dirname, './src/lib/stanford-postagger-3.4.1.jar'));
 java.classpath.push(path.resolve(__dirname, './src/lib/gson-2.8.5.jar'));
-
 const generateQuestion = async(ctx)=>{
     try
     {

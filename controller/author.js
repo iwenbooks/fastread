@@ -1,6 +1,5 @@
 'use strict';
-
-const AuthorModel = require('../model/author')
+const AuthorModel = require('../model/author');
 const create = async (ctx) => {
     let authorModel = ctx.request.body;
     try {

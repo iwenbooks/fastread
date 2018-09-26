@@ -36,16 +36,16 @@ const commentSegment = async (ctx) => {
 }
 
 const commentBook = async (ctx) => {
-    let bookInfo = await BookModel.findById(ctx.request.body.book).exec()
-    let token = jwt.getToken(ctx)
-    let userId = token.id
+    let bookInfo = await BookModel.findById(ctx.request.body.book).exec();
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
     let comment = new CommentModel({
         'user': userId,
         'content': ctx.request.body.content,
         'book': ctx.request.body.book
-    })
-    let newComment = await comment.save()
-    let newComments = []
+    });
+    let newComment = await comment.save();
+    let newComments = [];
     for (let i = 0; i < bookInfo["comments"].length; i++) {
         let comment = await CommentModel.findById(bookInfo["comments"][i]);
         if (comment != null) {
@@ -58,7 +58,7 @@ const commentBook = async (ctx) => {
     await bookInfo.save();
     ctx.status = 200;
     ctx.body = {};
-}
+};
 
 const getCommentsBySegmentId = async (ctx) => {
     let page = ctx.query.page || 1;
