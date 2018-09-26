@@ -1,5 +1,6 @@
 'use strict';
 const AnswerModel = require('../model/answer');
+const QuestionModel = require('../model/askQuestion');
 const jwt =require('../middleware/jwt');
 
 const createAnswer = async(ctx)=>{
@@ -12,6 +13,7 @@ const createAnswer = async(ctx)=>{
             "answer":ctx.request.body.answer,
         });
         let answers = await answer.save();
+        let question = await QuestionModel.findByIdAndUpdate(question,{'$push':{answer:answers._id}}).exec();
         ctx.status=200;
         ctx.body={_id:answers._id}
     }catch (e) {
