@@ -13,7 +13,9 @@ const createAnswer = async(ctx)=>{
             "answer":ctx.request.body.answer,
         });
         let answers = await answer.save();
-        let question = await QuestionModel.findByIdAndUpdate(question,{$push:{answer:answers._id}}).exec();
+        await QuestionModel.update({"_id":ctx.request.body.question},﻿{'$push':{"answer":answers._id}}).exec();
+        let answerNum = await QuestionModel.find({"_id":ctx.request.body.question}).exec()['answerNum']++;
+        await QuestionModel.update({"_id":ctx.request.body.question},{"answerNum":answerNum}).exec();
         ctx.status=200;
         ctx.body={_id:answers._id}
     }catch (e) {
@@ -26,7 +28,7 @@ const getAnswerByQuestionId = async(ctx)=>{
     let limit = Number(ctx.request.body.limit) || 10;
     let skip = (page - 1) * limit;
     let question = ctx.request.body.id;
-    let answers =await AnswerModel.find({"question":question}).sort({"likeNum":-1}).exec();
+    let answers =await AnswerModel.find({"question":question}).sort({"likeNum":-1}).skip(skip).limit(limit).exec();
     ctx.status=200;
     ctx.body=answers;
 };

@@ -32,7 +32,8 @@ const getQuestionBySegmentId = async(ctx)=>{
             "user":1,
             "answer":1,
             "likeNum":1
-        }
+        },
+        limit
     }).sort({"created":-1}).skip(skip).limit(limit).exec();
     ctx.body =questions;
     ctx.status=200;
