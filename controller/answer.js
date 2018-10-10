@@ -3,6 +3,7 @@ const AnswerModel = require('../model/answer');
 const QuestionModel = require('../model/askQuestion');
 const jwt =require('../middleware/jwt');
 const commonFunction =require('../middleware/common_function');
+const UserModel = require('../model/user');
 const createAnswer = async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
