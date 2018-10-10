@@ -43,7 +43,7 @@ const getAllQuestion =async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
-    let result ;
+    let result =[];
     let questions =await QuestionModel.find().sort({"created":-1}).skip(skip).limit(limit).exec();
     questions = conmonFunction.parseJSON(questions);
     for(let i = 0;i<questions.length;i++){
