@@ -49,7 +49,7 @@ const getAllQuestion =async(ctx)=>{
     for(let i = 0;i<questions.length;i++){
         let tmp ={};
         let bookId = questions[i]['book'];
-        let book = await BookModel.find({"_id":bookId},{"_id","bookname":1,"author":1,"cover":1,"segments":1}).exec();
+        let book = await BookModel.find({"_id":bookId},{"_id":1,"bookname":1,"author":1,"cover":1,"segments":1}).exec();
         book =book[0];
         let userId = questions[i]['presenter'];
         let user = await UserModel.findById(userId,{"_id":1,"nickname":1,"avatar":1}).exec();
