@@ -2,7 +2,7 @@
 const AnswerModel = require('../model/answer');
 const QuestionModel = require('../model/askQuestion');
 const jwt =require('../middleware/jwt');
-
+const commonFunction =require('../middleware/common_function');
 const createAnswer = async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
@@ -30,6 +30,13 @@ const getAnswerByQuestionId = async(ctx)=>{
     let skip = (page - 1) * limit;
     let question = ctx.request.body.id;
     let answers =await AnswerModel.find({"question":question}).sort({"likeNum":-1}).skip(skip).limit(limit).exec();
+    answers=commonFunction.parseJSON(answers);
+    for(let i =0;i<answers.length;i++) {
+        let userId = answers[i]['user'];
+        let user = await UserModel.find({"_id": userId}, {"_id": 1, "nickname": 1, "avatar": 1}).exec();
+        user = user[0];
+        answers[i]['user']=user;
+    }
     ctx.status=200;
     ctx.body=answers;
 };
