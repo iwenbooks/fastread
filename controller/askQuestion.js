@@ -37,6 +37,22 @@ const getQuestionBySegmentId = async(ctx)=>{
         },
         limit
     }).sort({"created":-1}).skip(skip).limit(limit).exec();
+    questions=conmonFunction.parseJSON(questions);
+    for(let i=0;i<questions.length;i++){
+        for(let j=0;j<questions[i].answer.length;j++){
+            let userId=questions[i].answer[j].user;
+            let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1}).exec();
+            user=user[0];
+            questions[i].answer[j].user=user;
+        }
+        let userId = questions[i]['presenter'];
+        let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1}).exec();
+        user=user[0];
+        questions[i]['user']=user;
+        delete questions[i].book;
+        delete questions[i].segment;
+        delete questions[i].presenter;
+    }
     ctx.body =questions;
     ctx.status=200;
 };
@@ -65,6 +81,7 @@ const getAllQuestion =async(ctx)=>{
         user=user[0];
         tmp['user']=user;
         tmp['content']=questions[i]['questionContent'];
+        tmp['_id']=questions[i]['_id'];
         result.push(tmp);
     }
     ctx.status=200;
