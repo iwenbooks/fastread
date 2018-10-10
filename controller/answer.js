@@ -14,7 +14,8 @@ const createAnswer = async(ctx)=>{
         });
         let answers = await answer.save();
         await QuestionModel.update({"_id":ctx.request.body.question},﻿{'$push':{"answer":answers._id}}).exec();
-        let answerNum = await QuestionModel.find({"_id":ctx.request.body.question}).exec()['answerNum']++;
+        let answerNum = await QuestionModel.find({"_id":ctx.request.body.question}).exec();
+        answerNum=answerNum[0]['answerNum']+1;
         await QuestionModel.update({"_id":ctx.request.body.question},{"answerNum":answerNum}).exec();
         ctx.status=200;
         ctx.body={_id:answers._id}
