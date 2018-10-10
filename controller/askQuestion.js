@@ -49,6 +49,12 @@ const getAllQuestion =async(ctx)=>{
     questions = conmonFunction.parseJSON(questions);
     for(let i = 0;i<questions.length;i++){
         let tmp ={};
+
+        let segmemtId= questions[i]['segment'];
+        let segment = await SegmentModel.find({"_id":segmemtId},{"_id":1,"name":1}).exec();
+        segment=segment[0];
+        tmp['segment']=segment;
+
         let bookId = questions[i]['book'];
         let book = await BookModel.find({"_id":bookId},{"_id":1,"bookname":1,"author":1,"cover":1}).exec();
         book =book[0];
@@ -58,12 +64,6 @@ const getAllQuestion =async(ctx)=>{
         let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1}).exec();
         user=user[0];
         tmp['user']=user;
-        console.log(user);
-        let segmemtId= questions[i]['segment'];
-        let segment = await SegmentModel.findById({"_id":segmemtId},{"_id":1,"name":1}).exec();
-        segment=segment[0];
-        tmp['segment']=segment;
-        console.log(segment);
         tmp['content']=questions[i]['questionContent'];
         result.push(tmp);
     }
