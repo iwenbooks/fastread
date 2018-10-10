@@ -4,6 +4,7 @@ const jwt =require('../middleware/jwt');
 const conmonFunction = require('../middleware/common_function');
 const BookModel = require('../model/book');
 const UserModel =require('../model/user');
+const SegmentModel =require('../model/segment');
 const createQuestion = async (ctx) => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
@@ -54,23 +55,16 @@ const getAllQuestion =async(ctx)=>{
         let userId = questions[i]['presenter'];
         let user = await UserModel.findById(userId,{"_id":1,"nickname":1,"avatar":1}).exec();
         user=user[0];
+
+        let segmemtId= questions[i]['segment'];
+        let segment = await SegmentModel.findById(segmemtId,{"_id":1,"name":1}).exec();
+        segment=segment[0];
+        tmp['book']=book;
+        tmp['segment']=segment;
         tmp['user']=user;
         tmp['content']=questions[i]['questionContent'];
-        let segmentNumber =0;
-        for(;segmentNumber<book.segments.length;segmentNumber++){
-            if(book.segments[segmentNumber]==questions[i]['segment'])
-                break;
-        }
-        delete book.segments;
-        tmp['book']=book;
-        tmp['segment']={
-            "name":segmentNumber,
-            '_id':questions[i]['segment']
-        };
         result.push(tmp);
     }
-
-
     ctx.status=200;
     ctx.body = result;
 };
