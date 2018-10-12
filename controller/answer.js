@@ -47,6 +47,7 @@ const likeAnawer=async(ctx)=>{
     let answerId = ctx.query.id;
     let answer = await AnswerModel.find({"_id":answerId});
     answer=answer[0];
+    console.log(userId.toString());
     if(userId.toString() in answer.likeList){
         ctx.body={error :"have Liked"};
         ctx.status=403;
