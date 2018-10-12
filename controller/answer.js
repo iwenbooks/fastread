@@ -85,7 +85,7 @@ const cancelLike=async(ctx)=>{
 };
 const getAnswerByAnswerId=async(ctx)=>{
     let answerId =ctx.query.id;
-    let answer = await AnswerModel.findById(answerId);
+    let answer = await AnswerModel.find({"_id":answerId}).exec();
     answer=commonFunction.parseJSON(answer);
     answer=answer[0];
     let userId = answer['user'];
