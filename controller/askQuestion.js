@@ -51,7 +51,9 @@ const getQuestionBySegmentId = async(ctx)=>{
             "answer":1,
             "likeNum":1
         },
-        limit
+        options:{
+            limit:5
+        }
     }).sort({"created":-1}).skip(skip).limit(limit).exec();
     questions=conmonFunction.parseJSON(questions);
     for(let i=0;i<questions.length;i++){

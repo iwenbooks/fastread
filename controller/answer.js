@@ -85,7 +85,15 @@ const cancelLike=async(ctx)=>{
 };
 const getAnswerByAnswerId=async(ctx)=>{
     let answerId =ctx.query.id;
-    let answer = await AnswerModel.find({"_id":answerId}).exec();
+    let answer = await AnswerModel.find({"_id":answerId}).populate(
+        {
+            path:"question",
+            select:{
+                "_id":1,
+                "questionContent":1
+            }
+        }
+    ).exec();
     answer=commonFunction.parseJSON(answer);
     answer=answer[0];
     let userId = answer['user'];
