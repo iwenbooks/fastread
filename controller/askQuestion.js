@@ -26,15 +26,17 @@ const createQuestion = async (ctx) => {
 const getQuestionByQuestionId = async(ctx)=>{
     let questionId = ctx.query.id;
     let questions = await QuestionModel.find({"_id":questionId});
-    let userId = questions[0]['presenter'];
+    questions=conmonFunction.parseJSON(questions);
+    questions = questions[0];
+    let userId = questions['presenter'];
     let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1});
     user=user[0];
-    questions[0]['user']=user;
-    delete questions[0].book;
-    delete questions[0].segment;
-    delete questions[0].presenter;
-    delete questions[0].answer;
-    ctx.body =questions[0];
+    questions['user']=user;
+    delete questions.book;
+    delete questions.segment;
+    delete questions.presenter;
+    delete questions.answer;
+    ctx.body =questions;
     ctx.status=200;
 };
 const getQuestionBySegmentId = async(ctx)=>{
