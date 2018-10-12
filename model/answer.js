@@ -9,9 +9,11 @@ const answerSchema = Schema({
     "comment":[{
         "user":{type:mongoose.Schema.Types.ObjectId, ref:'User'},
         "content":{type:String},
-        "likeNum":{type:Number,default:0}
+        "likeNum":{type:Number,default:0},
     }],
+    "commentNum":{type:Number,default:0},
     "likeNum":{type:Number,default:0},
+    "likeList":[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true }
 });

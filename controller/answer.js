@@ -41,8 +41,28 @@ const getAnswerByQuestionId = async(ctx)=>{
     ctx.status=200;
     ctx.body=answers;
 };
+const likeAnawer=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
+    let answerId = ctx.query.id;
+    let answer = await AnswerModel.findById(answerId).exec();
+    answer=answer[0];
+    if(userId in answer.likeList){
+        ctx.body={error :"have Liked"};
+        ctx.status=403;
+        return ;
+    }else {
+        answer.likeNum+=1;
+        answer.likeList.push(userId)
+    }
+
+    await AnswerModel.save(answer);
+    ctx.status=200;
+    ctx.body={};
+};
 module.exports.securedRouters = {
-    'POST /createAnswer':createAnswer
+    'POST /createAnswer':createAnswer,
+    'GET /likeAnawer':likeAnawer
 };
 module.exports.routers = {
     'POST /getAnswerByQuestionId':getAnswerByQuestionId
