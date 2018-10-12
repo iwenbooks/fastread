@@ -103,6 +103,25 @@ const getAnswerByAnswerId=async(ctx)=>{
     ctx.status=200;
     ctx.body=answer;
 };
+const createCommentForAnswer=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId=token.id;
+    let content = ctx.request.body.content;
+    let answerId = ctx.request.body.answerId;
+    let answers =AnswerModel.find({"_id":answerId}).exec();
+    answers=commonFunction.parseJSON(answers);
+    answers=answers[0];
+    let comment = {
+        "user":userId,
+        "content":content
+    };
+    answers.comment.push(content);
+    let newAnswer = new AnswerModel(answers);
+    await newAnswer.save();
+    ctx.status=200;
+    ctx.body={};
+};
+
 module.exports.securedRouters = {
     'POST /createAnswer':createAnswer,
     'GET /likeAnawer':likeAnawer,
@@ -110,5 +129,6 @@ module.exports.securedRouters = {
 };
 module.exports.routers = {
     'POST /getAnswerByQuestionId':getAnswerByQuestionId,
-    'GET /getAnswerByAnswerId':getAnswerByAnswerId
+    'GET /getAnswerByAnswerId':getAnswerByAnswerId,
+    'POST /createCommentForAnswer':createCommentForAnswer
 };
