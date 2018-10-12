@@ -23,6 +23,20 @@ const createQuestion = async (ctx) => {
         ctx.body={err:e}
     }
 };
+const getQuestionByQuestionId = async(ctx)=>{
+    let questionId = ctx.query.id;
+    let questions = await QuestionModel.find({"_id":questionId}).exec();
+    let userId = questions[0]['presenter'];
+    let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1}).exec();
+    user=user[0];
+    questions[0]['user']=user;
+    delete questions[0].book;
+    delete questions[0].segment;
+    delete questions[0].presenter;
+    delete questions[0].answer;
+    ctx.body =questions;
+    ctx.status=200;
+};
 const getQuestionBySegmentId = async(ctx)=>{
     let page = ctx.request.body.page || 1;
     let limit = Number(ctx.request.body.limit) || 10;
@@ -96,5 +110,6 @@ module.exports.securedRouters = {
 
 module.exports.routers = {
     'POST /getQuestionBySegmentId':getQuestionBySegmentId,
+    'GET /getQuestionByQuestionId':getQuestionByQuestionId,
     'GET /getAllQuestion':getAllQuestion
 };
