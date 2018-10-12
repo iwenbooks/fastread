@@ -115,7 +115,7 @@ const createCommentForAnswer=async(ctx)=>{
         "user":userId,
         "content":content
     };
-    answers.comment.push(content);
+    answers.comment.push(comment);
     let newAnswer = new AnswerModel(answers);
     await newAnswer.save();
     ctx.status=200;
