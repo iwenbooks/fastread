@@ -25,7 +25,17 @@ const createQuestion = async (ctx) => {
 };
 const getQuestionByQuestionId = async(ctx)=>{
     let questionId = ctx.query.id;
-    let questions = await QuestionModel.find({"_id":questionId});
+    let questions = await QuestionModel.find({"_id":questionId}).populate(
+        {
+            path:"book",
+            select:{
+                "_id":1,
+                "bookname":1,
+                "author":1,
+                "cover":1
+            }
+        }
+    );
     questions=conmonFunction.parseJSON(questions);
     questions = questions[0];
     let userId = questions['presenter'];
