@@ -45,6 +45,7 @@ const likeAnawer=async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let answerId = ctx.query.id;
+    console.log(answerId);
     let answer = await AnswerModel.findById(answerId).exec();
     answer=answer[0];
     console.log(answer);
