@@ -46,7 +46,8 @@ const likeAnawer=async(ctx)=>{
     let userId = token.id;
     let answerId = ctx.query.id;
     console.log(answerId);
-    let answer = await AnswerModel.findById(answerId).exec();
+    let answer = await AnswerModel.find({"_id":answerId});
+    console.log(answer);
     answer=answer[0];
     console.log(answer);
     if(userId in answer.likeList){
