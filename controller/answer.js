@@ -108,16 +108,13 @@ const createCommentForAnswer=async(ctx)=>{
     let userId=token.id;
     let content = ctx.request.body.content;
     let answerId = ctx.request.body.answerId;
-    let answers =await AnswerModel.find({"_id":answerId}).exec();
-    answers=commonFunction.parseJSON(answers);
-    answers=answers[0];
+
     let comment = {
         "user":userId,
         "content":content
     };
-    answers.comment.push(comment);
-    let newAnswer = new AnswerModel(answers);
-    await newAnswer.save();
+    await AnswerModel.update({"_id":answerId},{$push:{"comment":comment}});
+
     ctx.status=200;
     ctx.body={};
 };
