@@ -59,7 +59,8 @@ const likeAnawer=async(ctx)=>{
         answer.likeList.push(userId)
     }
 
-    await AnswerModel.save(answer);
+    let newAnswer = new AnswerModel(answer);
+    await newAnswer.save();
     ctx.status=200;
     ctx.body={};
 };
