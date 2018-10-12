@@ -62,9 +62,31 @@ const likeAnawer=async(ctx)=>{
     ctx.status=200;
     ctx.body={};
 };
+const cancelLike=async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId =token.id;
+    let answerId= ctx.query.id;
+    let answer =await AnswerModel.find({"_id":answerId});
+    answer = answer[0];
+    let newUserId = userId.toString();
+    let index = answer.likeList.indexOf(newUserId);
+    if(index==-1){
+        ctx.status=403;
+        ctx.body = "unliked";
+        return ;
+    }
+    answer.likeList.splice(index,1);
+    answer.likeNum--;
+    let newAnswer = new AnswerModel(answer);
+    await newAnswer.save();
+    ctx.body={};
+    ctx.status=200;
+
+};
 module.exports.securedRouters = {
     'POST /createAnswer':createAnswer,
-    'GET /likeAnawer':likeAnawer
+    'GET /likeAnawer':likeAnawer,
+    'GET /cancelLike':cancelLike
 };
 module.exports.routers = {
     'POST /getAnswerByQuestionId':getAnswerByQuestionId
