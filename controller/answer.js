@@ -47,16 +47,16 @@ const likeAnawer=async(ctx)=>{
     let answerId = ctx.query.id;
     let answer = await AnswerModel.find({"_id":answerId});
     answer=answer[0];
-    console.log(userId.toString());
-    if(userId.toString() in answer.likeList){
-        ctx.body={error :"have Liked"};
-        ctx.status=403;
-        return ;
-    }else {
-        answer.likeNum+=1;
-        answer.likeList.push(userId)
+    let newUserId = userId.toString();
+    for(let i=0;i<answer.likeList.length;i++){
+        if(answer.likeList[i].toString()==newUserId){
+            ctx.status=403;
+            ctx.body = {err:"have liked"};
+            return;
+        }
     }
-
+    answer.likeList.push(userId);
+    answer.likeNum+=1;
     let newAnswer = new AnswerModel(answer);
     await newAnswer.save();
     ctx.status=200;
