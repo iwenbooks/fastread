@@ -83,11 +83,24 @@ const cancelLike=async(ctx)=>{
     ctx.status=200;
 
 };
+const getAnswerByAnswerId=async(ctx)=>{
+    let answerId =ctx.query.id;
+    let answer = await AnswerModel.findById(answerId);
+    answer=commonFunction.parseJSON(answer);
+    answer=answer[0];
+    let userId = answer['user'];
+    let user = await UserModel.find({"_id": userId}, {"_id": 1, "nickname": 1, "avatar": 1}).exec();
+    user = user[0];
+    answer['user']=user;
+    ctx.status=200;
+    ctx.body=answer;
+};
 module.exports.securedRouters = {
     'POST /createAnswer':createAnswer,
     'GET /likeAnawer':likeAnawer,
     'GET /cancelLike':cancelLike
 };
 module.exports.routers = {
-    'POST /getAnswerByQuestionId':getAnswerByQuestionId
+    'POST /getAnswerByQuestionId':getAnswerByQuestionId,
+    'GET /getAnswerByAnswerId':getAnswerByAnswerId
 };
