@@ -42,7 +42,6 @@ const getQuestionByQuestionId = async(ctx)=>{
     let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1});
     user=user[0];
     questions['user']=user;
-    delete questions.book;
     delete questions.segment;
     delete questions.presenter;
     delete questions.answer;
