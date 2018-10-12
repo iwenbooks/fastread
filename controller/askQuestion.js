@@ -5,6 +5,7 @@ const conmonFunction = require('../middleware/common_function');
 const BookModel = require('../model/book');
 const UserModel =require('../model/user');
 const SegmentModel =require('../model/segment');
+const AnswerModel = require('../model/answer');
 const createQuestion = async (ctx) => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
@@ -88,15 +89,19 @@ const getAllQuestion =async(ctx)=>{
     let limit = Number(ctx.query.limit) || 10;
     let skip = (page - 1) * limit;
     let result =[];
-    let questions =await QuestionModel.find().sort({"created":-1}).skip(skip).limit(limit).exec();
+    let questions =await QuestionModel.find().sort({"created":1}).skip(skip).limit(limit).exec();
     questions = conmonFunction.parseJSON(questions);
     for(let i = 0;i<questions.length;i++){
         let tmp ={};
-
         let segmemtId= questions[i]['segment'];
         let segment = await SegmentModel.find({"_id":segmemtId},{"_id":1,"name":1}).exec();
         segment=segment[0];
         tmp['segment']=segment;
+
+        let answer =  questions[i]['answer'];
+        answer = answer[answer.length-1];
+        answer = await AnswerModel.find({"_id":answer},{"_id":1,"answer":1}).exec();
+        tmp['answer']=answer[0];
 
         let bookId = questions[i]['book'];
         let book = await BookModel.find({"_id":bookId},{"_id":1,"bookname":1,"author":1,"cover":1}).exec();
@@ -109,6 +114,8 @@ const getAllQuestion =async(ctx)=>{
         tmp['user']=user;
         tmp['content']=questions[i]['questionContent'];
         tmp['_id']=questions[i]['_id'];
+        tmp['created']=questions[i]['created'];
+        tmp['answerNum']=questions[i]['answerNum'];
         result.push(tmp);
     }
     ctx.status=200;

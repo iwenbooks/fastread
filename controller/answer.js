@@ -30,7 +30,8 @@ const getAnswerByQuestionId = async(ctx)=>{
     let limit = Number(ctx.request.body.limit) || 10;
     let skip = (page - 1) * limit;
     let question = ctx.request.body.id;
-    let answers =await AnswerModel.find({"question":question}).sort({"likeNum":-1}).skip(skip).limit(limit).exec();
+    let answers =await AnswerModel.find({"question":question}).sort({"likeNum":-1,'created':-1}).skip(skip).limit(limit).exec();
+
     answers=commonFunction.parseJSON(answers);
     for(let i =0;i<answers.length;i++) {
         let userId = answers[i]['user'];
