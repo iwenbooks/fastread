@@ -42,7 +42,7 @@ app.use(routers.routers());
 app.use(routers.securedRouters());
 app.use(logger());
 
-app.listen(8687);
+app.listen(1998);
 //const mongodbUri = 'mongodb://localhost:27017/fastread';
 const mongodbUri = 'mongodb://localhost:1997/fastread';
 
