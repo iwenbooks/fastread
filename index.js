@@ -43,8 +43,8 @@ app.use(routers.securedRouters());
 app.use(logger());
 
 app.listen(8687);
-const mongodbUri = 'mongodb://localhost:27017/fastread';
-//const mongodbUri = 'mongodb://localhost:27017/test';
+//const mongodbUri = 'mongodb://localhost:27017/fastread';
+const mongodbUri = 'mongodb://localhost:1997/fastread';
 
 mongoose.connect(
   mongodbUri,

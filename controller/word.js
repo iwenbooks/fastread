@@ -46,9 +46,9 @@ const getTestSet = async (ctx) => {
     ctx.status=200;
 }
 const getTestSetWord = async (ctx) => {
-    let levels = ctx.params.levels || [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    let levels = ctx.params.levels || [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     let limit = ctx.params.limit || 10;
-    let words = []
+    let words = [];
     for (let i = 0; i < levels.length; i++) {
         let  word =await randomFetch({ level: levels[i] }, { limit: limit });
         if(word!=undefined){       
@@ -56,7 +56,7 @@ const getTestSetWord = async (ctx) => {
             if(/^[A-Z].*/.test(word[0]["word"][0])){
                 i--;
             }else{
-                let wordlist = []
+                let wordlist = [];
                 for (let i in word) {
                     wordlist.push(word[i].word)
                 }
@@ -75,7 +75,6 @@ const create = async (ctx) => {
     let pronunciations = ctx.request.body.pronunciations;
     let chineseExplanations = ctx.request.body.chineseExplanations;
     let nyfreq = ctx.request.body.nyfreq;
-
     try {
         let newWord = await new WordModel({
             word: word,
@@ -85,7 +84,7 @@ const create = async (ctx) => {
             pronunciations: pronunciations,
             chineseExplanations: chineseExplanations,
             nyfreq: nyfreq
-        }).save()
+        }).save();
         ctx.status = 200;
         ctx.body = { _id: newWord._id };
     } catch (error) {
@@ -138,12 +137,10 @@ const getLemmaByWord = async (ctx) => {
 
 const updateByWord = async (ctx) => {
     let chineseExplanations = ctx.request.body.chineseExplanations;
-    let word = ctx.request.body.word
+    let word = ctx.request.body.word;
     await WordModel.update({"word":word},{$set:{"chineseExplanations":chineseExplanations}}).exec();
     ctx.status = 200;
 };
-
-
 const getInfoByWord = async (ctx) => {
     let wordInfo = await WordModel.find({"word":ctx.params.word});
     if (wordInfo.length > 0) {
