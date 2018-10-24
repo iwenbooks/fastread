@@ -1,5 +1,4 @@
 'use strict';
-
 const crypto = require('crypto');
 const jwt = require('../middleware/jwt');
 const UserModel = require('../model/user');
@@ -13,8 +12,6 @@ const commonFunction = require('../middleware/common_function');
 const request = require('request');
 const path = require('path');
 const fs = require('fs');
-
-//wechat app:
 const appid="wx7a4f658c7ff6cee3";
 const appsecret="56c48cca391a9463a74803c5f625833c";
 const loginForWechat = async(ctx)=>{
@@ -22,7 +19,7 @@ const loginForWechat = async(ctx)=>{
     // console.log(url);
     ctx.body =await request(url);
     ctx.status=200;
-}
+};
 
 const list = async (ctx) => {
     let page = ctx.query.page || 1;
@@ -30,7 +27,7 @@ const list = async (ctx) => {
     let skip = (page - 1) * limit;
     let users = await UserModel.find().skip(skip).limit(limit).exec();
     ctx.body = users;
-}
+};
 
 const auth = async (ctx) => {
     let username = ctx.request.body.username;
@@ -55,7 +52,7 @@ const auth = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: "Invalid login" }
     }
-}
+};
 const authByPhone = async(ctx)=>{
     let phoneNumber =ctx.request.body.phone;
     let password  =ctx.request.body.password;
@@ -461,7 +458,7 @@ const addBook = async (ctx) => {
         ctx.status = 401;
         ctx.body = { error: error }
     }
-}
+};
 const removeCollectWord=async(ctx)=>{
     let removeWord = ctx.request.body.word;
     try{

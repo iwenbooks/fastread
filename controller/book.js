@@ -2,6 +2,7 @@
 
 const jwt = require('../middleware/jwt');
 const BookModel = require('../model/book');
+const UserModel = require('../model/user');
 const fs = require('fs');
 const config = require('../config');
 const commonFunction =require("../middleware/common_function");
@@ -391,6 +392,54 @@ const checkUpdate = async(ctx)=>{
     catch {
         ctx.status = 401;
     }
+};
+const recommandBook = async(ctx)=>{
+    let token = jwt.getToken(ctx);
+    let userId = token.id;
+    let user =await UserModel.find({"_id":userId}).exec();
+    let result =[];
+    let myBook=[];
+    let myBookList = user[0]['books'];
+    let level = user[0]['level'];
+    for(let i =0;i<myBookList.length;i++){
+        myBook.push(myBookList[i]['book']);
+    }
+    let userList = await UserModel.find({"level":{$lte:level+1}},{"books":1}).exec();
+    for(let i=0;i<userList.length;i++){
+        let tempBooks=userList[i]['books'];
+        let tempBookList=[];
+        tempBooks.forEach(
+            (value,index,err)=>{
+                tempBookList.push(value['book']);
+            }
+        );
+        let weight = commonFunction.getEuclideanDistance(myBook,tempBookList);
+        let temp = [tempBookList,weight];
+        for(let j=0;j<result.length;j++){
+            if(weight<=result[j][1]&&weight>=1){
+                result.splice(j,0,temp);
+            }
+        }
+    }
+
+    let finialBook=[];
+    for(let i=0;i<result.length;i++){
+        let bookList = result[i][0];
+        for(let j=0;j<bookList.length;j++){
+            if(finialBook.indexOf(bookList[j]==-1&&myBook.indexOf(bookList[j]==-1)){
+                finialBook.push(bookList[i]);
+            }
+        }
+    }
+    console.log(finialBook);
+
+
+
+
+
+
+
+
 };
 module.exports.securedRouters = {
     'POST /book/like': like

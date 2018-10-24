@@ -21,8 +21,25 @@ const parseJSON=(content)=>{
     let dataString=JSON.stringify(content);
     return JSON.parse(dataString);
 };
+const getEuclideanDistance =(listA,listB)=>{
+    let x=0,y=0;
+    listA.forEach(
+        (value,index,err)=>{
+            if(listB.indexOf(value)==-1)
+                x++;
+        }
+    );
+    listB.forEach(
+        (value,index,err)=>{
+            if(listA.indexOf(value)==-1)
+                y++;
+        }
+    );
+    return (x*x+y*y)**(1/2);
+};
 module.exports={
     getRandomArrayElement,
     getPassword,
+    getEuclideanDistance,
     parseJSON
 };
