@@ -442,7 +442,8 @@ const recommandBook = async(ctx)=>{
 
 };
 module.exports.securedRouters = {
-    'POST /book/like': like
+    'POST /book/like': like,
+    'GET /recommandBook':recommandBook
 };
 
 module.exports.routers = {
