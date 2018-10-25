@@ -396,7 +396,7 @@ const checkUpdate = async(ctx)=>{
 const recommandBook = async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
-    let user =await UserModel.find({"_id":userId}).exec();
+    let user =await UserModel.find({"_id":userId},{'level':1,'books':1}).exec();
     console.log(user);
     let result =[];
     result.push([[],1000000]);
@@ -407,17 +407,17 @@ const recommandBook = async(ctx)=>{
         myBook.push(myBookList[i]['book']);
     }
     console.log(myBook);
-    let userList = await UserModel.find({"level":{$lte:level+1}},{"books":1}).exec();
+    let userList = await UserModel.find({"level":{$lte:level+1}},{"books":1,"_id":0}).limit(100).exec();
     console.log(userList);
     for(let i=0;i<userList.length;i++){
         let tempBooks=userList[i]['books'];
         let tempBookList=[];
-        tempBooks.forEach(
-            (value,index,err)=>{
-                tempBookList.push(value['book']);
-            }
-        );
+        for (let j=0;j<tempBooks.length;j++){
+            tempBookList.push(tempBooks[j]['book'])
+        }
+        console.log(tempBookList);
         let weight = commonFunction.getEuclideanDistance(myBook,tempBookList);
+        console.log(`--------------------------------------------------------${weight}`);
         let temp = [tempBookList,weight];
         for(let j=0;j<result.length;j++){
             if(weight<=result[j][1]&&weight>=1){
