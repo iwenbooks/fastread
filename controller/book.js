@@ -435,13 +435,13 @@ const recommandBook = async(ctx)=>{
             }
         }
     }
-    console.log(finialBook);
-
-
-
-
-
-
+    let book =[];
+    for(let i=0;i<finialBook.length;i++){
+        let eachbook = await BookModel.find({"_id":finialBook[i]},{"_id":1,"bookname":1,"author":1,"cover":1}).exec();
+        book.push(eachbook[0]);
+    }
+    ctx.status = 200;
+    ctx.body = book;
 };
 module.exports.securedRouters = {
     'POST /book/like': like,
