@@ -398,6 +398,7 @@ const recommandBook = async(ctx)=>{
     let userId = token.id;
     let user =await UserModel.find({"_id":userId}).exec();
     let result =[];
+    result.push([[],1000000]);
     let myBook=[];
     let myBookList = user[0]['books'];
     let level = user[0]['level'];
@@ -423,7 +424,7 @@ const recommandBook = async(ctx)=>{
     }
 
     let finialBook=[];
-    for(let i=0;i<result.length;i++){
+    for(let i=0;i<result.length-1;i++){
         let bookList = result[i][0];
         for(let j=0;j<bookList.length;j++){
             if(finialBook.indexOf(bookList[j]==-1&&myBook.indexOf(bookList[j]==-1)){
