@@ -397,7 +397,6 @@ const recommandBook = async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let user =await UserModel.find({"_id":userId},{'level':1,'books':1}).exec();
-    console.log(user);
     let result =[];
     result.push([[],1000000]);
     let myBook=[];
@@ -406,9 +405,7 @@ const recommandBook = async(ctx)=>{
     for(let i =0;i<myBookList.length;i++){
         myBook.push(myBookList[i]['book']);
     }
-    console.log(myBook);
     let userList = await UserModel.find({"level":{$lte:level+1}},{"books":1,"_id":0}).limit(100).exec();
-    console.log(userList);
     for(let i=0;i<userList.length;i++){
         let tempBooks=userList[i]['books'];
         let tempBookList=[];
@@ -417,7 +414,6 @@ const recommandBook = async(ctx)=>{
         }
         console.log(tempBookList);
         let weight = commonFunction.getEuclideanDistance(myBook,tempBookList);
-        console.log(`--------------------------------------------------------${weight}`);
         let temp = [tempBookList,weight];
         let judge = 0;
         for(let j=0;j<result.length;j++){
@@ -428,14 +424,13 @@ const recommandBook = async(ctx)=>{
                 judge=1;
             }
         }
-        console.log(temp,result);
     }
     console.log(result);
     let finialBook=[];
     for(let i=0;i<result.length-1;i++){
         let bookList = result[i][0];
         for(let j=0;j<bookList.length;j++){
-            if(finialBook.indexOf(bookList[j]==-1)&&myBook.indexOf(bookList[j]==-1)){
+            if(finialBook.indexOf(bookList[j])==-1&&myBook.indexOf(bookList[j])==-1){
                 finialBook.push(bookList[i]);
             }
         }
