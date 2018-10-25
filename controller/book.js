@@ -415,7 +415,6 @@ const recommandBook = async(ctx)=>{
             }
             let weight = commonFunction.getEuclideanDistance(myBook, tempBookList);
             let temp = [tempBookList, weight];
-            console.log(temp);
             let judge = 0;
             for (let j = 0; j < result.length; j++) {
                 if (judge) break;
@@ -426,8 +425,8 @@ const recommandBook = async(ctx)=>{
             }
         }
     }
-    console.log(result);
     let finialBook=[];
+    console.log(myBook);
     for(let i=0;i<result.length-1;i++){
         let bookList = result[i][0];
         console.log(result[i][1]);
