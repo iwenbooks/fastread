@@ -412,14 +412,13 @@ const recommandBook = async(ctx)=>{
         for (let j=0;j<tempBooks.length;j++){
             tempBookList.push(tempBooks[j]['book'])
         }
-        console.log(tempBookList);
         let weight = commonFunction.getEuclideanDistance(myBook,tempBookList);
         let temp = [tempBookList,weight];
+        console.log(temp);
         let judge = 0;
         for(let j=0;j<result.length;j++){
             if(judge) break;
             if(weight<=result[j][1]&&weight>=1){
-                console.log("in:",weight);
                 result.splice(j,0,temp);
                 judge=1;
             }
