@@ -429,8 +429,8 @@ const recommandBook = async(ctx)=>{
     console.log(myBook);
     for(let i=0;i<result.length-1;i++){
         let bookList = result[i][0];
-        console.log(result[i][1]);
         for(let j=0;j<bookList.length;j++){
+            console.log(bookList[j]);
             if(finialBook.indexOf(bookList[j])==-1&&myBook.indexOf(bookList[j])==-1){
                 finialBook.push(bookList[j]);
             }
