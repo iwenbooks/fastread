@@ -438,7 +438,7 @@ const recommandBook = async(ctx)=>{
         }
     }
     let book =[];
-    for(let i=0;i<finialBook.length;i++){
+    for(let i=finialBook.length-1;i>=0;i--){
         let eachbook = await BookModel.find({"_id":finialBook[i]},{"_id":1,"bookname":1,"author":1,"cover":1}).exec();
         book.push(eachbook[0]);
     }
