@@ -421,6 +421,7 @@ const recommandBook = async(ctx)=>{
         let temp = [tempBookList,weight];
         for(let j=0;j<result.length;j++){
             if(weight<=result[j][1]&&weight>=1){
+                console.log("in:",weight)
                 result.splice(j,0,temp);
             }
         }
