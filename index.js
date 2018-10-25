@@ -41,8 +41,10 @@ app.use(async (ctx, next) => {
 app.use(routers.routers());
 app.use(routers.securedRouters());
 app.use(logger());
+const PORT = 9596;
+app.listen(PORT);
 
-app.listen(9596);
+console.log(`listen to PORT ${PORT}`);
 //const mongodbUri = 'mongodb://localhost:27017/fastread';
 const mongodbUri = 'mongodb://localhost:1997/fastread';
 
