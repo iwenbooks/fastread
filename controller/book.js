@@ -397,6 +397,7 @@ const recommandBook = async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let user =await UserModel.find({"_id":userId}).exec();
+    console.log(user);
     let result =[];
     result.push([[],1000000]);
     let myBook=[];
@@ -405,7 +406,9 @@ const recommandBook = async(ctx)=>{
     for(let i =0;i<myBookList.length;i++){
         myBook.push(myBookList[i]['book']);
     }
+    console.log(myBook);
     let userList = await UserModel.find({"level":{$lte:level+1}},{"books":1}).exec();
+    console.log(userList);
     for(let i=0;i<userList.length;i++){
         let tempBooks=userList[i]['books'];
         let tempBookList=[];
@@ -422,7 +425,7 @@ const recommandBook = async(ctx)=>{
             }
         }
     }
-
+    console.log(result);
     let finialBook=[];
     for(let i=0;i<result.length-1;i++){
         let bookList = result[i][0];
@@ -433,8 +436,6 @@ const recommandBook = async(ctx)=>{
         }
     }
     console.log(finialBook);
-
-
 
 
 
