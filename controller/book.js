@@ -424,6 +424,7 @@ const recommandBook = async(ctx)=>{
                 result.splice(j,0,temp);
             }
         }
+        console.log(temp,result);
     }
     console.log(result);
     let finialBook=[];
