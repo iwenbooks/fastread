@@ -430,8 +430,20 @@ const recommandBook = async(ctx)=>{
     for(let i=0;i<result.length-1;i++){
         let bookList = result[i][0];
         for(let j=0;j<bookList.length;j++){
-            console.log(bookList[j]);
-            if(finialBook.indexOf(bookList[j])==-1&&myBook.indexOf(bookList[j])==-1){
+            let judge= true;
+            for(let k=0;k<myBook.length;k++){
+                if(bookList[j].toString()==myBook[k].toString()){
+                    judge = false;
+                    break;
+                }
+            }
+            for(let k=0;k<finialBook.length;k++){
+                if(finialBook[k].toString()==bookList[j].toString()){
+                    judge = false;
+                    break;
+                }
+            }
+            if(judge){
                 finialBook.push(bookList[j]);
             }
         }
