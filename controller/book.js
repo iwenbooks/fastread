@@ -408,19 +408,21 @@ const recommandBook = async(ctx)=>{
     let userList = await UserModel.find({"level":{$lte:level+1}},{"books":1,"_id":0}).limit(100).exec();
     for(let i=0;i<userList.length;i++){
         let tempBooks=userList[i]['books'];
-        let tempBookList=[];
-        for (let j=0;j<tempBooks.length;j++){
-            tempBookList.push(tempBooks[j]['book'])
-        }
-        let weight = commonFunction.getEuclideanDistance(myBook,tempBookList);
-        let temp = [tempBookList,weight];
-        console.log(temp);
-        let judge = 0;
-        for(let j=0;j<result.length;j++){
-            if(judge) break;
-            if(weight<=result[j][1]&&weight>=1){
-                result.splice(j,0,temp);
-                judge=1;
+        if(tempBooks.length!=0) {
+            let tempBookList = [];
+            for (let j = 0; j < tempBooks.length; j++) {
+                tempBookList.push(tempBooks[j]['book'])
+            }
+            let weight = commonFunction.getEuclideanDistance(myBook, tempBookList);
+            let temp = [tempBookList, weight];
+            console.log(temp);
+            let judge = 0;
+            for (let j = 0; j < result.length; j++) {
+                if (judge) break;
+                if (weight <= result[j][1] && weight >= 1) {
+                    result.splice(j, 0, temp);
+                    judge = 1;
+                }
             }
         }
     }
