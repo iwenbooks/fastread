@@ -1,5 +1,6 @@
 'use strict';
 
+const es = require('elasticsearch')
 const jwt = require('../middleware/jwt');
 const BookModel = require('../model/book');
 const UserModel = require('../model/user');
