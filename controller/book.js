@@ -223,7 +223,6 @@ const search_es = async(ctx)=>{
     let limit = (Number(ctx.request.body.limit) || 10)*20;
     let skip = (page - 1) * limit;
 	let category=  Number(ctx.request.body.category)||0;
-    console.log('search: ', ctx.request.body.search)
     let res = await client.search({
         index: 'fastread',
         type: 'books',
@@ -236,27 +235,20 @@ const search_es = async(ctx)=>{
             }
         }
     })
-    console.log(typeof res.hits.hits[0])
-    console.log(res.hits.hits[0]._source['zh_bookname'])
-    //let tmp = []
-    let ret_num = Math.min(limit, res.hits.total)
     if(ret_num==0) {
-        ctx.body = {}
+        ctx.body = []
         ctx.status = 200
     }
     else {
-        let tmp = res.hits.hits.slice(0, ret_num).map(function(obj){
+        let s = Math.min(skip, res.hits.total)
+        let l = Math.min(limit, res.hits.total-s)
+        let tmp = res.hits.hits.slice(s,res.hits.total).slice(0,l).map(function(obj){
             obj['_source']['_id'] = obj['_id']
             return obj['_source']
         })
         ctx.body = tmp
         ctx.status = 200
-
     }
-    //for(let i=0;i<ret_num;i++)
-    //{   
-    //   tmp.push(res.hits.hits[i]._source) 
-    //}
 }
 
 const search = async(ctx)=>{
