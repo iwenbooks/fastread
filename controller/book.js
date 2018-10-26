@@ -240,17 +240,23 @@ const search_es = async(ctx)=>{
     console.log(res.hits.hits[0]._source['zh_bookname'])
     //let tmp = []
     let ret_num = Math.min(limit, res.hits.total)
-    console.log('ret_num:', ret_num)
+    if(ret_num==0) {
+        ctx.body = {}
+        ctx.status = 200
+    }
+    else {
+        let tmp = res.hits.hits.slice(0, ret_num).map(function(obj){
+            obj['_source']['_id'] = obj['_id']
+            return obj['_source']
+        })
+        ctx.body = tmp
+        ctx.status = 200
+
+    }
     //for(let i=0;i<ret_num;i++)
     //{   
     //   tmp.push(res.hits.hits[i]._source) 
     //}
-    let tmp = res.hits.hits.slice(0, ret_num).map(function(obj){
-        obj['_source']['_id'] = obj['_id']
-        return obj['_source']
-    })
-    ctx.body = tmp
-    ctx.status = 200
 }
 
 const search = async(ctx)=>{
