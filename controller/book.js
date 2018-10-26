@@ -1,5 +1,6 @@
 'use strict';
 
+const es = require('elasticsearch')
 const jwt = require('../middleware/jwt');
 const BookModel = require('../model/book');
 const UserModel = require('../model/user');
@@ -212,6 +213,44 @@ function editDist(a,b)
     }
    // printf("%d\n", dp[lenb]);
 	return dp[lenb];
+}
+
+const search_es = async(ctx)=>{
+    const client = new es.Client({host:'localhost:9200', log:'trace'})
+    let catg=new Array("","Classical Literature","Historical Fiction","Science Fiction","Romance","Detective & Mystery","Children Books","Biographies & Memoirs","Art","Modern Novel","Non Fiction","Parenting & Families","Short Books","Other");
+    let page = ctx.request.body.page || 1;
+	//let page=10
+    let limit = (Number(ctx.request.body.limit) || 10)*20;
+    let skip = (page - 1) * limit;
+	let category=  Number(ctx.request.body.category)||0;
+    console.log('search: ', ctx.request.body.search)
+    let res = await client.search({
+        index: 'fastread',
+        type: 'books',
+        body: {
+            query:{
+                multi_match: {
+                    query: ctx.request.body.search,
+                    fields: ['zh_bookname', 'zh_author', 'bookname', 'author']
+                }
+            }
+        }
+    })
+    console.log(typeof res.hits.hits[0])
+    console.log(res.hits.hits[0]._source['zh_bookname'])
+    //let tmp = []
+    let ret_num = Math.min(limit, res.hits.total)
+    console.log('ret_num:', ret_num)
+    //for(let i=0;i<ret_num;i++)
+    //{   
+    //   tmp.push(res.hits.hits[i]._source) 
+    //}
+    let tmp = res.hits.hits.slice(0, ret_num).map(function(obj){
+        obj['_source']['_id'] = obj['_id']
+        return obj['_source']
+    })
+    ctx.body = tmp
+    ctx.status = 200
 }
 
 const search = async(ctx)=>{
@@ -471,7 +510,7 @@ module.exports.routers = {
     'POST /book': create,
     'GET /getBookByLevel/:level': getBookByLevel,
     'PUT /book/:book': updateInfo,
-    'GET /search':search,
+    'POST /search':search_es,
     'POST /uploadCover/:id': uploadCover,
     'POST /checkUpdate': checkUpdate
 };
