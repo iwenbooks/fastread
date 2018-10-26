@@ -235,6 +235,7 @@ const search_es = async(ctx)=>{
             }
         }
     })
+    let ret_num = res.hits.total
     if(ret_num==0) {
         ctx.body = []
         ctx.status = 200
