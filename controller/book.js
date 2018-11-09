@@ -265,7 +265,7 @@ const search_es = async(ctx)=>{
             obj['_source']['_id'] = obj['_id']
             return obj['_source']
         })
-        ctxbody = {is_zh:is_zh, results:tmp, tokens:broken_tokens}
+        let ctxbody = {is_zh:is_zh, results:tmp, tokens:broken_tokens}
         ctx.body = ctxbody
         ctx.status = 200
     }
