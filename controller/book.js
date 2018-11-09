@@ -21,6 +21,15 @@ const list = async ctx => {
   ctx.body = books;
 };
 
+const idList = async ctx => {
+  let books = await BookModel.find();
+  let res = [];
+  for (let i of books){
+      res.push(i["_id"]);
+  }
+  ctx.body = res;
+};
+
 const getBookByLevel = async ctx => {
   let books = await BookModel.find({
     level: ctx.params.level
@@ -111,7 +120,7 @@ const uploadCover = async ctx => {
   ctx.body = {};
 };
 
-const recommandByLevel = async(ctx)=>{
+const recommendByLevel = async(ctx)=>{
         let page = ctx.request.body.page || 1;
         let limit = Number(ctx.request.body.limit) || 10;
         let skip = (page - 1) * limit;
@@ -216,6 +225,10 @@ function editDist(a,b)
 }
 
 const search_es = async(ctx)=>{
+    var reg = new RegExp("[\\u4E00-\\u9FFF]+","g");
+    let is_zh = false;
+    if(reg.test(ctx.request.body.search))
+        is_zh = true;
     const client = new es.Client({host:'localhost:9200', log:'trace'})
     let catg=new Array("","Classical Literature","Historical Fiction","Science Fiction","Romance","Detective & Mystery","Children Books","Biographies & Memoirs","Art","Modern Novel","Non Fiction","Parenting & Families","Short Books","Other");
     let page = ctx.request.body.page || 1;
@@ -223,6 +236,11 @@ const search_es = async(ctx)=>{
     let limit = (Number(ctx.request.body.limit) || 10)*20;
     let skip = (page - 1) * limit;
 	let category=  Number(ctx.request.body.category)||0;
+    let res0 = await client.indices.analyze({
+        index: 'fastread',
+        body: {text: ctx.request.body.search, analyzer:'ik_max_word'}
+    })
+    let broken_tokens = res0.tokens;
     let res = await client.search({
         index: 'fastread',
         type: 'books',
@@ -237,7 +255,7 @@ const search_es = async(ctx)=>{
     })
     let ret_num = res.hits.total
     if(ret_num==0) {
-        ctx.body = []
+        ctx.body = {}
         ctx.status = 200
     }
     else {
@@ -247,10 +265,11 @@ const search_es = async(ctx)=>{
             obj['_source']['_id'] = obj['_id']
             return obj['_source']
         })
-        ctx.body = tmp
+        ctxbody = {is_zh:is_zh, results:tmp, tokens:broken_tokens}
+        ctx.body = ctxbody
         ctx.status = 200
     }
-}
+};
 
 const search = async(ctx)=>{
 	let catg=new Array("","Classical Literature","Historical Fiction","Science Fiction","Romance","Detective & Mystery","Children Books","Biographies & Memoirs","Art","Modern Novel","Non Fiction","Parenting & Families","Short Books","Other");
@@ -431,7 +450,7 @@ const checkUpdate = async(ctx)=>{
         ctx.status = 401;
     }
 };
-const recommandBook = async(ctx)=>{
+const recommendBook = async(ctx)=>{
     let token = jwt.getToken(ctx);
     let userId = token.id;
     let user =await UserModel.find({"_id":userId},{'level':1,'books':1}).exec();
@@ -496,15 +515,16 @@ const recommandBook = async(ctx)=>{
 };
 module.exports.securedRouters = {
     'POST /book/like': like,
-    'GET /recommandBook':recommandBook
+    'GET /recommendBook':recommendBook
 };
 
 module.exports.routers = {
     'POST /searchByAuthor':searchByAuthor,
     'POST /searchByFirstAlphabetOfAuthor':searchByFirstAlphabetOfAuthor,
     'GET /GetBookReadingInfo/:bookid':GetBookReadingInfo,
-    'POST /recommandByLevel':recommandByLevel,
+    'POST /recommendByLevel':recommendByLevel,
     'GET /book': list,
+    'GET /bookID': idList,
     'GET /book/:id': getInfoById,
     'POST /book': create,
     'GET /getBookByLevel/:level': getBookByLevel,

@@ -18,6 +18,7 @@ const CONSTANTS = {
 		12:"Short Books",
 		13:"Other"
     },
-    version:"0.2"
+    version:"0.3",
+    NLPCONFIGPATH:"/home/iwen/www/html/fastread/controller/src/config.properties"
 }
 module.exports = CONSTANTS;

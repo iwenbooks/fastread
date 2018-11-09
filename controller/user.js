@@ -8,6 +8,7 @@ const SegmentModel = require("../model/segment");
 const WordModel = require('../model/word');
 const config = require('../config');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
+const nlp_config_path = require('../CONSTANTS').NLPCONFIGPATH;
 const commonFunction = require('../middleware/common_function');
 const request = require('request');
 const path = require('path');
@@ -790,7 +791,7 @@ const getLevelWord= async(ctx)=>{
                         var java = require("java");
                         java.classpath.push(path.resolve(__dirname, './src'));
                         java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
-                        var runInterface = java.newInstanceSync("lemmatizer.LemmatizeText");
+                        var runInterface = java.newInstanceSync("lemmatizer.LemmatizeText", nlp_config_path);
                         java.callMethodSync(runInterface, "lemmatizeWordList", 
                                             JSON.stringify(wordList)
                                             );

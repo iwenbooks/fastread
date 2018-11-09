@@ -8,6 +8,7 @@ const WordModel = require('../model/word');
 const UserModel = require('../model/user');
 const path = require('path');
 const java = require("java");
+const nlp_config_path = require('../CONSTANTS').NLPCONFIGPATH;
 java.classpath.push(path.resolve(__dirname, './src'));
 java.classpath.push(path.resolve(__dirname, './src/lib/stanford-ner-3.4.1.jar'));
 java.classpath.push(path.resolve(__dirname, './src/lib/stanford-postagger-3.4.1.jar'));
@@ -96,7 +97,7 @@ const generateQuestion = async(ctx)=>{
         while(tryTimes > 0){
             try{
                 var runInterface = java.newInstanceSync("generator.QGen_server");
-                java.callMethodSync(runInterface, "preprocess", 
+                java.callMethodSync(runInterface, "preprocess",nlp_config_path,  
                                     JSON.stringify(segment), 
                                     JSON.stringify(learningWordsInfo), 
                                     JSON.stringify(learntWordsInfo),

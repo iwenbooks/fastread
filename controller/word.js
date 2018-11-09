@@ -5,6 +5,7 @@ const jwt = require('../middleware/jwt')
 const WordModel = require('../model/word');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 const path = require('path');
+const nlp_config_path = require('../CONSTANTS').NLPCONFIGPATH;
 
 const list = async (ctx) => {
     let page = ctx.query.page || 1;
@@ -108,10 +109,11 @@ function getLemma(word){
             var java = require("java");
             java.classpath.push(path.resolve(__dirname, './src'));
             java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
-            lemma = java.callStaticMethodSync("lemmatizer.Lemmatize", "getLemma", word);
+            lemma = java.callStaticMethodSync("lemmatizer.Lemmatize", "getLemma",nlp_config_path, word);
             break;
         }
         catch(e){
+            console.log(e);
             tryTimes -= 1;
         }
     }
