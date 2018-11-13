@@ -10,6 +10,7 @@ const config = require('../config');
 const ERRORCODE = require('../CONSTANTS').ERRORCODE;
 const nlp_config_path = require('../CONSTANTS').NLPCONFIGPATH;
 const commonFunction = require('../middleware/common_function');
+const app_version = require('../CONSTANTS').version;
 const request = require('request');
 const path = require('path');
 const fs = require('fs');
@@ -168,6 +169,7 @@ const myInfo = async (ctx) => {
             }
         )
         .exec();
+    user[0]["app_version"] = app_version;
     ctx.status = 200;
     ctx.body = user[0];
 };
