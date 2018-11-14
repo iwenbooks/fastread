@@ -241,18 +241,45 @@ const search_es = async(ctx)=>{
         body: {text: ctx.request.body.search, analyzer:'ik_max_word'}
     })
     let broken_tokens = res0.tokens;
-    let res = await client.search({
-        index: 'fastread',
-        type: 'books',
-        body: {
-            query:{
-                multi_match: {
-                    query: ctx.request.body.search,
-                    fields: ['zh_bookname', 'zh_author', 'bookname', 'author']
+    let res;
+    if(category==0) {
+        res = await client.search({
+            index: 'fastread',
+            type: 'books',
+            body: {
+                query:{
+                    multi_match: {
+                        query: ctx.request.body.search,
+                        fields: ['zh_bookname', 'zh_author', 'bookname', 'author']
+                    }
                 }
             }
-        }
-    })
+        })
+    }
+    else {
+        res = await client.search({
+            index: 'fastread',
+            type: 'books',
+            body: {
+                query: {
+                    bool: {
+                        must: {
+                            multi_match: {
+                                query: ctx.request.body.search,
+                                fields: ['zh_bookname', 'zh_author', 'bookname', 'author']
+                            } 
+                        },
+                        filter: {
+                            term: {
+                               "category": catg[category] 
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+    
     let ret_num = res.hits.total
     if(ret_num==0) {
         ctx.body = {}
