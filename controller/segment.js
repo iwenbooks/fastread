@@ -3,6 +3,8 @@
 const jwt = require('../middleware/jwt');
 const SegmentModel = require('../model/segment');
 const commonFunction=require('../middleware/common_function');
+const util = require('util')
+const exec = util.promisify(require('child_process').exec)
 
 const list = async (ctx) => {
     let page = Number(ctx.query.page) || 1;
@@ -66,6 +68,25 @@ const SegmentCommentNum = async(ctx)=>{
     ctx.body = segment.commentNum;
     ctx.status=200;
 };
+
+const judgeQuestion = async(ctx)=> {
+    let comment = ctx.request.body.comment;
+    let ans;
+    try{
+        const {stdout, stderr} = await exec("python3 evaluate.py" + " " + comment, {cwd: "./qd"});
+        if(stdout=="Q")
+            ans = true;
+        else
+            ans = false;
+        ctx.status = 200;
+        ctx.body = {is_question: ans};
+    }
+    catch(err) {
+        ctx.status = 400;
+        ctx.body = {error: "error"}
+    }
+}
+
 module.exports.securedRouters = {
 };
 
@@ -75,5 +96,6 @@ module.exports.routers = {
     'GET /segment': list,
     'POST /segment': create,
     'GET /segment/:id': getInfoById,
-    'POST /segment/words': updateWordsList
+    'POST /segment/words': updateWordsList,
+    'POST /segment/judge': judgeQuestion
 };
