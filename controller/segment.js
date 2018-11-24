@@ -82,6 +82,7 @@ const judgeQuestion = async(ctx)=> {
         ctx.body = {is_question: ans};
     }
     catch(err) {
+        console.log(err);
         ctx.status = 400;
         ctx.body = {error: "error"}
     }
