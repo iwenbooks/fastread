@@ -1,0 +1,83 @@
+process controller: author.js...
+register URL mapping: GET /getAuthorBooks
+process controller: awardList.js...
+register URL mapping: GET /getAward
+register URL mapping: POST /awardList
+register URL mapping: GET /getAwardList
+process controller: book.js...
+register URL mapping: POST /book/like
+register URL mapping: POST /searchByAuthor
+register URL mapping: POST /searchByFirstAlphabetOfAuthor
+register URL mapping: GET /GetBookReadingInfo/:bookid
+register URL mapping: POST /recommandByLevel
+register URL mapping: GET /book
+register URL mapping: GET /book/:id
+register URL mapping: POST /book
+register URL mapping: GET /getBookByLevel/:level
+register URL mapping: PUT /book/:book
+register URL mapping: GET /search
+register URL mapping: POST /uploadCover/:id
+process controller: comment.js...
+register URL mapping: POST /comment/segment
+register URL mapping: POST /comment/book
+register URL mapping: POST /comment/like
+register URL mapping: GET /comment/segment/:segment
+register URL mapping: POST /deleteCommentById/:myid
+register URL mapping: GET /comment/book/:book
+process controller: question.js...
+register URL mapping: POST /question
+process controller: segment.js...
+register URL mapping: POST /segment/weChatQuestion
+register URL mapping: GET /SegmentCommentNum/:myid
+register URL mapping: GET /segment
+register URL mapping: POST /segment
+register URL mapping: GET /segment/:id
+register URL mapping: POST /segment/words
+process controller: user.js...
+register URL mapping: POST /updatePassword
+register URL mapping: DEL /deleteComments
+register URL mapping: GET /tmpTest
+register URL mapping: GET /getCollectWords
+register URL mapping: POST /whetherInCollectWords
+register URL mapping: GET /getWords
+register URL mapping: POST /updateSetting
+register URL mapping: POST /getLevelWord
+register URL mapping: GET /totalAnswers/:query
+register URL mapping: GET /totalCorrectAnswers/:query
+register URL mapping: GET /totalLearnedWords/:query
+register URL mapping: GET /totalChapters/:query
+register URL mapping: GET /totalReadingTime/:query
+register URL mapping: GET /totalReadingBooks/:query
+register URL mapping: GET /totalReadingWords/:query
+register URL mapping: GET /consecutiveTime
+register URL mapping: GET /myInfo
+register URL mapping: GET /myComments
+register URL mapping: POST /updateLevel
+register URL mapping: POST /updateWords
+register URL mapping: POST /updateCollectWords
+register URL mapping: POST /updateBookProgress
+register URL mapping: POST /user/book
+register URL mapping: DEL /user/book
+register URL mapping: DEL /removeCollectWord
+register URL mapping: PUT /user
+register URL mapping: GET /recommend
+register URL mapping: POST /user/record
+register URL mapping: PUT /user/phone
+register URL mapping: PUT /user/status
+register URL mapping: POST /like
+register URL mapping: POST /unlike
+register URL mapping: POST /uploadAvatar
+register URL mapping: GET /loginForWechat/:code
+register URL mapping: GET /user
+register URL mapping: POST /auth
+register URL mapping: POST /user
+register URL mapping: POST /authByWechat
+register URL mapping: POST /authByPhone
+register URL mapping: GET /user/:id
+process controller: word.js...
+register URL mapping: POST /word
+register URL mapping: GET /word
+register URL mapping: GET /test
+register URL mapping: GET /word/:id
+Mongoose default connection open to mongodb://localhost:27017/fastread
+(node:4308) [DEP0079] DeprecationWarning: Custom inspection function on Objects via .inspect() is deprecated

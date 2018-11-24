@@ -1,0 +1,6 @@
+#Sat Aug 11 19:20:03 CST 2018
+variants_path=/home/iwen/www/html/fastread/controller/src/LanguageTool-4.1/dictionary.dump.processed
+posModel_path=/home/iwen/www/html/fastread/controller/src/models/en-pos-maxent.bin
+classifier_path=classifiers/english.muc.7class.distsim.crf.ser.gz
+model_path=models/english-left3words-distsim.tagger
+dictLemmatizer_path=/home/iwen/www/html/fastread/controller/src/dictionary/en-lemmatizer.txt

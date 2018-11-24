@@ -1,0 +1,17 @@
+{
+  "name": "mongo-connector",
+  "version": "0.0.2",
+  "description": "Mongoose 連線流程簡化",
+  "main": "index.js",
+  "scripts": {},
+  "author": "mosluce<mosluce@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.0.5",
+    "mongoose": "^4.2.4",
+    "mongoose-timestamp": "^0.4.0"
+  },
+  "__npminstall_done": "Thu Oct 25 2018 20:42:28 GMT+0800 (CST)",
+  "_from": "mongo-connector@0.0.2",
+  "_resolved": "http://registry.npm.taobao.org/mongo-connector/download/mongo-connector-0.0.2.tgz"
+}

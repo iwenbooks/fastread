@@ -5,6 +5,42 @@ const SegmentModel = require('../model/segment');
 const commonFunction=require('../middleware/common_function');
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
+const http = require('http')
+const qs = require('querystring')
+
+const judge = function (comment) {
+    let promise = new Promise((resolve, reject) => {
+        var data = { comment: comment }
+        var content = qs.stringify(data)
+
+        var options = {
+            hostname: '127.0.0.1',
+
+            port: 8667,
+
+            path: '/?' + content,
+
+            method: 'GET'
+
+        };
+
+        var req = http.request(options, function (res) {
+            //console.log('STATUS: ' + res.statusCode);
+
+            //console.log('HEADERS: ' + JSON.stringify(res.headers));
+
+            res.setEncoding('utf8');
+            let data = "";
+            res.on('data', function (chunk) {
+                resolve(chunk);
+            });
+
+        })
+        req.end();
+    })
+
+    return promise;
+}
 
 const list = async (ctx) => {
     let page = Number(ctx.query.page) || 1;
@@ -73,13 +109,9 @@ const judgeQuestion = async(ctx)=> {
     let comment = ctx.request.body.comment;
     let ans;
     try{
-        const {stdout, stderr} = await exec("python3 evaluate.py" + " " + comment, {cwd: "./qd"});
-        if(stdout=="Q")
-            ans = true;
-        else
-            ans = false;
+	ans = await judge(comment);
         ctx.status = 200;
-        ctx.body = {is_question: ans};
+        ctx.body = {is_question: JSON.parse(ans)['flag']};
     }
     catch(err) {
         console.log(err);

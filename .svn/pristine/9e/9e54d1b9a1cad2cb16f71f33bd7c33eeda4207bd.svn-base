@@ -1,0 +1,28 @@
+{
+  "name": "fastread",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "wfnuser",
+  "license": "ISC",
+  "dependencies": {
+    "co-busboy": "^1.4.0",
+    "elasticsearch": "^15.1.1",
+    "jsonwebtoken": "^8.2.1",
+    "koa": "^2.5.0",
+    "koa-body": "^4.0.4",
+    "koa-body-parser": "^1.1.2",
+    "koa-bodyparser": "^4.2.0",
+    "koa-jwt": "^3.3.1",
+    "koa-logger": "^2.0.1",
+    "koa-multer": "^1.0.2",
+    "koa-router": "^7.4.0",
+    "mongo-connector": "0.0.2",
+    "mongoose": "^5.0.14",
+    "mongoose-simple-random": "^0.4.1",
+    "request": "^2.85.0"
+  }
+}
