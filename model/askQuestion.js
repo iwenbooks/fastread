@@ -11,7 +11,9 @@ const askQuestionSchema = new Schema({
     "answer":[{type:mongoose.Schema.Types.ObjectId,ref:'Answer'}],
     "created": { type: Date, default: Date.now, index: true },
     "updated": { type: Date, default: Date.now, index: true },
-    "answerNum":{type:Number,default:0}
+    "answerNum":{type:Number,default:0},
+    "index": { type: Number, default:-1},
+    "isQuestion": { type: Boolean, default:false},
 });
 askQuestionSchema.pre('save',(next)=>{
     this.updated=Date.now();

@@ -6,15 +6,57 @@ const BookModel = require('../model/book');
 const UserModel =require('../model/user');
 const SegmentModel =require('../model/segment');
 const AnswerModel = require('../model/answer');
+
+const judge = function (comment) {
+    let promise = new Promise((resolve, reject) => {
+        var data = { comment: comment }
+        var content = qs.stringify(data)
+
+        var options = {
+            hostname: '127.0.0.1',
+
+            port: 8667,
+
+            path: '/?' + content,
+
+            method: 'GET'
+
+        };
+
+        var req = http.request(options, function (res) {
+            //console.log('STATUS: ' + res.statusCode);
+
+            //console.log('HEADERS: ' + JSON.stringify(res.headers));
+
+            res.setEncoding('utf8');
+            let data = "";
+            res.on('data', function (chunk) {
+                resolve(chunk);
+            });
+
+        })
+        req.end();
+    })
+
+    return promise;
+}
 const createQuestion = async (ctx) => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
     try {
+        let content = ctx.request.body.content;
+        let ans = await judge(content);
+        let isQuestion = false;
+        if (JSON.parse(ans)['flag']) {
+            isQuestion = true;
+        }
         let question = new QuestionModel({
             "presenter": userId,
             "book": ctx.request.body.book,
             "segment": ctx.request.body.segment,
             "questionContent": ctx.request.body.content,
+            "index": ctx.request.body.index,
+            "isQuestion": isQuestion,
         });
         let questions = await question.save();
         ctx.status = 200;
