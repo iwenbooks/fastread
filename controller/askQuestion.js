@@ -55,7 +55,7 @@ const createQuestion = async (ctx) => {
             "book": ctx.request.body.book,
             "segment": ctx.request.body.segment,
             "questionContent": ctx.request.body.content,
-            "index": ctx.request.body.index,
+            "index": ctx.request.body.index,  // 传进来一个index，如果是整段则为-1
             "isQuestion": isQuestion,
         });
         let questions = await question.save();

@@ -6,6 +6,7 @@ const answerSchema = Schema({
     "question":{ type: mongoose.Schema.Types.ObjectId, ref: 'AskQuestion'},
     "user":{type:mongoose.Schema.Types.ObjectId, ref:'User'},
     "answer":{type:String},
+    "fromanswerID": { type: mongoose.Schema.Types.ObjectId, ref: 'Answer' },
     "comment":[{
         "user":{type:mongoose.Schema.Types.ObjectId, ref:'User'},
         "content":{type:String},

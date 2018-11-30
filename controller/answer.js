@@ -12,6 +12,7 @@ const createAnswer = async(ctx)=>{
             "user":userId,
             "question":ctx.request.body.question,
             "answer":ctx.request.body.answer,
+            "fromanswerID": ctx.request.body.fromanswerID,  // maybe this is the reply to an answer
         });
         let answers = await answer.save();
         await QuestionModel.update({"_id":ctx.request.body.question},﻿{'$push':{"answer":answers._id}}).exec();
@@ -101,6 +102,13 @@ const getAnswerByAnswerId=async(ctx)=>{
     let user = await UserModel.find({"_id": userId}, {"_id": 1, "nickname": 1, "avatar": 1}).exec();
     user = user[0];
     answer['user']=user;
+    // add fromanswer part
+    let fromanswerID = answer['fromanswerID'];
+    if (fromanswerID != null) {
+        let fromanswer = await AnswerModel.find({"_id": fromanswerID}, {"_id":1, "user":1, "answer":1}).exec();
+        fromanswer = fromanswer[0];
+        answer['fromanswerID'] = fromanswer;
+    }
     ctx.status=200;
     ctx.body=answer;
 };
