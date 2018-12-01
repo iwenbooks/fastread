@@ -2,21 +2,20 @@
 #source /home/qinghao/.bashrc
 #source /etc/profile
 
-PATH=/home/qinghao/local/mongodb/bin:/home/qinghao/local/bin:/home/kangqi/torch/install/bin:/usr/local/cuda-7.5/bin:/usr/java/jdk1.8.0_51/bin:/usr/bin:/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/home/liuyi/llvmclang/build/bin
 
 #echo $PATH
 date
 count=0
 choose=-1
 
-mongostat=`ps -x | grep "mongod --dbpath /home/qinghao/mongodb/data --logpath /home/qinghao/mongodb/logs/mongodb.log --fork" | grep -v grep`
+mongostat=`ps -x | grep "mongod --dbpath /home/iwen/www/html/mongodb/data/db --logpath /home/iwen/www/html/mongodb/log/mongodb.log --fork" | grep -v grep`
 echo $mongostat
 if [[ $mongostat =~ "mongod" ]]
 then
     echo "mongod normal"
 else
     echo "mongod down"
-    mongod --dbpath /home/qinghao/mongodb/data --logpath /home/qinghao/mongodb/logs/mongodb.log --fork
+    mongod --dbpath /home/iwen/www/html/mongodb/data/db --logpath /home/iwen/www/html/mongodb/log/mongodb.log --fork
     pm2 reload all
     pm2 restart all
     echo "mongod restarted"
@@ -63,17 +62,17 @@ done
 if [ $indexNeedChange -eq 1 ]
 then
     echo "pm2 index down"
-    pm2 stop /home/qinghao/www/html/fastread/index.js
+    pm2 stop /home/iwen/www/html/fastread/index.js
     pid=`fuser -n tcp 8687`
     kill -9 $pid
-    pm2 start /home/qinghao/www/html/fastread/index.js
+    pm2 start /home/iwen/www/html/fastread/index.js
     echo "pm2 index restarted"
 fi
 
 if [ $filesNeedChange -eq 1 ]
 then
     echo "pm2 files down"
-    cd /home/qinghao/www/data
+    cd /home/iwen/www/data
     pm2 stop files
     pm2 start /home/qinghao/local/bin/http-server --name files -- -p 8688 -d false
     echo "pm2 files restarted"

@@ -100,6 +100,7 @@ const getQuestionBySegmentId = async(ctx)=>{
         path: 'answer',
         select: {
             "user":1,
+            "index":1,
             "answer":1,
             "likeNum":1
         },
