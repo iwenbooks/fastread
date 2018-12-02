@@ -36,6 +36,9 @@ const judge = function (comment) {
             });
 
         })
+        req.on('error', function(error){
+            resolve('error');
+        })
         req.end();
     })
 
@@ -110,8 +113,14 @@ const judgeQuestion = async(ctx)=> {
     let ans;
     try{
 	ans = await judge(comment);
-        ctx.status = 200;
-        ctx.body = {is_question: JSON.parse(ans)['flag']};
+        if(ans=="error"){
+            ctx.status = 200;
+	    ctx.body = {is_question: comment.endsWith("?")};
+        }
+	else {
+	    ctx.status = 200;
+    	    ctx.body = {is_question: JSON.parse(ans)['flag']};
+	}
     }
     catch(err) {
         console.log(err);

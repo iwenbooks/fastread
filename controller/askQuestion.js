@@ -6,12 +6,14 @@ const BookModel = require('../model/book');
 const UserModel =require('../model/user');
 const SegmentModel =require('../model/segment');
 const AnswerModel = require('../model/answer');
+const qs = require('querystring');
+const http = require('http');
 
 const judge = function (comment) {
     let promise = new Promise((resolve, reject) => {
+      try {
         var data = { comment: comment }
         var content = qs.stringify(data)
-
         var options = {
             hostname: '127.0.0.1',
 
@@ -22,7 +24,6 @@ const judge = function (comment) {
             method: 'GET'
 
         };
-
         var req = http.request(options, function (res) {
             //console.log('STATUS: ' + res.statusCode);
 
@@ -35,16 +36,21 @@ const judge = function (comment) {
             });
 
         })
-        req.end();
+      }catch(e){
+        console.log(e);
+      }
+      req.end();
     })
 
     return promise;
-}
+};
 const createQuestion = async (ctx) => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
     try {
+        console.log('0');
         let content = ctx.request.body.content;
+        console.log('1');
         let ans = await judge(content);
         let isQuestion = false;
         if (JSON.parse(ans)['flag']) {
@@ -75,7 +81,8 @@ const getQuestionByQuestionId = async(ctx)=>{
                 "_id":1,
                 "bookname":1,
                 "author":1,
-                "cover":1
+                "cover":1,
+                "isQuestion":1
             }
         }
     );
@@ -127,6 +134,45 @@ const getQuestionBySegmentId = async(ctx)=>{
     ctx.body =questions;
     ctx.status=200;
 };
+const getSentenceQuestion = async(ctx) => {
+    let page = ctx.request.body.page || 1;
+    let limit = Number(ctx.request.body.limit) || 10;
+    let skip = (page - 1) * limit;
+    let segmentId = ctx.request.body.segment;
+    let sentenceIndex = ctx.request.body.sentenceIndex;
+    let questions = await QuestionModel.find({"segment":segmentId, "index":sentenceIndex}).populate({
+        path: 'answer',
+        select: {
+            "user":1,
+            "index":1,
+            "answer":1,
+            "likeNum":1
+        },
+        options:{
+            limit:5
+        }
+    }).sort({"created":-1}).skip(skip).limit(limit).exec();
+    for(let i=0;i<questions.length;i++){
+        for(let j=0;j<questions[i].answer.length;j++){
+            let userId=questions[i].answer[j].user;
+            let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1}).exec();
+            user=user[0];
+            questions[i].answer[j].user=user;
+        }
+        let userId = questions[i]['presenter'];
+        let user = await UserModel.find({"_id":userId},{"_id":1,"nickname":1,"avatar":1}).exec();
+        user=user[0];
+        questions[i]['user']=user;
+        delete questions[i].book;
+        delete questions[i].segment;
+        delete questions[i].presenter;
+    }
+    ctx.body =questions;
+    ctx.status=200;
+
+
+};
+
 const getAllQuestion =async(ctx)=>{
     let page = ctx.query.page || 1;
     let limit = Number(ctx.query.limit) || 10;
@@ -173,6 +219,7 @@ module.exports.securedRouters = {
 
 module.exports.routers = {
     'POST /getQuestionBySegmentId':getQuestionBySegmentId,
+    'POST /getSentenceQuestion':getSentenceQuestion,
     'GET /getQuestionByQuestionId':getQuestionByQuestionId,
     'GET /getAllQuestion':getAllQuestion
 };
