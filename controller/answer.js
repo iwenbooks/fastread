@@ -39,6 +39,23 @@ const getAnswerByQuestionId = async(ctx)=>{
         let user = await UserModel.find({"_id": userId}, {"_id": 1, "nickname": 1, "avatar": 1}).exec();
         user = user[0];
         answers[i]['user']=user;
+        let replyId = answers[i]['fromanswerID'];
+        console.log(replyId);
+        if (replyId != null && replyId.length != 0) {
+            let replyer =  await UserModel.find({"_id": replyId}, {"_id": 1, "username":1, "nickname": 1, "avatar": 1}).exec();
+            if (replyer.length != 0){
+                replyer = replyer[0];
+                let nickname = replyer['nickname'];
+                if (nickname.length == 0) {
+                    nickname = replyer['username'];
+                } 
+                answers[i]['replyer'] = nickname;
+            } else {
+                answers[i]['replyer'] = '';
+            }
+        } else {
+            answers[i]['replyer'] = '';
+        }
     }
     ctx.status=200;
     ctx.body=answers;
@@ -128,6 +145,21 @@ const createCommentForAnswer=async(ctx)=>{
     ctx.body={};
 };
 
+const deleteAnswerById = async(ctx)=>{
+    let id = ctx.request.body.answer;
+    let answer = await AnswerModel.findById(id);
+    let question = await QuestionModel.findById(answer['question']);
+    let answers = question['answer'];
+    let index = answers.indexOf(id);
+    if (index != -1) {
+        answers.splice(index, 1);
+        await QuestionModel.update({"_id":answer['question']}, {$set:{"answer":answers, "answerNum":answers.length}}).exec();
+    }
+
+    await AnswerModel.findByIdAndRemove(id);
+    ctx.status=200;
+}
+
 module.exports.securedRouters = {
     'POST /createAnswer':createAnswer,
     'GET /likeAnawer':likeAnawer,
@@ -136,5 +168,6 @@ module.exports.securedRouters = {
 module.exports.routers = {
     'POST /getAnswerByQuestionId':getAnswerByQuestionId,
     'GET /getAnswerByAnswerId':getAnswerByAnswerId,
-    'POST /createCommentForAnswer':createCommentForAnswer
+    'POST /createCommentForAnswer':createCommentForAnswer,
+    'DEL /deleteAnswer': deleteAnswerById
 };

@@ -152,6 +152,7 @@ const getSentenceQuestion = async(ctx) => {
             limit:5
         }
     }).sort({"created":-1}).skip(skip).limit(limit).exec();
+    questions=conmonFunction.parseJSON(questions);
     for(let i=0;i<questions.length;i++){
         for(let j=0;j<questions[i].answer.length;j++){
             let userId=questions[i].answer[j].user;
@@ -211,6 +212,17 @@ const getAllQuestion =async(ctx)=>{
     ctx.body = result;
 };
 
+const deleteQuestionById = async(ctx)=>{
+    let id = ctx.request.body.question;
+    let question = await QuestionModel.findById(id);
+    let answers = question["answer"];
+    for (let i=0; i<answers.length; i++) {
+        let answerId = answers[i];
+        await AnswerModel.findByIdAndRemove(answerId);
+    }
+    await QuestionModel.findByIdAndRemove(id);
+    ctx.status=200;
+}
 
 
 module.exports.securedRouters = {
@@ -221,5 +233,6 @@ module.exports.routers = {
     'POST /getQuestionBySegmentId':getQuestionBySegmentId,
     'POST /getSentenceQuestion':getSentenceQuestion,
     'GET /getQuestionByQuestionId':getQuestionByQuestionId,
-    'GET /getAllQuestion':getAllQuestion
+    'GET /getAllQuestion':getAllQuestion,
+    'DEL /deleteQuestion': deleteQuestionById
 };
