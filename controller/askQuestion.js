@@ -48,9 +48,7 @@ const createQuestion = async (ctx) => {
     let token = jwt.getToken(ctx);
     let userId = token.id;
     try {
-        console.log('0');
         let content = ctx.request.body.content;
-        console.log('1');
         let ans = await judge(content);
         let isQuestion = false;
         if (JSON.parse(ans)['flag']) {
@@ -222,7 +220,67 @@ const deleteQuestionById = async(ctx)=>{
     }
     await QuestionModel.findByIdAndRemove(id);
     ctx.status=200;
-}
+};
+
+const getSentenceBySegmentId = async(ctx)=>{
+    let segmentId = ctx.query.id;
+    let questions = await QuestionModel.find({"segment":segmentId}).
+    select('_id user index isQuestion answerNum').sort({"index":1}).exec();
+    questions=conmonFunction.parseJSON(questions);
+    let index = -1;
+    let tmpValueRed = 0;
+    let tmpValueBlue = 0;
+    let tmpValueGreen = 0;
+    let red = [];
+    let green = [];
+    let blue = [];
+    for(let i=0;i<questions.length;i++){
+        if (questions[i]['index'] == -1) continue;
+        if (questions[i]['index'] != index) {
+            if (index != -1){
+                if (tmpValueGreen == 1){
+                    green.push(index);
+                } 
+                if (tmpValueBlue == 1){
+                    blue.push(index);
+                }
+                if (tmpValueRed == 1){
+                    red.push(index);
+                }
+            }
+            tmpValueRed = 0;
+            tmpValueBlue = 0;
+            tmpValueGreen = 0;
+            index = questions[i]['index'];
+        } 
+        if (index != -1){
+            if (questions[i]['isQuestion']) {
+                if (questions[i]['answerNum'] == 0) {
+                    tmpValueRed = 1;
+                } else {
+                    tmpValueGreen = 1;
+                }
+            } else {
+                tmpValueBlue = 1;
+            }
+        }
+    }
+    if (index != -1){
+        if (tmpValueGreen == 1){
+            green.push(index);
+        } 
+        if (tmpValueBlue == 1){
+            blue.push(index);
+        } 
+        if (tmpValueRed == 1){
+            red.push(index);
+        }
+    }
+
+    let result = {"green":green, "blue":blue, "red":red};
+    ctx.status=200;
+    ctx.body = result;
+};
 
 
 module.exports.securedRouters = {
@@ -234,5 +292,6 @@ module.exports.routers = {
     'POST /getSentenceQuestion':getSentenceQuestion,
     'GET /getQuestionByQuestionId':getQuestionByQuestionId,
     'GET /getAllQuestion':getAllQuestion,
-    'DEL /deleteQuestion': deleteQuestionById
+    'DEL /deleteQuestion': deleteQuestionById,
+    'GET /getSentenceBySegmentId':getSentenceBySegmentId
 };
