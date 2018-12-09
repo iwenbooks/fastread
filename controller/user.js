@@ -750,6 +750,128 @@ const unLikeBook=async(ctx)=>{
     
 };
 
+const getOneLevelWord = async(ctx) => {
+    try {
+        let segmentId = ctx.request.body.id;
+        let learnedWordList = ctx.request.body.wordList; // already learned wordlist
+        let token = jwt.getToken(ctx);
+        let userId = token.id;
+        let user = await UserModel.findById(userId).exec();
+        let haveReadWord = user["words"];
+        let segment = await SegmentModel.findById(segmentId).exec();
+        // almost copy from getLevelWord function
+        if(segment) {
+            let content = segment["content"];
+            let wordList = [];
+            let wordsId = [];
+            let userLevel = user.level > 9 ? 0 : user.level;
+            let resWord=[];
+
+            if("words" in segment){
+                wordList = segment['words'];
+            }
+            if(wordList.length == 0){
+                wordList=content.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\d+|\'|\·|\,|\<|\.|\>|\/|\?]|(\r\n)|(\n)/g," ").split(" ");
+                content = null;
+                wordList = wordList.filter((word,index,self)=>{
+                    word =word.toLocaleLowerCase();
+                    return word.length>=2&&self.indexOf(word)===index;
+                }) 
+
+                let resultArr = [];
+
+                let tryTimes = 3;
+                while(tryTimes > 0){
+                    try{
+                        var java = require("java");
+                        java.classpath.push(path.resolve(__dirname, './src'));
+                        java.classpath.push(path.resolve(__dirname, './src/lib/opennlp-tools-1.8.4.jar'));
+                        var runInterface = java.newInstanceSync("lemmatizer.LemmatizeText", nlp_config_path);
+                        java.callMethodSync(runInterface, "lemmatizeWordList", 
+                                            JSON.stringify(wordList)
+                                            );
+                        let resultStr = java.callMethodSync(runInterface, "getLemmaListJson");
+
+                        resultArr = JSON.parse(resultStr);
+                        break;
+                    }
+                    catch(e){
+                        tryTimes -= 1;
+                    }
+                }
+
+                let lemmaSuccess = null;
+                if(resultArr == null){
+                    lemmaSuccess = false;
+                    resultArr = wordList;
+                }
+                else{
+                    if(resultArr.length == 0){
+                        lemmaSuccess = false;
+                        resultArr = wordList;
+                    }
+                    else lemmaSuccess = true;
+                }
+
+                let allWordDir = await WordModel.find({"level":{$gte: 1, $lte: 9}},{"explanations":0}).exec();
+
+                for(let i=0;i<resultArr.length;i++){
+                    let tempWord=resultArr[i];
+                    for(let j=0;j<allWordDir.length;j++){
+                        if(tempWord==allWordDir[j]['word']){
+                            wordsId.push(allWordDir[j]['id']);
+                            if(allWordDir[j]['level'] == userLevel){
+                                resWord.push(allWordDir[j]);
+                            }
+                            break;
+                        }
+                    }
+                }
+                if(lemmaSuccess)
+                    await SegmentModel.findByIdAndUpdate(segmentId, {$set: {"words": wordsId}});
+            }
+            else{
+                for(let i = 0; i < wordList.length; i++){
+                    let wordInfo = await WordModel.findById(wordList[i],{"explanations":0});
+                    if(wordInfo['level'] == userLevel)
+                        resWord.push(wordInfo);
+                }
+            }
+
+            let learnWord = [];
+            for(let i=0;i<resWord.length;i++){
+                let k = 0;
+                for(let j=0;j<haveReadWord.length;j++){
+                    if(haveReadWord[j]["word"].toString() == resWord[i]["id"].toString()){
+                        k = 1;
+                    }
+                }
+                // learnedWordList judge
+                for (let j = 0; j < learnedWordList.length; j++) {
+                    if (learnedWordList[j]["word"].toString() == resWord[i]["id"].toString()) {
+                        k = 1;
+                    }
+                }
+                if (k == 0) {
+                    learnWord.push(resWord[i]);
+                }
+            }
+            let wordLength = learnWord.length>10?10:learnWord.length;
+            let result = null;
+            if (wordLength != 0)
+                result=await commonFunction.getRandomArrayElement(learnWord,wordLength)[0]; // get the first word from the random
+            ctx.body=result;
+        }else{
+            ctx.status = 404;
+            ctx.body={error:"invalid segment ID"};
+        }
+    } catch (e) {
+        console.log("400 exception: " + e);
+        ctx.status = 400;
+        ctx.body={error:"exception"};
+    }
+};
+
 const getLevelWord= async(ctx)=>{
     try{
         let segmentId = ctx.request.body.id;
@@ -931,6 +1053,7 @@ module.exports.securedRouters = {
     'GET /getWords':getWords,
     'POST /updateSetting':updateSetting,
     'POST /getLevelWord':getLevelWord,
+    'POST /getOneLevelWord':getOneLevelWord,
     'GET /totalAnswers/:query':totalAnswers,
     'GET /totalCorrectAnswers/:query':totalCorrectAnswers,
     'GET /totalLearnedWords/:query':totalLearnedWords,
