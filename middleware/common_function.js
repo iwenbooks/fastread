@@ -11,6 +11,10 @@ const getRandomArrayElement=function(arr,count) {
     }
     return shuffled.slice(min);
 };
+const getRandomElement=function(arr) {
+    let index =Math.floor((arr.length)*Math.random());
+    return arr[index];
+};
 const getPassword = function (password) {
     return crypto.createHash('sha1');
     shasum.update(password);
@@ -41,5 +45,6 @@ module.exports={
     getRandomArrayElement,
     getPassword,
     getEuclideanDistance,
-    parseJSON
+    parseJSON,
+    getRandomElement
 };
