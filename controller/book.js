@@ -21,6 +21,17 @@ const list = async ctx => {
     ctx.body = books;
 };
 
+const getHotBook = async(ctx) => {
+    let books = await BookModel.find({}, {"_id":1, "bookname":1, "segments":1, "numberOfReading":1, "author":1, "cover":1}).sort({"numberOfReading":-1}).limit(4).exec();
+    let res = [];
+    for (let i of books) {
+        i = i.toObject();
+        i["segments"] = i["segments"].length;
+        res.push(i);
+    }
+    ctx.body = res;
+};
+
 const idList = async ctx => {
     let books = await BookModel.find();
     let res = [];
@@ -530,6 +541,7 @@ module.exports.routers = {
     'GET /GetBookReadingInfo/:bookid': GetBookReadingInfo,
     'POST /recommendByLevel': recommendByLevel,
     'GET /book': list,
+    'GET /getHotBook': getHotBook, 
     'GET /bookID': idList,
     'GET /book/:id': getInfoById,
     'POST /book': create,
