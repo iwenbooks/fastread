@@ -131,6 +131,48 @@ const uploadCover = async ctx => {
     ctx.body = {};
 };
 
+const recommendByLevelHardCode = async (ctx) => {
+    let page = ctx.request.body.page || 1;
+    let limit = Number(ctx.request.body.limit) || 10;
+    let skip = (page - 1) * limit;
+    let level = Number(ctx.request.body.level) || 10;
+    let category = ctx.request.body.category;
+    let myCategory = CategoryInfo;
+    let tmp = [myCategory[category]];
+    let sortWay = Number(ctx.request.body.sortway) || -1;//default:descending order
+    let pattern = ctx.request.body.pattern;
+    let NineBooks = ["To Kill A Mockingbird", "The Great Gatsby","Catch-22",
+    "Moby Dick","Jane Eyre","Invisible Man","1984","Adventures of Huckleberry Finn",
+    "Alice's Adventures in Wonderland and Through the Looking-Glass"];
+    let recommendList = [];
+    let back = null;
+    for (let i of NineBooks) {
+        let tmpResult = await BookModel.find({"bookname": i}, { "_id": 1, "bookname": 1, "author": 1, "cover": 1 }).exec();
+        recommendList.push(tmpResult[0]);
+    }
+    if (category == 0) {
+        if (pattern == "smart") {
+            let tempRes = await BookModel.find({ "level": { $lte: level } , "bookname": {$nin: NineBooks}}, { "_id": 1, "bookname": 1, "author": 1, "cover": 1 }).collation({ "locale": "en", numericOrdering: true }).sort({ "IMDB": sortWay, "cover": -1 }).skip(skip).limit(3 * limit).exec();
+            let num = tempRes.length < limit ? tempRes.length : limit;
+            back = await commonFunction.getRandomArrayElement(tempRes, num);
+        }
+        else back = await BookModel.find({ "level": { $lte: level }, "bookname": {$nin: NineBooks}}, { "_id": 1, "bookname": 1, "author": 1, "cover": 1 }).collation({ "locale": "en", numericOrdering: true }).sort({ [`${pattern}`]: sortWay, "cover": -1 }).skip(skip).limit(limit).exec();
+    }
+    else {
+        if (pattern == "smart") {
+            let tempRes = await BookModel.find({ "level": { $lte: level }, "category": { $in: tmp },"bookname": {$nin: NineBooks} }, { "_id": 1, "bookname": 1, "author": 1, "cover": 1 }).collation({ "locale": "en", numericOrdering: true }).sort({ "IMDB": sortWay, "cover": -1 }).skip(skip * 3).limit(3 * limit).exec();
+            let num = tempRes.length < limit ? tempRes.length : limit;
+            back = await commonFunction.getRandomArrayElement(tempRes, num);
+        }
+        else back = await BookModel.find({ "level": { $lte: level }, "category": { $in: tmp },"bookname": {$nin: NineBooks} }, { "_id": 1, "bookname": 1, "author": 1, "cover": 1 }).collation({ "locale": "en", numericOrdering: true }).sort({ [`${pattern}`]: sortWay, "cover": -1 }).skip(skip).limit(limit).exec();
+    }
+    for (let i of back) {
+        recommendList.push(i);
+    }
+    ctx.body = recommendList;
+    ctx.status = 200;
+};
+
 const recommendByLevel = async (ctx) => {
     let page = ctx.request.body.page || 1;
     let limit = Number(ctx.request.body.limit) || 10;
@@ -540,6 +582,7 @@ module.exports.routers = {
     'POST /searchByFirstAlphabetOfAuthor': searchByFirstAlphabetOfAuthor,
     'GET /GetBookReadingInfo/:bookid': GetBookReadingInfo,
     'POST /recommendByLevel': recommendByLevel,
+    'POST /recommendByLevelHardCode': recommendByLevelHardCode,
     'GET /book': list,
     'GET /getHotBook': getHotBook, 
     'GET /bookID': idList,
