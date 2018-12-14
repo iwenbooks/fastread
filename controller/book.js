@@ -22,7 +22,7 @@ const list = async ctx => {
 };
 
 const getHotBook = async(ctx) => {
-    let books = await BookModel.find({}, {"_id":1, "bookname":1, "segments":1, "numberOfReading":1, "author":1, "cover":1}).sort({"numberOfReading":-1}).limit(4).exec();
+    let books = await BookModel.find({}, {"_id":1, "bookname":1, "segments":1, "numberOfReading":1, "author":1, "cover":1, "CommentNum":1}).sort({"numberOfReading":-1}).limit(3).exec();
     let res = [];
     for (let i of books) {
         i = i.toObject();

@@ -7,6 +7,7 @@ const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const http = require('http')
 const qs = require('querystring')
+var Algorithmia = require("algorithmia");
 
 const judge = function (comment) {
     let promise = new Promise((resolve, reject) => {
@@ -129,6 +130,14 @@ const judgeQuestion = async(ctx)=> {
     }
 }
 
+const split_sentence = async(ctx)=> {
+    let content = ctx.request.body.content;
+    console.log(content);
+    let res = await Algorithmia.client("simPiZAZYl2np5CFIyB5UAcPAGW1").algo("StanfordNLP/SentenceSplit/0.1.0").pipe(content);
+    ctx.body = {sentences: res.get()}
+    ctx.status = 200;
+}
+
 module.exports.securedRouters = {
 };
 
@@ -139,5 +148,6 @@ module.exports.routers = {
     'POST /segment': create,
     'GET /segment/:id': getInfoById,
     'POST /segment/words': updateWordsList,
-    'POST /segment/judge': judgeQuestion
+    'POST /segment/judge': judgeQuestion,
+    'POST /split_sentence': split_sentence
 };

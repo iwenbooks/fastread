@@ -750,7 +750,6 @@ const unLikeBook=async(ctx)=>{
     
 };
 
-<<<<<<< HEAD
 const getOneLevelWord= async(ctx)=>{
     try{
         let segmentId = ctx.request.body.id;
@@ -771,20 +770,6 @@ const getOneLevelWord= async(ctx)=>{
                 content=content.slice(num,endIdx);
             }
 			*/
-=======
-const getOneLevelWord = async(ctx) => {
-    try {
-        let segmentId = ctx.request.body.id;
-        let learnedWordList = ctx.request.body.wordList; // already learned wordlist
-        let token = jwt.getToken(ctx);
-        let userId = token.id;
-        let user = await UserModel.findById(userId).exec();
-        let haveReadWord = user["words"];
-        let segment = await SegmentModel.findById(segmentId).exec();
-        // almost copy from getLevelWord function
-        if(segment) {
-            let content = segment["content"];
->>>>>>> 59f3bf86e6941579d88fc400a2d6e1c573c3735c
             let wordList = [];
             let wordsId = [];
             let userLevel = user.level > 9 ? 0 : user.level;
@@ -869,14 +854,8 @@ const getOneLevelWord = async(ctx) => {
                         k = 1;
                     }
                 }
-<<<<<<< HEAD
                 for (let j=0;j<learntWord.length;j++){
                     if(learntWord[j] == resWord[i]["id"].toString()){
-=======
-                // learnedWordList judge
-                for (let j = 0; j < learnedWordList.length; j++) {
-                    if (learnedWordList[j]["word"].toString() == resWord[i]["id"].toString()) {
->>>>>>> 59f3bf86e6941579d88fc400a2d6e1c573c3735c
                         k = 1;
                     }
                 }
@@ -884,28 +863,16 @@ const getOneLevelWord = async(ctx) => {
                     learnWord.push(resWord[i]);
                 }
             }
-<<<<<<< HEAD
             let result = {}
             if (learnWord.length>0) {
                 result=await commonFunction.getRandomElement(learnWord);
             }
-=======
-            let wordLength = learnWord.length>10?10:learnWord.length;
-            let result = null;
-            if (wordLength != 0)
-                result=await commonFunction.getRandomArrayElement(learnWord,wordLength)[0]; // get the first word from the random
->>>>>>> 59f3bf86e6941579d88fc400a2d6e1c573c3735c
             ctx.body=result;
         }else{
             ctx.status = 404;
             ctx.body={error:"invalid segment ID"};
         }
-<<<<<<< HEAD
-    }
-    catch(e){
-=======
     } catch (e) {
->>>>>>> 59f3bf86e6941579d88fc400a2d6e1c573c3735c
         console.log("400 exception: " + e);
         ctx.status = 400;
         ctx.body={error:"exception"};
