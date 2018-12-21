@@ -572,6 +572,20 @@ const recommendBook = async (ctx) => {
     ctx.status = 200;
     ctx.body = book;
 };
+
+const getBookByIdList = async(ctx) => {
+    let idList = ctx.request.body.books;
+    let res = [];
+    for (let i=0; i < idList.length; i++) {
+        let book = await BookModel.find({"_id":idList[i]}, {"_id":1, "bookname":1, "segments":1, "numberOfReading":1, "author":1, "cover":1, "CommentNum":1});
+        book = book[0].toObject();
+        book["segments"] = book["segments"].length;
+        res.push(book)
+    }
+    ctx.body = res;
+};
+
+
 module.exports.securedRouters = {
     'POST /book/like': like,
     'GET /recommendBook': recommendBook
@@ -592,5 +606,6 @@ module.exports.routers = {
     'PUT /book/:book': updateInfo,
     'POST /search': search_es,
     'POST /uploadCover/:id': uploadCover,
-    'POST /checkUpdate': checkUpdate
+    'POST /checkUpdate': checkUpdate,
+    'POST /getBookByIdList': getBookByIdList
 };
