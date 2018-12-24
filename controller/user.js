@@ -1086,12 +1086,21 @@ const getRecentlyReadBooks = async (ctx) => {
         let userId= token.id;
         let books = await UserModel.find({"_id":userId}, {"books":1, "_id":0}).exec();
         books = books[0].books;
-        ctx.body = books.sort(function (a, b) {
+        let sortedbooks = books.sort(function (a, b) {
             return (a["timestamp"]==b["timestamp"])?0:((a["timestamp"]<b["timestamp"])?1:-1);
         });
+        let res = []
+        for (let i = 0; i < 3 && i < sortedbooks.length; i++) {
+            let book = await BookModel.find({"_id":sortedbooks[i]["book"]}, {"_id":1, "bookname":1, "segments":1, "numberOfReading":1, "author":1, "cover":1, "CommentNum":1});
+            book = book[0].toObject();
+            book["segments"] = book["segments"].length;
+            res.push(book)
+        }
+        ctx.body = res;
         ctx.status = 200;
-    } catch (error) {
-        ctx.body = { error: error };
+    } catch (e) {
+        console.log(e);
+        ctx.body = { error: e};
         ctx.status = 401;
     }
 };
