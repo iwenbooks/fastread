@@ -13,8 +13,8 @@ const userSchema = new Schema({
         whetherOrNotToRead:{type:Boolean,default:false},
         like:{type:Boolean,default:false},
         currentSegment:{type:Number,default:0},
-        totalSegment:{type:Number,default:0}
-
+        totalSegment:{type:Number,default:0},
+        timestamp:{type: Number}
 
     }],
     "records": [{

@@ -452,7 +452,8 @@ const addBook = async (ctx) => {
         user.books.push({
             book: newBookId,
             segment: book.segments[0],
-            totalSegment:totalSegmentLength
+            totalSegment:totalSegmentLength,
+            timestamp: new Date().getTime()
         });
         user = await user.save();
         ctx.status = 200;
@@ -1056,6 +1057,51 @@ const uploadAvatar = async ctx => {
     ctx.status = 200;
     ctx.body = {};
 };
+
+// touch book
+const pushBook = async (ctx) => {
+    let bookId = ctx.request.body.book;
+    try {
+        let token = jwt.getToken(ctx);
+        let userId= token.id;
+        let user = await UserModel.findById(userId);
+        user.books.forEach(book => {
+            if (String(book.book) === newBookId) {
+                book["timestamp"] = new DataCue().getTime();
+            }
+        });
+        user.books.push({
+            book: bookId,
+            segment: book.segments[0],
+            totalSegment:totalSegmentLength,
+            timestamp: new Date().getTime()
+        });
+        user = await user.save();
+        ctx.status=200;
+        ctx.body={};
+    }  catch (error) {
+        ctx.status = 401;
+        ctx.body = { error: error }
+    }
+};
+
+// 现在是返回排好序的jsonarray，里面是user保存的bookInfo
+const getRecentlyReadBooks = async (ctx) => {
+    try {
+        let token = jwt.getToken(ctx);
+        let userId= token.id;
+        let books = await UserModel.find({"_id":userId}, {"books":1, "_id":0}).exec();
+        books = books[0].books;
+        ctx.body = books.sort(function (a, b) {
+            return (a["timestamp"]==b["timestamp"])?0:((a["timestamp"]<b["timestamp"])?1:-1);
+        });
+        ctx.status = 200;
+    } catch (error) {
+        ctx.body = { error: error };
+        ctx.status = 401;
+    }
+};
+
 module.exports.securedRouters = {
     'GET /tmpTest':tmpTest,
     'GET /getCollectWords':getCollectWords,
@@ -1064,6 +1110,8 @@ module.exports.securedRouters = {
     'POST /updateSetting':updateSetting,
     'POST /getLevelWord':getLevelWord,
     'POST /getOneLevelWord':getOneLevelWord,
+    'POST /pushBook': pushBook,
+    'GET /getRecentlyReadBooks': getRecentlyReadBooks,
     'GET /totalAnswers/:query':totalAnswers,
     'GET /totalCorrectAnswers/:query':totalCorrectAnswers,
     'GET /totalLearnedWords/:query':totalLearnedWords,
