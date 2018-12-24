@@ -1066,15 +1066,9 @@ const pushBook = async (ctx) => {
         let userId= token.id;
         let user = await UserModel.findById(userId);
         user.books.forEach(book => {
-            if (String(book.book) === newBookId) {
-                book["timestamp"] = new DataCue().getTime();
+            if (String(book.book) === bookId) {
+                book["timestamp"] = new Date().getTime();
             }
-        });
-        user.books.push({
-            book: bookId,
-            segment: book.segments[0],
-            totalSegment:totalSegmentLength,
-            timestamp: new Date().getTime()
         });
         user = await user.save();
         ctx.status=200;
